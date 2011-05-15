@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ *
+ *  Copyright (c) 2010 Sonrisa Informatikai Kft. All Rights Reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Sonrisa Informatikai Kft. ("Confidential Information").
+ * You shall not disclose such Confidential Information and shall use it only in
+ * accordance with the terms of the license agreement you entered into
+ * with Sonrisa.
+ *
+ * SONRISA MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF
+ * THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+ * TO THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE, OR NON-INFRINGEMENT. SONRISA SHALL NOT BE LIABLE FOR
+ * ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR
+ * DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
+ *
+ -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+       http://www.springframework.org/schema/security
+       http://www.springframework.org/schema/security/spring-security-2.0.4.xsd">
+
+    <security:http auto-config="false" access-denied-page="/belepes/"
+        entry-point-ref="myAuthenticationProcessingFilterEntryPoint">
+        <security:anonymous/>
+        <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+    </security:http>
+
+    <security:authentication-manager alias="authenticationManagerAlias"/>
+
+    <bean id="myAuthenticationProcessingFilter" class="org.springframework.security.ui.webapp.AuthenticationProcessingFilter">
+        <property name="authenticationManager" ref="authenticationManagerAlias" />
+        <property name="defaultTargetUrl" value="/SNMPWeb" />
+        <property name="authenticationFailureUrl" value="/SNMPWeb/belepes" />
+        <property name="alwaysUseDefaultTargetUrl" value="false" />
+        <property name="useRelativeContext" value="true" />
+        <security:custom-filter position="AUTHENTICATION_PROCESSING_FILTER"/>
+    </bean>
+
+    <bean id="myLogoutFilter" class="org.springframework.security.ui.logout.LogoutFilter">
+        <constructor-arg index="0" value="/jbet-web" />
+        <constructor-arg index="1">
+            <list>
+                <ref bean="myLogoutHandler" />
+            </list>
+        </constructor-arg>
+        <property name="useRelativeContext" value="true" />
+        <property name="filterProcessesUrl" value="/logout" />
+        <security:custom-filter position="LOGOUT_FILTER"/>
+    </bean>
+
+    <bean id="myLogoutHandler"
+        class="org.springframework.security.ui.logout.SecurityContextLogoutHandler">
+        <property name="invalidateHttpSession" value="true" />
+    </bean>
+
+    <bean id="myAuthenticationProcessingFilterEntryPoint"
+        class="org.springframework.security.ui.webapp.AuthenticationProcessingFilterEntryPoint">
+        <property name="loginFormUrl" value="/belepes/" />
+    </bean>
+<!--
+    <bean id="authenticationProvider" scope="singleton"
+   class="hu.sonrisa.kgr.k11.web.auth.SpringSecAuthProvider">
+        <security:custom-authentication-provider/>
+    </bean>
+
+    <bean id="pAuthenticationService"
+          name="pAuthenticationService"
+          class="hu.sonrisa.kgr.k11.web.auth.proto.SpringProtoAuthenticationModul"/>
+
+    <bean id="sessionCredentialsProvider" scope="session"
+          class="hu.sonrisa.kgr.k11.web.auth.SessionCredentialsProviderImpl">
+        <aop:scoped-proxy />
+        <property name="pAuthenticationService" ref="pAuthenticationService" />
+    </bean>
+
+    <bean id="loggerListener"
+   class="org.springframework.security.event.authentication.LoggerListener" />
+
+    <bean id="loginHelper" class="hu.sonrisa.kgr.k11.web.auth.SpringLoginHelperBean">
+        <property name="idamLink" value="${web.idam.link}"/>
+    </bean>
+    <bean id="SystemName" name="SystemName" class="hu.sonrisa.kgr.k11.web.SystemName">
+        <property name="systemName" value="${k11.system.name}"/>
+    </bean>
+-->
+</beans>
