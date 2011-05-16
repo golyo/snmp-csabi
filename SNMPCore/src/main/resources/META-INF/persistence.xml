@@ -9,11 +9,13 @@
     <class>com.zh.snmp.snmpcore.entities.HistoryEntity</class>
     <properties>
       <property name="eclipselink.target-database" value="org.eclipse.persistence.platform.database.oracle.OraclePlatform"/>
+      <!--
       <property name="org.eclipse.persistence.platform.server.ServerPlatform" value="WebLogic_10"/>
       <property name="eclipselink.target-server" value="WebLogic_10"/>
       <property name="eclipselink.logging.logger" value="org.eclipse.persistence.logging.JavaLog"/>
       <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
       <property name="eclipselink.ddl-generation" value="${eclipselink.ddl-generation}"/>
+      -->
     </properties>
   </persistence-unit>
 </persistence>
