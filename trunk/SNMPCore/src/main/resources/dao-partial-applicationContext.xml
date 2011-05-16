@@ -11,10 +11,41 @@
        http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
        default-autowire="byName">    
 
+    
+    <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+        <property name="transactionManager">
+            <!--
+            <bean class="org.springframework.jndi.JndiObjectFactoryBean">
+                 <property name="resourceRef" value="true" />
+                 <property name="jndiName" value="UserTransaction" />
+                 <property name="expectedType" value="javax.transaction.TransactionManager" />
+            </bean>
+            -->
+            <bean class="org.springframework.transaction.jta.JotmFactoryBean"/>
+        </property>
+    </bean>
+    
+    <bean id="loadTimeWeaver" class="org.springframework.instrument.classloading.SimpleLoadTimeWeaver"/>
+    
     <bean id="pum" class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager">
         <property name="persistenceXmlLocation" value="classpath*:META-INF/persistence.xml"/>
     </bean>
 
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="persistenceUnitManager" ref="pum"/>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter" />
+        </property>
+        <!-- EclipseLink Cache Coordination-->
+        <property name="jpaProperties">
+            <props>
+            </props>
+        </property>
+        <property name="loadTimeWeaver" ref="loadTimeWeaver"/>
+        <property name="persistenceUnitName" value="SNMP_UNIT" />
+    </bean>
+
+<!--
     <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
         <property name="transactionManager">
             <bean class="org.springframework.jndi.JndiObjectFactoryBean">
@@ -25,14 +56,14 @@
         </property>
     </bean>
 
-    <bean id="loadTimeWeaver" class="com.zh.jbet.core.util.JpaAwareLoadTimeWeaver"/>
+    <bean id="loadTimeWeaver" class="com.zh.snmp.snmpcore.util.JpaAwareLoadTimeWeaver"/>
+
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="persistenceUnitManager" ref="pum"/>
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter" />
         </property>
-        <!-- EclipseLink Cache Coordination-->
         <property name="jpaProperties">
             <props>
                 <prop key="eclipselink.target-server">com.zh.snmp.snmpcore.util.BitronixTransactionController</prop>
@@ -41,5 +72,6 @@
         <property name="loadTimeWeaver" ref="loadTimeWeaver"/>
         <property name="persistenceUnitName" value="SNMP_UNIT" />
     </bean>
+    -->
 </beans>
 

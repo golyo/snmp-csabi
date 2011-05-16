@@ -42,13 +42,10 @@
         <filter-name>wicket.snmpfilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    
-    <!--
     <filter>
         <filter-name>springRequestContextFilter</filter-name>
         <filter-class>org.springframework.web.filter.RequestContextFilter</filter-class>
     </filter>
-
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
@@ -67,6 +64,11 @@
     <listener>
         <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
     </listener>
+    <!--
+    <persistence-context-ref>
+        <persistence-context-ref-name>persistence/em</persistence-context-ref-name>
+        <persistence-unit-name>SNMP_UNIT</persistence-unit-name>
+    </persistence-context-ref>
     -->
     <resource-ref>
         <res-ref-name>snmp_ds</res-ref-name>
