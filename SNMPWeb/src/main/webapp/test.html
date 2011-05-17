@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
+<html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd" >
+<head>
+    <title>Nav title</title>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link rel="stylesheet" type="text/css" href="menu.css"/>
+<script type="text/javascript" src="resources/org.apache.wicket.markup.html.WicketEventReference/wicket-event.js"></script>
+<script type="text/javascript" src="resources/org.apache.wicket.ajax.WicketAjaxReference/wicket-ajax.js"></script>
+<script type="text/javascript" src="resources/org.apache.wicket.ajax.AbstractDefaultAjaxBehavior/wicket-ajax-debug.js"></script>
+<script type="text/javascript" id="wicket-ajax-debug-enable"><!--/*--><![CDATA[/*><!--*/
+wicketAjaxDebugEnable=true;
+/*-->]]>*/</script>
+
+<script type="text/javascript" src="resources/org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow/res/modal.js"></script>
+<link rel="stylesheet" type="text/css" href="resources/org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow/res/modal.css" />
+</head>
+<body>
+    <table class="outerCont" cellpadding="0" cellspacing="0">
+        <tr>
+            <td class="headCont" colspan="3">
+                Header
+                <a wicket:id="logout" href="?wicket:interface=:6:logout::ILinkListener::">Logout</a>
+            </td>
+
+        </tr>
+        <tr>
+            <td class="leftCont">
+                <wicket:link>
+                    <a href="./">Bets</a><br/>
+                    <span><em>Games</em></span><br/>
+                </wicket:link>
+            </td>
+
+            <td class="pageCont">
+                <div wicket:id="menu" class="topmenu" id="menu17"><wicket:panel>
+    <div wicket:id="menuCont" id="id118"><wicket:panel>
+    <ul>
+        <li wicket:id="menuItems" id="id119" class="selected">
+            <div>
+            <a wicket:id="menuLink" id="menuLink1a" href="#" onclick="var wcall=wicketAjaxGet('?wicket:interface=:6:menu:menuCont:1:menuItems:1:menuLink::IBehaviorListener:0:',function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('menuLink1a') != null;}.bind(this));return !wcall;"><span wicket:id="menuText">GameStartPanel.menuTitle</span></a>
+            </div>
+        </li><li wicket:id="menuItems" id="id21b" class="">
+            <div>
+            <a wicket:id="menuLink" id="menuLink1c" href="#" onclick="var wcall=wicketAjaxGet('?wicket:interface=:6:menu:menuCont:1:menuItems:2:menuLink::IBehaviorListener:0:',function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('menuLink1c') != null;}.bind(this));return !wcall;"><span wicket:id="menuText">GameTestPanel.menuTitle</span></a>
+            </div>
+
+        </li>
+    </ul>
+</wicket:panel></div>
+</wicket:panel></div>
+                <div class="aaa">
+                    <div>&nbsp;</div>
+                       <form wicket:id="form" id="form1d" method="post" action="?wicket:interface=:6:form::IFormSubmitListener::"><div style="display:none"><input type="hidden" name="form1d_hf_0" id="form1d_hf_0" /></div>
+                            <h1>kkd</h1>
+                       </form>
+                    </div>  
+            </td>
+            <td class="rightCont">
+                valami
+            </td>
+        </tr>
+        <tr>
+
+            <td class="footCont" colspan="3">Footer</td>
+        </tr>
+    </table>
+    <div wicket:id="modal" id="modal25" style="display:none"><wicket:panel>
+
+</wicket:panel></div>
+</body>
+</html>

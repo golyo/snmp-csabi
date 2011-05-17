@@ -16,29 +16,25 @@
  */
 
 package com.zh.snmp.snmpweb.pages;
+
+import com.zh.snmp.snmpweb.menu.MenuConfig;
+import com.zh.snmp.snmpweb.pages.snmp.SnmpPanel;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.markup.html.basic.Label;
 
 /**
  *
  * @author golyo
  */
-public class GamePage extends WebPage {
+@MenuConfig(context={SnmpPanel.class})
+public class GamePage extends BasePage {
     private static final long serialVersionUID = 1L;
 
     public GamePage(final PageParameters parameters) {
         super(parameters);
-        add(new Label("lb", "szar"));
-        add(new AjaxLink("testLink") {
+    }
 
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                int i = 0;
-                int j = i;
-            }
-        });
+    @Override
+    public BasePanel buildContent(String id, final PageParameters parameters) {
+        return new SnmpPanel(id, null);
     }
 }

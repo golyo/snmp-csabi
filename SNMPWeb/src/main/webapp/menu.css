@@ -1,0 +1,53 @@
+.topmenu ul {
+    border-bottom:1px solid #aaa;
+    list-style-type:none;
+    margin:1em 0;
+    padding:3px 10px;
+    text-align:left;
+    margin: 7px 0px 0px 0px;
+}
+
+.topmenu {
+    background-color: #fff;
+}
+
+.topmenu ul li {
+    display:inline;
+}
+
+a {
+    outline: none;
+}
+
+body {
+}
+
+.topmenu div {
+    padding-top: 5px;
+    background:#f6f6f6;
+    border-right: 1px solid #aaa;
+}
+
+.topmenu div.firstBar {
+    background:#fff;
+    border-right: none;
+}
+
+a {
+    color: #127;
+}
+.topmenu ul li a {   
+    background:#ddf;
+    text-decoration: none;
+    border: 1px solid #abd;
+    margin-right:0px;
+    padding:3px 4px;
+    color: #025;
+}
+
+.topmenu ul li.selected a {
+    background:#f6f6f6;
+    border-bottom:2px solid #f6f6f6;
+    color: #236;
+}
+

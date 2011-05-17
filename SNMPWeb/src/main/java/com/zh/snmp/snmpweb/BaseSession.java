@@ -19,6 +19,8 @@ package com.zh.snmp.snmpweb;
 
 import com.zh.snmp.snmpcore.entities.UserEntity;
 import com.zh.snmp.snmpcore.services.AuthenticationService;
+import java.util.LinkedList;
+import java.util.List;
 import org.apache.wicket.Request;
 import org.apache.wicket.authentication.AuthenticatedWebSession;
 import org.apache.wicket.authorization.strategies.role.Roles;
@@ -36,8 +38,10 @@ public class BaseSession extends AuthenticatedWebSession {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseSession.class);
     
-    public static final String ROLE_PLAYER = "PLAYER";
-    public static final String ROLE_ADMIN = "ADMIN";
+    public enum SnmpRoles {
+        ADMIN,
+        USER
+    }
     
     @SpringBean(name = "AuthenticationService")
     private AuthenticationService authService;
@@ -88,10 +92,28 @@ public class BaseSession extends AuthenticatedWebSession {
         roles = null;
     }
 
+    private static final String ADMIN_ACC = "Admin";
     @Override
     public boolean authenticate(String username, String password) {
         user = authService.findPlayer(username, password);
+        if (user == null && ADMIN_ACC.equals(username) && ADMIN_ACC.equals(password)) {
+            user = createDefaultAdmin();
+        }
         return setRoles();
     }
 
+    private UserEntity createDefaultAdmin() {
+        UserEntity ret = new UserEntity();
+        ret.setName(ADMIN_ACC);
+        ret.setRoles(getAllRoles());
+        return ret;
+    }
+    
+    private static List<String> getAllRoles() {
+        List<String> ret = new LinkedList<String>();
+        for (SnmpRoles r: SnmpRoles.values()) {
+            ret.add(r.toString());
+        }
+        return ret;
+    }
 }

@@ -15,19 +15,21 @@
  *  under the License.
  */
 
-package com.zh.snmp.snmpweb.pages;
+package com.zh.snmp.snmpweb.menu;
 
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.markup.html.WebPage;
+import com.zh.snmp.snmpweb.pages.BasePanel;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  *
  * @author sonrisa
  */
-public class SignInPage extends WebPage {
-    private static final long serialVersionUID = 1L;
-
-    public SignInPage(final PageParameters parameters)
-    {
-        super(parameters);
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+public @interface MenuConfig {
+    Class<? extends BasePanel>[] context();
+    int depth = 0;
 }
