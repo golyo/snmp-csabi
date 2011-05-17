@@ -4,9 +4,9 @@
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <jta-data-source>snmp_ds</jta-data-source>
     <class>com.zh.snmp.snmpcore.entities.UserEntity</class>
-    <class>com.zh.snmp.snmpcore.entities.SnmpTypeEntity</class>
-    <class>com.zh.snmp.snmpcore.entities.ClientEntity</class>
     <class>com.zh.snmp.snmpcore.entities.HistoryEntity</class>
+    <class>com.zh.snmp.snmpcore.entities.DeviceConfigEntity</class>
+    <class>com.zh.snmp.snmpcore.entities.DeviceEntity</class>
     <properties>
       <property name="eclipselink.target-database" value="org.eclipse.persistence.platform.database.oracle.OraclePlatform"/>
       <!--

@@ -17,9 +17,9 @@
 package com.zh.snmp.snmpcore.services.impl;
 
 import com.zh.snmp.snmpcore.BaseTest;
-import com.zh.snmp.snmpcore.entities.ClientEntity;
+import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.entities.HistoryEntity;
-import com.zh.snmp.snmpcore.entities.SnmpTypeEntity;
+import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import java.util.List;
 import org.junit.After;
@@ -50,39 +50,38 @@ public class SnmpServiceImplTest extends BaseTest {
 
     @Test
     public void testSnmpService() {
-        SnmpTypeEntity type = new SnmpTypeEntity();
+        DeviceConfigEntity type = new DeviceConfigEntity();
         type.setActive(true);
         type.setName("testName");
         type.setCode("testCode");
         type.setSnmpDescriptor("testDescriptor");
-        SnmpTypeEntity saved = snmpService.saveSnmpType(type);
+        DeviceConfigEntity saved = snmpService.saveDeviceConfig(type);
         assertNotNull(saved.getId());
         
-        SnmpTypeEntity check = snmpService.findSnmpTypeById(saved.getId());
+        DeviceConfigEntity check = snmpService.findDeviceConfigById(saved.getId());
         assertNotNull(check);
         
-        List<SnmpTypeEntity> ls = snmpService.findSnmpTypesByFilter(new SnmpTypeEntity(), null, 0, -1);
+        List<DeviceConfigEntity> ls = snmpService.findSnmpTypesByFilter(new DeviceConfigEntity(), null, 0, -1);
         assertEquals(ls.size(), 1);
         
-        check = snmpService.findSnmpTypeByCode(type.getCode());
+        check = snmpService.findDeviceConfigByCode(type.getCode());
         assertNotNull(check);
         
         String ip = "ip";
-        ClientEntity client = snmpService.setSnmpTypeToClient(ip, "unknowType");
-        assertNull(client);
+        DeviceEntity device = snmpService.setDeviceConfig(ip, "unknowType");
+        assertNull(device);
+        device = snmpService.setDeviceConfig(ip, type.getCode());
+        assertNotNull(device);
+        assertEquals(device.getIpAddress(), ip);
         
-        client = snmpService.setSnmpTypeToClient(ip, type.getCode());
-        assertNotNull(client);
-        assertEquals(client.getIpAddress(), ip);
-        
-        List<HistoryEntity> histories = snmpService.getClientHistory(new HistoryEntity(), null, 0, -1);
+        List<HistoryEntity> histories = snmpService.getDeviceHistory(new HistoryEntity(), null, 0, -1);
         assertEquals(histories.size(), 1);
         
-        client = snmpService.setSnmpTypeToClient(ip, null);
-        assertNotNull(client);
-        assertNull(client.getType());
+        device = snmpService.setDeviceConfig(ip, null);
+        assertNotNull(device);
+        assertNull(device.getConfig());
 
-        histories = snmpService.getClientHistory(new HistoryEntity(), null, 0, -1);
+        histories = snmpService.getDeviceHistory(new HistoryEntity(), null, 0, -1);
         assertEquals(histories.size(), 2);
     }
 

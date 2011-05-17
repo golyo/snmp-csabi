@@ -37,9 +37,9 @@ import javax.persistence.Temporal;
 @Table(name = "HISTORY")
 public class HistoryEntity implements BaseEntity, Serializable {
     private Long id;
-    private ClientEntity client;
-    private SnmpTypeEntity oldType;
-    private SnmpTypeEntity newType;
+    private DeviceEntity device;
+    private DeviceConfigEntity oldConfig;
+    private DeviceConfigEntity newConfig;
     private UserEntity user;
     private Date updateTime;
 
@@ -56,33 +56,33 @@ public class HistoryEntity implements BaseEntity, Serializable {
     }
 
     @ManyToOne()
-    @JoinColumn(name="CLIENTID")
-    public ClientEntity getClient() {
-        return client;
+    @JoinColumn(name="DEVICEID")
+    public DeviceEntity getDevice() {
+        return device;
     }
 
-    public void setClient(ClientEntity client) {
-        this.client = client;
-    }
-
-    @ManyToOne()
-    @JoinColumn(name="NEWTYPEID")
-    public SnmpTypeEntity getNewType() {
-        return newType;
-    }
-
-    public void setNewType(SnmpTypeEntity newType) {
-        this.newType = newType;
+    public void setDevice(DeviceEntity device) {
+        this.device = device;
     }
 
     @ManyToOne()
-    @JoinColumn(name="OLDTYPEID")
-    public SnmpTypeEntity getOldType() {
-        return oldType;
+    @JoinColumn(name="NEWCONFIGID")
+    public DeviceConfigEntity getNewConfig() {
+        return newConfig;
     }
 
-    public void setOldType(SnmpTypeEntity oldType) {
-        this.oldType = oldType;
+    public void setNewConfig(DeviceConfigEntity newConfig) {
+        this.newConfig = newConfig;
+    }
+
+    @ManyToOne()
+    @JoinColumn(name="OLDCONFIGID")
+    public DeviceConfigEntity getOldConfig() {
+        return oldConfig;
+    }
+
+    public void setOldConfig(DeviceConfigEntity oldConfig) {
+        this.oldConfig = oldConfig;
     }
 
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)

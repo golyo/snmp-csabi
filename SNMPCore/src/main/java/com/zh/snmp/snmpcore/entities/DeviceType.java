@@ -14,14 +14,13 @@
  *  ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR
  *  DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
  */
-package com.zh.snmp.snmpcore.dao;
-
-import com.zh.snmp.snmpcore.entities.ClientEntity;
+package com.zh.snmp.snmpcore.entities;
 
 /**
  *
  * @author Golyo
  */
-public class ClientDao extends BaseJpaDao<ClientEntity> {
-    
+public enum DeviceType {
+    NET,
+    VOIP
 }

@@ -14,8 +14,8 @@
     <context:component-scan base-package="com.zh.jbet.core"/>
 
     <bean id="UserDao"      class="com.zh.snmp.snmpcore.dao.UserDao"      lazy-init="true" />
-    <bean id="SnmpTypeDao"  class="com.zh.snmp.snmpcore.dao.SnmpTypeDao"  lazy-init="true" />
-    <bean id="ClientDao"    class="com.zh.snmp.snmpcore.dao.ClientDao"    lazy-init="true" />
+    <bean id="SnmpTypeDao"  class="com.zh.snmp.snmpcore.dao.DeviceConfigDao"  lazy-init="true" />
+    <bean id="ClientDao"    class="com.zh.snmp.snmpcore.dao.DeviceDao"    lazy-init="true" />
     <bean id="HistoryDao"   class="com.zh.snmp.snmpcore.dao.HistoryDao"   lazy-init="true" />
 </beans>
 

@@ -20,6 +20,8 @@ import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -33,17 +35,18 @@ import javax.persistence.Table;
  * @author Golyo
  */
 @Entity
-@Table(name = "SNMPTYPE")
-public class SnmpTypeEntity implements BaseEntity, Serializable {
+@Table(name = "DEVICECONFIG")
+public class DeviceConfigEntity implements BaseEntity, Serializable {
     private Long id;
     private String code;
     private String name;
     private String snmpDescriptor;
+    private DeviceType deviceType = DeviceType.NET;
     private Boolean active;
 
     @Id
-    @SequenceGenerator(name = "S_SNMPTYPE", sequenceName = "S_SNMPTYPE", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "S_SNMPTYPE")
+    @SequenceGenerator(name = "S_DEVICECONFIG", sequenceName = "S_DEVICECONFIG", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "S_DEVICECONFIG")
     @Override
     public Long getId() {
         return id;
@@ -92,6 +95,17 @@ public class SnmpTypeEntity implements BaseEntity, Serializable {
         this.snmpDescriptor = snmpDescriptor;
     }
 
+    @Basic(optional = false)
+    @Column(name = "DEVICETYPE", nullable = false, columnDefinition = "varchar2(20)")
+    @Enumerated(EnumType.STRING)
+    public DeviceType getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(DeviceType deviceType) {
+        this.deviceType = deviceType;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -100,7 +114,7 @@ public class SnmpTypeEntity implements BaseEntity, Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final SnmpTypeEntity other = (SnmpTypeEntity) obj;
+        final DeviceConfigEntity other = (DeviceConfigEntity) obj;
         if ((this.code == null) ? (other.code != null) : !this.code.equals(other.code)) {
             return false;
         }
