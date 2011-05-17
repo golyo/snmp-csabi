@@ -14,25 +14,13 @@
  *  ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR
  *  DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
  */
-package com.zh.snmp.snmpcore.services;
+package com.zh.snmp.snmpcore.dao;
 
-import com.zh.snmp.snmpcore.entities.DeviceEntity;
-import com.zh.snmp.snmpcore.entities.HistoryEntity;
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
-import java.util.List;
 
 /**
  *
  * @author Golyo
  */
-public interface SnmpService {
-    public List<DeviceConfigEntity> findSnmpTypesByFilter(DeviceConfigEntity filter, String sort, int start, int count);
-    public DeviceConfigEntity saveDeviceConfig(DeviceConfigEntity type);
-    public DeviceConfigEntity findDeviceConfigByCode(String code);
-    public DeviceConfigEntity findDeviceConfigById(Long id);
-    
-    public DeviceEntity setDeviceConfig(String ipAddress, String configCode);
-    public int changeConfigToAllDevice(String oldTypeCode, String newTypeCode);
-    
-    public List<HistoryEntity> getDeviceHistory(HistoryEntity filter, String sort, int start, int count);
+public class DeviceConfigDao extends BaseJpaDao<DeviceConfigEntity> {
 }

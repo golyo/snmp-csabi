@@ -32,15 +32,17 @@ import javax.persistence.Table;
  * @author Golyo
  */
 @Entity
-@Table(name = "CLIENT")
-public class ClientEntity implements BaseEntity, Serializable {
+@Table(name = "DEVICE")
+public class DeviceEntity implements BaseEntity, Serializable {
     private Long id;
+    private String nodeId;
+    private String macAddress;
     private String ipAddress;
-    private SnmpTypeEntity type;
+    private DeviceConfigEntity config;
 
     @Id
-    @SequenceGenerator(name = "S_CLIENT", sequenceName = "S_CLIENT", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "S_CLIENT")
+    @SequenceGenerator(name = "S_DEVICE", sequenceName = "S_DEVICE", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "S_DEVICE")
     @Override
     public Long getId() {
         return id;
@@ -60,14 +62,31 @@ public class ClientEntity implements BaseEntity, Serializable {
     }
 
     @ManyToOne()
-    @JoinColumn(name="TYPEID")
-    public SnmpTypeEntity getType() {
-        return type;
+    @JoinColumn(name="CONFIGID")
+    public DeviceConfigEntity getConfig() {
+        return config;
     }
 
-    public void setType(SnmpTypeEntity type) {
-        this.type = type;
+    public void setConfig(DeviceConfigEntity config) {
+        this.config = config;
     }
-    
+
+    @Basic
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
+    }
+
+    @Basic
+    public String getNodeId() {
+        return nodeId;
+    }
+
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
+    }
     
 }

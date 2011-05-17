@@ -16,13 +16,13 @@
  */
 package com.zh.snmp.snmpcore.services.impl;
 
-import com.zh.snmp.snmpcore.dao.ClientDao;
+import com.zh.snmp.snmpcore.dao.DeviceDao;
 import com.zh.snmp.snmpcore.dao.HistoryDao;
-import com.zh.snmp.snmpcore.dao.SnmpTypeDao;
+import com.zh.snmp.snmpcore.dao.DeviceConfigDao;
 import com.zh.snmp.snmpcore.dao.UserDao;
 import com.zh.snmp.snmpcore.entities.HistoryEntity;
-import com.zh.snmp.snmpcore.entities.ClientEntity;
-import com.zh.snmp.snmpcore.entities.SnmpTypeEntity;
+import com.zh.snmp.snmpcore.entities.DeviceEntity;
+import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import java.util.Date;
 import java.util.List;
@@ -34,20 +34,20 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class SnmpServiceImpl implements SnmpService {
     @Autowired
-    private SnmpTypeDao snmpTypedDao;
+    private DeviceConfigDao snmpTypedDao;
     @Autowired
-    private ClientDao clientDao;
+    private DeviceDao clientDao;
     @Autowired
-    private ClientDao changeLogDao;
+    private DeviceDao changeLogDao;
     @Autowired
     private UserDao userDao;
     @Autowired
     private HistoryDao historyDao;
     
     @Override
-    public SnmpTypeEntity findSnmpTypeByCode(String code) {
+    public DeviceConfigEntity findDeviceConfigByCode(String code) {
         if (code != null) {
-            SnmpTypeEntity entity = new SnmpTypeEntity();
+            DeviceConfigEntity entity = new DeviceConfigEntity();
             entity.setCode(code);
             return snmpTypedDao.findExampleEntity(entity);            
         } else {
@@ -56,35 +56,35 @@ public class SnmpServiceImpl implements SnmpService {
     }
 
     @Override
-    public SnmpTypeEntity findSnmpTypeById(Long id) {
+    public DeviceConfigEntity findDeviceConfigById(Long id) {
         return snmpTypedDao.load(id);
     }
     
     @Override
-    public SnmpTypeEntity saveSnmpType(SnmpTypeEntity type) {
-        SnmpTypeEntity ret = snmpTypedDao.save(type);
+    public DeviceConfigEntity saveDeviceConfig(DeviceConfigEntity type) {
+        DeviceConfigEntity ret = snmpTypedDao.save(type);
         snmpTypedDao.flush();
         return ret;
     }
     
     @Override
-    public List<SnmpTypeEntity> findSnmpTypesByFilter(SnmpTypeEntity filter, String sort, int start, int count) {
+    public List<DeviceConfigEntity> findSnmpTypesByFilter(DeviceConfigEntity filter, String sort, int start, int count) {
         return snmpTypedDao.find(filter, sort, start, count);
     }
     
     @Override
-    public int changeTypeToAllClient(String oldTypeCode, String newTypeCode) {
-        SnmpTypeEntity oldType = findSnmpTypeByCode(oldTypeCode);
-        SnmpTypeEntity newType = findSnmpTypeByCode(newTypeCode);
-        if (oldType == null || newType == null) {
+    public int changeConfigToAllDevice(String oldConfigCode, String newConfigCode) {
+        DeviceConfigEntity oldConfig = findDeviceConfigByCode(oldConfigCode);
+        DeviceConfigEntity newConfig = findDeviceConfigByCode(newConfigCode);
+        if (oldConfig == null || newConfig == null) {
             return 0;
         } else {
-            ClientEntity filterClient = new ClientEntity();
-            filterClient.setType(oldType);
-            List<ClientEntity> clients = clientDao.find(filterClient, null, 0, -1);
-            for (ClientEntity client: clients) {
-                client.setType(newType);
-                clientSnmpTypeChanged(client, oldType);
+            DeviceEntity filterClient = new DeviceEntity();
+            filterClient.setConfig(oldConfig);
+            List<DeviceEntity> clients = clientDao.find(filterClient, null, 0, -1);
+            for (DeviceEntity client: clients) {
+                client.setConfig(newConfig);
+                clientSnmpTypeChanged(client, oldConfig);
             }
             clientDao.flush();
             return clients.size();
@@ -92,36 +92,37 @@ public class SnmpServiceImpl implements SnmpService {
     }
 
     @Override
-    public ClientEntity setSnmpTypeToClient(String ipAddress, String typeCode) {
-        SnmpTypeEntity type = findSnmpTypeByCode(typeCode);
-        if (type == null && typeCode != null) {
+    public DeviceEntity setDeviceConfig(String ipAddress, String configCode) {
+        DeviceConfigEntity config = findDeviceConfigByCode(configCode);
+        if (config == null && configCode != null) {
             return null;
         } else {
-            ClientEntity filterClient = new ClientEntity();
+            DeviceEntity filterClient = new DeviceEntity();
             filterClient.setIpAddress(ipAddress);
-            ClientEntity saveable = clientDao.findExampleEntity(filterClient);
+            //TODO
+            DeviceEntity saveable = clientDao.findExampleEntity(filterClient);
             if (saveable == null) {
                 saveable = filterClient;            
             }
-            SnmpTypeEntity oldType = saveable.getType();
-            saveable.setType(type);
+            DeviceConfigEntity oldConfig = saveable.getConfig();
+            saveable.setConfig(config);
             clientDao.save(saveable);
-            clientSnmpTypeChanged(saveable, oldType);
+            clientSnmpTypeChanged(saveable, oldConfig);
             clientDao.flush();
             return saveable;            
         }
     }
     
     @Override
-    public List<HistoryEntity> getClientHistory(HistoryEntity filter, String sort, int start, int count) {
+    public List<HistoryEntity> getDeviceHistory(HistoryEntity filter, String sort, int start, int count) {
         return historyDao.find(filter, sort, start, count);
     }
     
-    private void clientSnmpTypeChanged(ClientEntity client, SnmpTypeEntity oldType) {
+    private void clientSnmpTypeChanged(DeviceEntity device, DeviceConfigEntity oldConfig) {
         HistoryEntity log = new HistoryEntity();
-        log.setClient(client);
-        log.setNewType(client.getType());
-        log.setOldType(oldType);
+        log.setDevice(device);
+        log.setNewConfig(device.getConfig());
+        log.setOldConfig(oldConfig);
         log.setUpdateTime(new Date());
         historyDao.save(log);
     }

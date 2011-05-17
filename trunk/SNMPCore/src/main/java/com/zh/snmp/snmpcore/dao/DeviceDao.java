@@ -16,11 +16,12 @@
  */
 package com.zh.snmp.snmpcore.dao;
 
-import com.zh.snmp.snmpcore.entities.SnmpTypeEntity;
+import com.zh.snmp.snmpcore.entities.DeviceEntity;
 
 /**
  *
  * @author Golyo
  */
-public class SnmpTypeDao extends BaseJpaDao<SnmpTypeEntity> {
+public class DeviceDao extends BaseJpaDao<DeviceEntity> {
+    
 }
