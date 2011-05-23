@@ -1,6 +1,6 @@
 package com.zh.snmp.snmpweb;
 
-import com.zh.snmp.snmpweb.pages.GamePage;
+import com.zh.snmp.snmpweb.pages.SnmpPage;
 import com.zh.snmp.snmpweb.pages.SignInPage;
 import org.apache.wicket.authentication.AuthenticatedWebApplication;
 import org.apache.wicket.authentication.AuthenticatedWebSession;
@@ -44,7 +44,7 @@ public class BaseApplication extends AuthenticatedWebApplication implements Appl
     
     @Override
     public Class getHomePage() {
-        return GamePage.class;
+        return SnmpPage.class;
     }
 
     @Override

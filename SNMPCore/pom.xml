@@ -15,37 +15,32 @@
     <dependencies>
         <!-- persistence -->
         <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId>
-            <version>1.0</version>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>javax.persistence</artifactId>
+            <version>2.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>eclipselink</artifactId>
+            <version>2.2.0</version>
         </dependency>
         <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>jta</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.jotm</groupId>
-            <artifactId>jotm-core</artifactId>
-            <version>2.1.9</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.spec.ee</groupId>
-            <artifactId>ow2-connector-1.5-spec</artifactId>
-            <version>1.0-M1</version>
+            <version>1.1</version>
+            <scope>provided</scope>
         </dependency>
         <!-- spring -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring</artifactId>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core-tiger</artifactId>
         </dependency>
+        -->
         <!-- db -->
         <dependency>
             <groupId>com.oracle</groupId>
@@ -64,6 +59,14 @@
             <artifactId>aspectjweaver</artifactId>
             <version>1.6.8</version>
         </dependency>
+        <!--
+        <dependency>
+            <groupId>org.codehaus.btm</groupId>
+            <artifactId>btm-jetty6-lifecycle</artifactId>
+            <version>2.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        -->
         <!-- log -->
         <dependency>
             <groupId>log4j</groupId>

@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.1
  * 
  */
-@WebServiceClient(name = "TryWs", targetNamespace = "http://snmpweb.snmp.zh.com/", wsdlLocation = "http://localhost:8080/SNMPWeb/TryWs?wsdl")
+@WebServiceClient(name = "TryWs", targetNamespace = "http://snmpweb.snmp.zh.com/", wsdlLocation = "http://localhost:7000/SNMPWeb/TryWs?wsdl")
 public class TryWs_Service
     extends Service
 {
@@ -30,9 +30,9 @@ public class TryWs_Service
         try {
             URL baseUrl;
             baseUrl = com.zh.snmp.snmpclient.generated.TryWs_Service.class.getResource(".");
-            url = new URL(baseUrl, "http://localhost:8080/SNMPWeb/TryWs?wsdl");
+            url = new URL(baseUrl, "http://localhost:7000/SNMPWeb/TryWs?wsdl");
         } catch (MalformedURLException e) {
-            logger.warning("Failed to create URL for the wsdl Location: 'http://localhost:8080/SNMPWeb/TryWs?wsdl', retrying as a local file");
+            logger.warning("Failed to create URL for the wsdl Location: 'http://localhost:7000/SNMPWeb/TryWs?wsdl', retrying as a local file");
             logger.warning(e.getMessage());
         }
         TRYWS_WSDL_LOCATION = url;

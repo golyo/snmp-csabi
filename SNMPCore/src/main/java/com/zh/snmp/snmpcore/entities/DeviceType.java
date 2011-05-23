@@ -21,6 +21,7 @@ package com.zh.snmp.snmpcore.entities;
  * @author Golyo
  */
 public enum DeviceType {
-    NET,
-    VOIP
+    VOIP,
+    WIFI,
+    ACCES
 }

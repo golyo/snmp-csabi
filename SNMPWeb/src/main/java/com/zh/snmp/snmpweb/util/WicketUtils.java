@@ -19,28 +19,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 public class WicketUtils {
 
     private static Logger logger = LoggerFactory.getLogger(WicketUtils.class);
-    private static Map<Class, Constructor> constructors = new ConcurrentHashMap<Class, Constructor>();
 
-    protected static <T> Constructor<T> getStringModelConstructor(Class<T> panelClass) {
-        Constructor<T> c = constructors.get(panelClass);
-        if (c == null) {
-            long begin = System.currentTimeMillis();
-            try {
-                c = panelClass.getConstructor(String.class, IModel.class);
-            } catch (Exception ex) {
-                logger.error(ex.getMessage());
-            }
-            long end = System.currentTimeMillis();
-            logger.debug("Getting String,IModel constructor for " + panelClass.getName() + " took " + (end - begin) + " ms");
-            if (c != null) {
-                constructors.put(panelClass, c);
-            } else {
-                logger.error("Not found String model constructor for class " + panelClass);
-            }
-        }
-        return c;
-    }
-
+/*    
     protected static <T> Constructor<T> getModalServiceableConstructor(Class<T> panelClass) {
         Constructor<T> c = constructors.get(panelClass);
         if (c == null) {
@@ -60,16 +40,27 @@ public class WicketUtils {
         }
         return c;
     }
-
+*/
+   
     public static <T extends Panel> T createPanel(String id, Class<T> panelClass, IModel model) {
+        Constructor[] cs = panelClass.getConstructors();
+        if (cs.length != 1) {
+            throw new SystemException(ExceptionCodesEnum.Unsupported, "Need exactly one constructor, to auto generate class " + panelClass);
+        }
+        Constructor act = cs[0];
+        Class[] params = act.getParameterTypes();
         try {
-            Constructor<T> c = getStringModelConstructor(panelClass);
-            return c.newInstance(id, model);
+            if (params.length == 1) {
+                return (T)act.newInstance(id);
+            } else if (params.length == 2) {
+                return (T)act.newInstance(id, model);
+            }
         } catch (Exception ex) {
             throw new SystemException(ExceptionCodesEnum.ConfigurationException, "Construct panel failed " + panelClass, ex);
         }
-    }
-
+        throw new SystemException(ExceptionCodesEnum.ConfigurationException, "Construct panel failed, (String) or (String, IModel) constructor not found to class " + panelClass);
+    }    
+/*
     public static <T extends Panel> T createModalPopupPanel(Class<T> panelClass, ModalWindow modal, IModel model) {
         try {
             Constructor<T> c = getModalServiceableConstructor(panelClass);
@@ -78,7 +69,7 @@ public class WicketUtils {
             throw new SystemException(ExceptionCodesEnum.ConfigurationException, "Construct panel failed " + panelClass, ex);
         }
     }
-
+*/
     public static <T> T createNewInstance(Class<T> clazz) {
         try {
             return clazz.getConstructor().newInstance();
@@ -86,5 +77,4 @@ public class WicketUtils {
             throw new SystemException(ExceptionCodesEnum.ConfigurationException, clazz + " does not have emty constructor.", e);
         }
     }
-
 }

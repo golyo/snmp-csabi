@@ -16,12 +16,6 @@
        A core és a test-integration közösen használják, ezért van a test-shared modulban.
   -->
 
-    <bean id="transactionManagerTest" class="org.springframework.transaction.jta.JtaTransactionManager">
-        <property name="transactionManager">
-            <bean class="org.springframework.transaction.jta.JotmFactoryBean"/>
-        </property>
-    </bean>
-    
     <bean id="loadTimeWeaver" class="com.zh.snmp.snmpcore.util.JpaAwareLoadTimeWeaver"/>
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
