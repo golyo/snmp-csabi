@@ -34,5 +34,7 @@ public interface SnmpService {
     public DeviceEntity setDeviceConfig(String ipAddress, String configCode);
     public int changeConfigToAllDevice(String oldTypeCode, String newTypeCode);
     
+    public List<DeviceConfigEntity> getDeviceHistory(DeviceConfigEntity filter, String sort, int start, int count);
+    public int countDeviceHistory(DeviceConfigEntity filter);
     public List<HistoryEntity> getDeviceHistory(HistoryEntity filter, String sort, int start, int count);
 }

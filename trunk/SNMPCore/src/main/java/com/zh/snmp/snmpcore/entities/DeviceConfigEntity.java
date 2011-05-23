@@ -41,7 +41,7 @@ public class DeviceConfigEntity implements BaseEntity, Serializable {
     private String code;
     private String name;
     private String snmpDescriptor;
-    private DeviceType deviceType = DeviceType.NET;
+    private DeviceType deviceType = DeviceType.ACCES;
     private Boolean active;
 
     @Id

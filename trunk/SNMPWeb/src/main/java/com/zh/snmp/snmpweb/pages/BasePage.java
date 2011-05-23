@@ -64,7 +64,7 @@ public abstract class BasePage extends WebPage {
             @Override
             public void onClick() {
                 BaseSession.get().signOut();
-                setResponsePage(GamePage.class, null);
+                setResponsePage(SnmpPage.class, null);
             }
         }) ;
         add(form = isFormStateless() ? new StatelessForm("form") {

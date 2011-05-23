@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+<Configure class="org.mortbay.jetty.webapp.WebAppContext">
+    <New id="snmp_ds" class="org.mortbay.jetty.plus.naming.Resource">
+        <Arg>snmp_ds</Arg>
+        <Arg>
+            <New id="poolingDS" class="bitronix.tm.resource.jdbc.PoolingDataSource">
+                <Set name="uniqueName">oracle</Set>
+                <Set name="className">oracle.jdbc.xa.client.OracleXADataSource</Set>
+                <Set name="minPoolSize">0</Set>
+                <Set name="maxPoolSize">5</Set>
+                <Set name="acquireIncrement">1</Set>
+                <Set name="allowLocalTransactions">true</Set>
+                <Set name="testQuery">SELECT 1 FROM DUAL</Set>
+                <Set name="useTmJoin">true</Set>
+                <Set name="deferConnectionRelease">true</Set>
+                <Set name="automaticEnlistingEnabled">true</Set>
+                <Set name="acquisitionTimeout">30</Set>
+                <Set name="acquisitionInterval">1</Set>
+                <Set name="preparedStatementCacheSize">5</Set>
+                <Get name="driverProperties">
+                    <Put name="user">snmp</Put>
+                    <Put name="password">snmp</Put>
+                    <Put name="URL">jdbc:oracle:thin:@localhost:1521:XE</Put>
+                </Get>
+                <Call name="init"/>
+            </New>
+        </Arg>
+    </New>
+</Configure>

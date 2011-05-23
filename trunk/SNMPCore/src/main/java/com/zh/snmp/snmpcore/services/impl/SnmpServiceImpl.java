@@ -126,4 +126,14 @@ public class SnmpServiceImpl implements SnmpService {
         log.setUpdateTime(new Date());
         historyDao.save(log);
     }
+    
+    @Override
+    public List<DeviceConfigEntity> getDeviceHistory(DeviceConfigEntity filter, String sort, int start, int count) {
+        return snmpTypedDao.find(filter, sort, start, count);
+    }
+    
+    @Override
+    public int countDeviceHistory(DeviceConfigEntity filter) {
+        return snmpTypedDao.count(filter);
+    }
 }
