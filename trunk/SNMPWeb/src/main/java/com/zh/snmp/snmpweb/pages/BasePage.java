@@ -118,6 +118,10 @@ public abstract class BasePage extends WebPage {
         art.addComponent(form);
     }
 
+    public void refreshPanel(AjaxRequestTarget target) {
+        target.addComponent(form);
+    }
+    
     public void changePanel(Class<? extends BasePanel>[] config, IModel model, Class<? extends MarkupContainer> parentClz, AjaxRequestTarget art) {
         tabContainer.addNewTabLine(model, parentClz, config[0], config);
         art.addComponent(tabContainer);

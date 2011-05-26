@@ -15,12 +15,12 @@
     <class>com.zh.snmp.snmpcore.entities.DeviceConfigEntity</class>
     <class>com.zh.snmp.snmpcore.entities.DeviceEntity</class>
     <properties>
-      <property name="eclipselink.target-database" value="org.eclipse.persistence.platform.database.oracle.OraclePlatform"/>
+        <property name="eclipselink.target-database" value="MYSQL"/>
       <!-- tesztekben ne cacheljünk ! -->
       <property name="eclipselink.cache.shared.default" value="false"/>
       <!--<property name="eclipselink.logging.level" value="ALL"/>-->
       <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
-      <property name="javax.persistence.jdbc.url" value="${javax.persistence.jdbc.url}"/>
+      <property name="javax.persistence.jdbc.url" value="${javax.persistence.jdbc.testurl}"/>
       <property name="javax.persistence.jdbc.password" value="${javax.persistence.jdbc.password}"/>
       <property name="javax.persistence.jdbc.driver" value="${javax.persistence.jdbc.driver}"/>
       <property name="javax.persistence.jdbc.user" value="${javax.persistence.jdbc.testuser}"/>

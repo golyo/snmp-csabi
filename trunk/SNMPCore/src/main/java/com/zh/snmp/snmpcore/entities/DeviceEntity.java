@@ -24,7 +24,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 /**
@@ -41,8 +40,7 @@ public class DeviceEntity implements BaseEntity, Serializable {
     private DeviceConfigEntity config;
 
     @Id
-    @SequenceGenerator(name = "S_DEVICE", sequenceName = "S_DEVICE", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "S_DEVICE")
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Override
     public Long getId() {
         return id;

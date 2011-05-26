@@ -18,10 +18,15 @@ package com.zh.snmp.snmpweb.pages.snmp;
 
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import com.zh.snmp.snmpweb.components.DataTablePanel;
+import com.zh.snmp.snmpweb.components.RowLinkColumn;
 import com.zh.snmp.snmpweb.model.DeviceConfigProvider;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilteredPropertyColumn;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 
 /**
@@ -31,9 +36,31 @@ import org.apache.wicket.model.ResourceModel;
 public class DeviceConfigListPanel extends DataTablePanel<DeviceConfigEntity> {
     
     public DeviceConfigListPanel(String id) {
-        super(id, new IColumn[] {
+        super(id, new DeviceConfigProvider(), 20);
+        add(new AjaxLink("newEntity") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                showEditPanel(target, Model.of(new DeviceConfigEntity()));
+            }
+        });
+    }
+
+    @Override
+    protected IColumn<DeviceConfigEntity>[] createTableColumns() {
+        return new IColumn[] {
             new TextFilteredPropertyColumn(new ResourceModel("deviceConfig.code"), "code"),
-            new PropertyColumn(new ResourceModel("deviceConfig.name"), "name")
-        }, new DeviceConfigProvider(), 20);
+            new PropertyColumn(new ResourceModel("deviceConfig.name"), "name"),
+            new RowLinkColumn<DeviceConfigEntity>(new ResourceModel("title.options"), new ResourceModel("link.edit"), null) {
+                @Override
+                protected void onRowSelect(AjaxRequestTarget target, IModel<DeviceConfigEntity> rowModel) {
+                    showEditPanel(target, rowModel);
+               }              
+            }
+        };
+    }
+    
+    private void showEditPanel(AjaxRequestTarget target, IModel<DeviceConfigEntity> model) {
+        DeviceConfigEditPanel panel = new DeviceConfigEditPanel(getJBetPage().getModal(), model);
+        panel.show(target);        
     }
 }

@@ -25,7 +25,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 
@@ -44,8 +43,7 @@ public class HistoryEntity implements BaseEntity, Serializable {
     private Date updateTime;
 
     @Id
-    @SequenceGenerator(name = "S_HISTORY", sequenceName = "S_HISTORY", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "S_HISTORY")
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Override
     public Long getId() {
         return id;

@@ -5,8 +5,8 @@
         <Arg>snmp_ds</Arg>
         <Arg>
             <New id="poolingDS" class="bitronix.tm.resource.jdbc.PoolingDataSource">
-                <Set name="uniqueName">oracle</Set>
-                <Set name="className">oracle.jdbc.xa.client.OracleXADataSource</Set>
+                <Set name="uniqueName">mysql</Set>
+                <Set name="className">com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</Set>
                 <Set name="minPoolSize">0</Set>
                 <Set name="maxPoolSize">5</Set>
                 <Set name="acquireIncrement">1</Set>
@@ -21,7 +21,7 @@
                 <Get name="driverProperties">
                     <Put name="user">snmp</Put>
                     <Put name="password">snmp</Put>
-                    <Put name="URL">jdbc:oracle:thin:@localhost:1521:XE</Put>
+                    <Put name="URL">jdbc:mysql://localhost:3306/snmp</Put>
                 </Get>
                 <Call name="init"/>
             </New>

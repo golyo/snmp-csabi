@@ -10,7 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.CollectionTable;
@@ -24,8 +23,7 @@ public class UserEntity implements BaseEntity, Serializable {
     private List<String>  roles;
 
     @Id
-    @SequenceGenerator(name = "S_USERS", sequenceName = "S_USERS", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "S_USERS")
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Override
     public Long getId() {
         return id;
