@@ -27,7 +27,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 /**
@@ -42,11 +41,10 @@ public class DeviceConfigEntity implements BaseEntity, Serializable {
     private String name;
     private String snmpDescriptor;
     private DeviceType deviceType = DeviceType.ACCES;
-    private Boolean active;
+    private Boolean active = Boolean.TRUE;
 
     @Id
-    @SequenceGenerator(name = "S_DEVICECONFIG", sequenceName = "S_DEVICECONFIG", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "S_DEVICECONFIG")
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Override
     public Long getId() {
         return id;

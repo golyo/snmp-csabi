@@ -160,16 +160,21 @@
         <hudson.url>${HUDSON_URL}</hudson.url>
         <svn.revision>${SVN_REVISION}</svn.revision>
         -->
-        <javax.persistence.jdbc.driver>oracle.jdbc.OracleDriver</javax.persistence.jdbc.driver>
+        <javax.persistence.jdbc.driver>com.mysql.jdbc.Driver</javax.persistence.jdbc.driver>
+        
+        <javax.persistence.jdbc.url>jdbc:mysql://localhost:3306/snmp</javax.persistence.jdbc.url>
+        <javax.persistence.jdbc.testurl>jdbc:mysql://localhost:3306/snmp_test</javax.persistence.jdbc.testurl>
+        <!--
         <javax.persistence.jdbc.url>jdbc:oracle:thin:@localhost:1521:xe</javax.persistence.jdbc.url>
+        -->
         <javax.persistence.jdbc.user>snmp</javax.persistence.jdbc.user>
         <javax.persistence.jdbc.testuser>snmp_test</javax.persistence.jdbc.testuser>
         <javax.persistence.jdbc.password>snmp</javax.persistence.jdbc.password>
-        <javax.persistence.jdbc.sysuser>sys</javax.persistence.jdbc.sysuser>
-        <javax.persistence.jdbc.systemuser>system</javax.persistence.jdbc.systemuser>
-        <javax.persistence.jdbc.syspassword>oracle</javax.persistence.jdbc.syspassword>
-        <javax.persistence.jdbc.local.sysuser>sys</javax.persistence.jdbc.local.sysuser>
-        <javax.persistence.jdbc.local.systemuser>system</javax.persistence.jdbc.local.systemuser>
+        <javax.persistence.jdbc.sysuser>root</javax.persistence.jdbc.sysuser>
+        <javax.persistence.jdbc.systemuser>root</javax.persistence.jdbc.systemuser>
+        <javax.persistence.jdbc.syspassword>password</javax.persistence.jdbc.syspassword>
+        <javax.persistence.jdbc.local.sysuser>root</javax.persistence.jdbc.local.sysuser>
+        <javax.persistence.jdbc.local.systemuser>root</javax.persistence.jdbc.local.systemuser>
         <javax.persistence.jdbc.local.syspassword>password</javax.persistence.jdbc.local.syspassword>
     </properties>
     

@@ -11,7 +11,7 @@
             <!--
             <property name="eclipselink.session.customizer" value="com.zh.snmp.snmpcore.util.JPAEclipseLinkSessionCustomizer"/>
             -->
-            <property name="eclipselink.target-database" value="org.eclipse.persistence.platform.database.oracle.OraclePlatform"/>
+            <property name="eclipselink.target-database" value="MYSQL"/>
             <property name="eclipselink.logging.level" value="FINEST"/>
             <property name="eclipselink.logging.parameters" value="true"/>
             <property name="eclipselink.ddl-generation" value="none"/>

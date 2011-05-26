@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<wicket:panel>
+    <form wicket:id="form">
+        <div wicket:id="feedback">errors</div>
+        <p>
+            <label for="startTime">Kód</label>
+            <input wicket:id="code"/>
+        </p>
+        <p>
+            <label for="startTime">Név</label>
+            <input wicket:id="name"/>
+        </p>
+        <wicket:enclosure>
+            <p>
+                <label for="uploadFile">SNMP leíró</label>
+                <input wicket:id="uploadFile" id="uploadFile" type="file"/>
+            </p>
+        </wicket:enclosure>
+        <p><input wicket:id="submit" value="submit" type="submit"/><input wicket:id="delete" value="delete" type="submit"/><input wicket:id="cancel" value="cancel" type="submit"/></p>
+    </form>
+</wicket:panel>

@@ -58,6 +58,7 @@ public class DBAuthenticationServiceImpl implements AuthenticationService {
     public boolean register(UserEntity player, String password) {
         if (userDao.findByName(player.getName()) == null) {
             userDao.register(player, CoreUtil.digest(password));
+            userDao.flush();
             return true;
         } else {
             return false;

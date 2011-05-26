@@ -8,6 +8,6 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9 http://www.l
 
     <changeSet author="golyo" id="start">
         <sqlFile splitStatements="true" stripComments="true"
-            path="/src/main/resources/sql/schema/snmp_schema.sql"/>
+            path="/src/main/resources/sql/schema/snmp_mysql_schema.sql"/>
     </changeSet>
 </databaseChangeLog>

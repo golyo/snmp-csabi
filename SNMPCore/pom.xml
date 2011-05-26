@@ -43,11 +43,19 @@
         -->
         <!-- db -->
         <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.16</version>
+            <scope>test</scope>
+        </dependency>
+        <!--
+        <dependency>
             <groupId>com.oracle</groupId>
             <artifactId>ojdbc6</artifactId>
             <version>11.1.0.7.0</version>
             <scope>test</scope>
         </dependency>        
+        -->
         <!-- aop -->
         <dependency>
             <groupId>org.aspectj</groupId>

@@ -39,9 +39,9 @@ public abstract class DataTablePanel<R> extends BasePanel {
     private static final String TABLE_ID = "datatable";
     private ZhDataDable<R> dataTable;
 
-    public DataTablePanel(String id, IColumn[] colums, ISortableDataProvider<R> dataProvider, int rowsPerPage) {
+    public DataTablePanel(String id, ISortableDataProvider<R> dataProvider, int rowsPerPage) {
         super(id, null);
-        dataTable = new ZhDataDable(TABLE_ID, colums, dataProvider, rowsPerPage);
+        dataTable = new ZhDataDable(TABLE_ID, createTableColumns(), dataProvider, rowsPerPage);
         FilterForm form = new FilterForm(
                 "filterform", (IFilterStateLocator)dataProvider);
         dataTable.addTopToolbar(
@@ -61,6 +61,8 @@ public abstract class DataTablePanel<R> extends BasePanel {
     protected IModel<String> createRowLinkModel() {
         return null;
     }
+    
+    protected abstract IColumn<R>[] createTableColumns();
     
     @Override
     public Class<? extends BasePanel>[] getMainMenuConfig() {
