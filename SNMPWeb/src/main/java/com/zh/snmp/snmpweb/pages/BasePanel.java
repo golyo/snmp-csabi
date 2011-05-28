@@ -28,8 +28,8 @@ import org.apache.wicket.model.IModel;
  *
  * @author sonrisa
  */
-public abstract class BasePanel extends Panel {
-    public BasePanel(String id, IModel model) {
+public abstract class BasePanel<T> extends Panel {
+    public BasePanel(String id, IModel<T> model) {
         super(id, model);
     }
 
@@ -57,6 +57,9 @@ public abstract class BasePanel extends Panel {
         
     }
 
+    public IModel<T> getPanelModel() {
+        return (IModel<T>)getDefaultModel();
+    }
     public Class<? extends BasePanel>[] getMainMenuConfig() {
         MenuConfig c = getClass().getAnnotation(MenuConfig.class);
         return c != null ? c.context() : null;

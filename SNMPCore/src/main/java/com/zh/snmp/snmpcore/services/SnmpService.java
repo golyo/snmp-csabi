@@ -26,15 +26,25 @@ import java.util.List;
  * @author Golyo
  */
 public interface SnmpService {
-    public List<DeviceConfigEntity> findSnmpTypesByFilter(DeviceConfigEntity filter, String sort, int start, int count);
+    public List<DeviceConfigEntity> findDeviceConfigByFilter(DeviceConfigEntity filter, String sort, int start, int count);
     public DeviceConfigEntity saveDeviceConfig(DeviceConfigEntity type);
     public DeviceConfigEntity findDeviceConfigByCode(String code);
     public DeviceConfigEntity findDeviceConfigById(Long id);
+    public int countDeviceHistory(DeviceConfigEntity filter);
     
+    public DeviceEntity findDeviceById(Long id);
+    public DeviceEntity findDeviceByNodeId(String nodeId);
+    public List<DeviceEntity> findDeviceByFilter(DeviceEntity filter, String sort, int start, int count);
+    public DeviceEntity saveDevice(DeviceEntity device);
+    public int countDevice(DeviceEntity filter);
+    
+    public HistoryEntity findHsitoryById(Long id);
+    public List<HistoryEntity> findHistoryByFilter(HistoryEntity filter, String sort, int start, int count);
+    public int countHistory(HistoryEntity filter);
+        
     public DeviceEntity setDeviceConfig(String ipAddress, String configCode);
     public int changeConfigToAllDevice(String oldTypeCode, String newTypeCode);
     
     public List<DeviceConfigEntity> getDeviceHistory(DeviceConfigEntity filter, String sort, int start, int count);
-    public int countDeviceHistory(DeviceConfigEntity filter);
     public List<HistoryEntity> getDeviceHistory(HistoryEntity filter, String sort, int start, int count);
 }

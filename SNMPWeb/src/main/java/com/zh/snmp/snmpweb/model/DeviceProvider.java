@@ -16,7 +16,7 @@
  */
 package com.zh.snmp.snmpweb.model;
 
-import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
+import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import java.util.Iterator;
 import org.apache.wicket.injection.web.InjectorHolder;
@@ -27,28 +27,28 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
  *
  * @author Golyo
  */
-public class DeviceConfigProvider extends EntityDataProvider<DeviceConfigEntity> {
+public class DeviceProvider extends EntityDataProvider<DeviceEntity> {
     @SpringBean
     private SnmpService srv;
     
-    public DeviceConfigProvider() {
-        super(new DeviceConfigEntity());
+    public DeviceProvider() {
+        super(new DeviceEntity());
         InjectorHolder.getInjector().inject(this);
     }
     
     @Override
-    public Iterator<? extends DeviceConfigEntity> iterator(int first, int count) {
-        return srv.findDeviceConfigByFilter(getFilterState(), getSortParam(), first, count).iterator();
+    public Iterator<? extends DeviceEntity> iterator(int first, int count) {
+        return srv.findDeviceByFilter(getFilterState(), getSortParam(), first, count).iterator();
     }
 
     @Override
-    public IModel<DeviceConfigEntity> model(DeviceConfigEntity object) {
-        return new DetachableDeviceConfigModel(object);
+    public IModel<DeviceEntity> model(DeviceEntity object) {
+        return new DetachableDeviceModel(object);
     }
 
     @Override
     public int size() {
-        return srv.countDeviceHistory(getFilterState());
+        return srv.countDevice(getFilterState());
     }
     
 }

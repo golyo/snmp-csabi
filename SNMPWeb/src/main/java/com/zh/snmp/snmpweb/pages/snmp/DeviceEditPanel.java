@@ -17,71 +17,58 @@
 package com.zh.snmp.snmpweb.pages.snmp;
 
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
+import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import com.zh.snmp.snmpweb.components.ModalEditCloseListener;
 import com.zh.snmp.snmpweb.components.ModalEditPanel;
-import java.io.IOException;
-import java.io.InputStream;
+import com.zh.snmp.snmpweb.model.DetachableDeviceConfigListModel;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.form.upload.FileUpload;
-import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.util.io.IOUtils;
 
 /**
  *
  * @author Golyo
  */
-public class DeviceConfigEditPanel extends ModalEditPanel<DeviceConfigEntity> implements ModalEditCloseListener {
+public class DeviceEditPanel extends ModalEditPanel<DeviceEntity> implements ModalEditCloseListener {
     @SpringBean
     private SnmpService service;
-    private FileUploadField file;
     
-    public DeviceConfigEditPanel(ModalWindow modal, IModel<DeviceConfigEntity> model) {
+    public DeviceEditPanel(ModalWindow modal, IModel<DeviceEntity> model) {
         super(modal, model, false);
         boolean isEdit = model.getObject().getId() != null;
-        form.setDefaultModel(new CompoundPropertyModel<DeviceConfigEntity>(model.getObject()));
-        form.add(new TextField("code").setRequired(true).setEnabled(!isEdit));
-        form.add(new TextField("name").setRequired(true));
-        form.add(file = new FileUploadField("uploadFile", new Model<FileUpload>()));
-        file.setRequired(!isEdit).setVisible(!isEdit);        
+        form.setDefaultModel(new CompoundPropertyModel<DeviceEntity>(model.getObject()));
+        form.add(new TextField("nodeId").setRequired(true).setEnabled(!isEdit));
+        form.add(new TextField("macAddress").setRequired(true));
+        form.add(new TextField("ipAddress").setRequired(true));
+        DeviceConfigEntity filter = new DeviceConfigEntity();
+        filter.setActive(Boolean.TRUE);
+        form.add(new DropDownChoice<DeviceConfigEntity>("config", null, new DetachableDeviceConfigListModel(filter), DetachableDeviceConfigListModel.DEVICE_CONFIG_RENDERER));
     }
 
     @Override
     protected boolean onModalSave(AjaxRequestTarget target) {
         String errKey = null;
-        DeviceConfigEntity saveable = (DeviceConfigEntity)form.getDefaultModelObject();
-        DeviceConfigEntity checkCode = service.findDeviceConfigByCode(saveable.getCode());
+        DeviceEntity saveable = (DeviceEntity)form.getDefaultModelObject();
+        DeviceEntity checkCode = service.findDeviceByNodeId(saveable.getNodeId());
         if (checkCode != null && !checkCode.getId().equals(saveable.getId())) {
-            errKey = "deviceConfigEntity.error.codeExists";
-        } else if (saveable.getId() == null) {
-            FileUpload upload = file.getFileUpload();
-            InputStream is = null;
-            try {
-                is = upload.getInputStream();
-                saveable.setSnmpDescriptor(IOUtils.toString(is));            
-            } catch (IOException e) {
-                IOUtils.closeQuietly(is);
-                errKey = "fileUpload.exception";
-            }            
-        }
-        if (errKey != null) {
+            errKey = "deviceEntity.error.nodeIdExists";
             error(getString(errKey));
             target.addComponent(feedback);
             return false;
         } else {
-            service.saveDeviceConfig(saveable);
+            service.saveDevice(saveable);
             return true;
         }
     }
-    
+
     @Override
     public void onModalClose(AjaxRequestTarget target, boolean save, boolean delete) {
         getBasePage().refreshPanel(target);
     }
+    
 }

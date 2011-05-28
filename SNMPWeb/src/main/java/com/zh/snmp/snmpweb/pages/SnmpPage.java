@@ -19,6 +19,7 @@ package com.zh.snmp.snmpweb.pages;
 
 import com.zh.snmp.snmpweb.menu.MenuConfig;
 import com.zh.snmp.snmpweb.pages.snmp.DeviceConfigListPanel;
+import com.zh.snmp.snmpweb.pages.snmp.DeviceListPanel;
 import com.zh.snmp.snmpweb.pages.snmp.SnmpPanel;
 import org.apache.wicket.PageParameters;
 
@@ -26,7 +27,7 @@ import org.apache.wicket.PageParameters;
  *
  * @author golyo
  */
-@MenuConfig(context={SnmpPanel.class, DeviceConfigListPanel.class})
+@MenuConfig(context={DeviceConfigListPanel.class, DeviceListPanel.class})
 public class SnmpPage extends BasePage {
     private static final long serialVersionUID = 1L;
 
