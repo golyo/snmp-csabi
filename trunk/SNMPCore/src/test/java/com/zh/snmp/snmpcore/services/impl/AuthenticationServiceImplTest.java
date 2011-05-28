@@ -20,6 +20,9 @@ package com.zh.snmp.snmpcore.services.impl;
 import com.zh.snmp.snmpcore.BaseTest;
 import com.zh.snmp.snmpcore.entities.UserEntity;
 import com.zh.snmp.snmpcore.services.AuthenticationService;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.Locale;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,4 +71,7 @@ public class AuthenticationServiceImplTest extends BaseTest {
         LOGGER.info("AuthenticationService test succes");
     }
 
+    @Test
+    public void testFormat() {
+    }
 }

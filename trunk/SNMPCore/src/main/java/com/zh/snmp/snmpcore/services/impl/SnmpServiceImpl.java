@@ -23,6 +23,8 @@ import com.zh.snmp.snmpcore.dao.UserDao;
 import com.zh.snmp.snmpcore.entities.HistoryEntity;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
+import com.zh.snmp.snmpcore.exception.ExceptionCodesEnum;
+import com.zh.snmp.snmpcore.exception.SystemException;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import java.util.Date;
 import java.util.List;
@@ -34,9 +36,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class SnmpServiceImpl implements SnmpService {
     @Autowired
-    private DeviceConfigDao snmpTypedDao;
+    private DeviceConfigDao deviceConfigDao;
     @Autowired
-    private DeviceDao clientDao;
+    private DeviceDao deviceDao;
     @Autowired
     private DeviceDao changeLogDao;
     @Autowired
@@ -49,7 +51,7 @@ public class SnmpServiceImpl implements SnmpService {
         if (code != null) {
             DeviceConfigEntity entity = new DeviceConfigEntity();
             entity.setCode(code);
-            return snmpTypedDao.findExampleEntity(entity);            
+            return deviceConfigDao.findExampleEntity(entity);                        
         } else {
             return null;
         }
@@ -57,19 +59,51 @@ public class SnmpServiceImpl implements SnmpService {
 
     @Override
     public DeviceConfigEntity findDeviceConfigById(Long id) {
-        return snmpTypedDao.load(id);
+        return deviceConfigDao.load(id);
     }
     
     @Override
     public DeviceConfigEntity saveDeviceConfig(DeviceConfigEntity type) {
-        DeviceConfigEntity ret = snmpTypedDao.save(type);
-        snmpTypedDao.flush();
+        DeviceConfigEntity ret = deviceConfigDao.save(type);
+        deviceConfigDao.flush();
         return ret;
     }
     
     @Override
-    public List<DeviceConfigEntity> findSnmpTypesByFilter(DeviceConfigEntity filter, String sort, int start, int count) {
-        return snmpTypedDao.find(filter, sort, start, count);
+    public List<DeviceConfigEntity> findDeviceConfigByFilter(DeviceConfigEntity filter, String sort, int start, int count) {
+        return deviceConfigDao.find(filter, sort, start, count);
+    }
+    
+    @Override
+    public DeviceEntity findDeviceById(Long id) {
+        return deviceDao.load(id);
+    }
+    
+    @Override
+    public DeviceEntity findDeviceByNodeId(String nodeId) {
+        DeviceEntity device = new DeviceEntity();
+        device.setNodeId(nodeId);
+        return deviceDao.findExampleEntity(device);
+    }
+    
+    @Override
+    public List<DeviceEntity> findDeviceByFilter(DeviceEntity filter, String sort, int start, int count) {
+        return deviceDao.find(filter, sort, start, count);
+    }
+    
+    @Override
+    public DeviceEntity saveDevice(DeviceEntity device) {      
+        DeviceConfigEntity old = device.getId() != null ? deviceDao.load(device.getId()).getConfig() : null;                
+        DeviceEntity newDevice = deviceDao.save(device);
+        if ((newDevice.getConfig() != null && !newDevice.getConfig().equals(old)) || (newDevice.getConfig() == null && old != null)) {
+            clientSnmpTypeChanged(newDevice, old);          
+        }
+        return newDevice;
+    }
+    
+    @Override
+    public int countDevice(DeviceEntity filter) {
+        return deviceDao.count(filter);
     }
     
     @Override
@@ -81,12 +115,12 @@ public class SnmpServiceImpl implements SnmpService {
         } else {
             DeviceEntity filterClient = new DeviceEntity();
             filterClient.setConfig(oldConfig);
-            List<DeviceEntity> clients = clientDao.find(filterClient, null, 0, -1);
+            List<DeviceEntity> clients = deviceDao.find(filterClient, null, 0, -1);
             for (DeviceEntity client: clients) {
                 client.setConfig(newConfig);
                 clientSnmpTypeChanged(client, oldConfig);
             }
-            clientDao.flush();
+            deviceDao.flush();
             return clients.size();
         }
     }
@@ -100,15 +134,15 @@ public class SnmpServiceImpl implements SnmpService {
             DeviceEntity filterClient = new DeviceEntity();
             filterClient.setIpAddress(ipAddress);
             //TODO
-            DeviceEntity saveable = clientDao.findExampleEntity(filterClient);
+            DeviceEntity saveable = deviceDao.findExampleEntity(filterClient);
             if (saveable == null) {
                 saveable = filterClient;            
             }
             DeviceConfigEntity oldConfig = saveable.getConfig();
             saveable.setConfig(config);
-            clientDao.save(saveable);
+            saveable = deviceDao.save(saveable);
             clientSnmpTypeChanged(saveable, oldConfig);
-            clientDao.flush();
+            deviceDao.flush();
             return saveable;            
         }
     }
@@ -129,11 +163,27 @@ public class SnmpServiceImpl implements SnmpService {
     
     @Override
     public List<DeviceConfigEntity> getDeviceHistory(DeviceConfigEntity filter, String sort, int start, int count) {
-        return snmpTypedDao.find(filter, sort, start, count);
+        return deviceConfigDao.find(filter, sort, start, count);
     }
     
     @Override
     public int countDeviceHistory(DeviceConfigEntity filter) {
-        return snmpTypedDao.count(filter);
+        return deviceConfigDao.count(filter);
     }
+
+    @Override
+    public HistoryEntity findHsitoryById(Long id) {
+        return historyDao.load(id);
+    }
+    
+    @Override
+    public List<HistoryEntity> findHistoryByFilter(HistoryEntity filter, String sort, int start, int count) {
+        return historyDao.find(filter, sort, start, count);
+    }
+    
+    @Override
+    public int countHistory(HistoryEntity filter) {
+        return historyDao.count(filter);
+    }
+            
 }

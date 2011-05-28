@@ -61,7 +61,7 @@ public class SnmpServiceImplTest extends BaseTest {
         DeviceConfigEntity check = snmpService.findDeviceConfigById(saved.getId());
         assertNotNull(check);
         
-        List<DeviceConfigEntity> ls = snmpService.findSnmpTypesByFilter(new DeviceConfigEntity(), null, 0, -1);
+        List<DeviceConfigEntity> ls = snmpService.findDeviceConfigByFilter(new DeviceConfigEntity(), null, 0, -1);
         assertEquals(ls.size(), 1);
         
         check = snmpService.findDeviceConfigByCode(type.getCode());
