@@ -67,17 +67,17 @@ public class SnmpServiceImplTest extends BaseTest {
         check = snmpService.findDeviceConfigByCode(type.getCode());
         assertNotNull(check);
         
-        String ip = "ip";
-        DeviceEntity device = snmpService.setDeviceConfig(ip, "unknowType");
+        String nodeId = "ip";
+        DeviceEntity device = snmpService.setDeviceConfig(nodeId, "unknowType");
         assertNull(device);
-        device = snmpService.setDeviceConfig(ip, type.getCode());
+        device = snmpService.setDeviceConfig(nodeId, type.getCode());
         assertNotNull(device);
-        assertEquals(device.getIpAddress(), ip);
+        assertEquals(device.getNodeId(), nodeId);
         
         List<HistoryEntity> histories = snmpService.getDeviceHistory(new HistoryEntity(), null, 0, -1);
         assertEquals(histories.size(), 1);
         
-        device = snmpService.setDeviceConfig(ip, null);
+        device = snmpService.setDeviceConfig(nodeId, null);
         assertNotNull(device);
         assertNull(device.getConfig());
 
