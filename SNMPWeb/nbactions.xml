@@ -7,4 +7,14 @@
                 <goal>jetty:run</goal>
             </goals>
         </action>
+        <action>
+            <actionName>debug</actionName>
+            <goals>
+                <goal>jetty:run</goal>
+            </goals>
+            <properties>
+                <jpda.listen>maven</jpda.listen>
+                <netbeans.deploy.debugmode>true</netbeans.deploy.debugmode>
+            </properties>
+        </action>
     </actions>

@@ -20,7 +20,6 @@ package com.zh.snmp.snmpweb.pages;
 import com.zh.snmp.snmpweb.menu.MenuConfig;
 import com.zh.snmp.snmpweb.pages.snmp.DeviceConfigListPanel;
 import com.zh.snmp.snmpweb.pages.snmp.DeviceListPanel;
-import com.zh.snmp.snmpweb.pages.snmp.SnmpPanel;
 import org.apache.wicket.PageParameters;
 
 /**
@@ -37,6 +36,6 @@ public class SnmpPage extends BasePage {
 
     @Override
     public BasePanel buildContent(String id, final PageParameters parameters) {
-        return new SnmpPanel(id, null);
+        return new DeviceConfigListPanel(id);
     }
 }

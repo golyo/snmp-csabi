@@ -39,7 +39,7 @@
                         </goals>
                         <configuration>
                             <wsdlUrls>
-                                <wsdlUrl>http://localhost:8080/SNMPWeb/TryWs?wsdl</wsdlUrl>
+                                <wsdlUrl>http://localhost:7000/SNMPWeb/SnmpWebService?wsdl</wsdlUrl>
                             </wsdlUrls>
                             <packageName>com.zh.snmp.snmpclient.generated</packageName>
                         </configuration>
@@ -56,6 +56,7 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
+            
         </plugins>
     </build> 
    

@@ -1,6 +1,28 @@
 <?xml version="1.0"?>
 <!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
 <Configure class="org.mortbay.jetty.webapp.WebAppContext">
+    
+    <Call name="getConfiguration" class="bitronix.tm.TransactionManagerServices">
+      <Set name="defaultTransactionTimeout">900</Set>
+      <!--
+      <Set name="logPart1Filename">./target/work/btm1.tlog</Set>
+      <Set name="logPart2Filename">./target/work/btm2.tlog</Set>
+      -->
+    </Call>
+
+    <New class="org.mortbay.jetty.plus.naming.Resource">
+      <Arg>javax.transaction.TransactionManager</Arg>
+      <Arg>
+        <Call name="getTransactionManager" class="bitronix.tm.TransactionManagerServices" />
+      </Arg>
+    </New>
+
+    <New class="org.mortbay.jetty.plus.naming.Transaction">
+      <Arg>
+        <Call name="getTransactionManager" class="bitronix.tm.TransactionManagerServices" />
+      </Arg>
+    </New>
+
     <New id="snmp_ds" class="org.mortbay.jetty.plus.naming.Resource">
         <Arg>snmp_ds</Arg>
         <Arg>
