@@ -14,12 +14,15 @@ public class App
 {
     public static void main( String[] args )
     {
+
         SnmpWebService_Service service = new SnmpWebService_Service();
         SnmpWebService srv = service.getSnmpWebServicePort();
         
         List<String> confd = srv.getConfigurations(); 
         System.out.println("++++++++++++" + confd);
         
-        srv.setDeviceConfig("node", "aa");
+        
+        boolean succes = srv.setDeviceConfig("nodeidTest", "aa"); 
+        System.out.println("++++++++++++" + succes);
     }
 }
