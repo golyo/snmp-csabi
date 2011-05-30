@@ -47,7 +47,7 @@ public class SnmpWebService {
     }
     
     @WebMethod(operationName = "getConfigurations")
-    public List<String> getConfigurations(@WebParam(name = "name") String txt) {
+    public List<String> getConfigurations() {
         init();
         List<DeviceConfigEntity> confs = service.findDeviceConfigByFilter(new DeviceConfigEntity(), null, 0, -1);
         List<String> ret = new LinkedList<String>();

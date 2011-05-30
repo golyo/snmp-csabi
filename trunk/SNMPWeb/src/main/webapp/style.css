@@ -73,7 +73,7 @@ table.dataview tr td
 
 table.dataview th,
 table.dataview th a  {
-    background: #b4be3c;
+    background: #AABBDD;
     color: #fff;
     padding: 1px 5px 2px 5px;
     text-decoration: none;
@@ -90,11 +90,10 @@ table.dataview td  {
 }
 
 table.dataview tr.even {
-    background: #d3d6b0;
+    background: #e1e3cc;
 }
 
 table.dataview tr.odd {
-    background: #e1e3cc;
 }
 
 label {

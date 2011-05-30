@@ -26,7 +26,14 @@ public interface SnmpWebService {
 
     /**
      * 
-     * @param name
+     */
+    @WebMethod
+    @RequestWrapper(localName = "init", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.Init")
+    @ResponseWrapper(localName = "initResponse", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.InitResponse")
+    public void init();
+
+    /**
+     * 
      * @return
      *     returns java.util.List<java.lang.String>
      */
@@ -34,9 +41,24 @@ public interface SnmpWebService {
     @WebResult(targetNamespace = "")
     @RequestWrapper(localName = "getConfigurations", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.GetConfigurations")
     @ResponseWrapper(localName = "getConfigurationsResponse", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.GetConfigurationsResponse")
-    public List<String> getConfigurations(
-        @WebParam(name = "name", targetNamespace = "")
-        String name);
+    public List<String> getConfigurations();
+
+    /**
+     * 
+     * @param nodeId
+     * @param configCode
+     * @return
+     *     returns java.lang.Boolean
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "setDeviceConfig", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.SetDeviceConfig")
+    @ResponseWrapper(localName = "setDeviceConfigResponse", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.SetDeviceConfigResponse")
+    public Boolean setDeviceConfig(
+        @WebParam(name = "nodeId", targetNamespace = "")
+        String nodeId,
+        @WebParam(name = "configCode", targetNamespace = "")
+        String configCode);
 
     /**
      * 
@@ -57,22 +79,5 @@ public interface SnmpWebService {
         String ipAddress,
         @WebParam(name = "macAddress", targetNamespace = "")
         String macAddress);
-
-    /**
-     * 
-     * @param nodeId
-     * @param configCode
-     * @return
-     *     returns java.lang.Boolean
-     */
-    @WebMethod
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "setDeviceConfig", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.SetDeviceConfig")
-    @ResponseWrapper(localName = "setDeviceConfigResponse", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.SetDeviceConfigResponse")
-    public Boolean setDeviceConfig(
-        @WebParam(name = "nodeId", targetNamespace = "")
-        String nodeId,
-        @WebParam(name = "configCode", targetNamespace = "")
-        String configCode);
 
 }
