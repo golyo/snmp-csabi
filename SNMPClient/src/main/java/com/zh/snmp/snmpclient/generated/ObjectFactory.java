@@ -41,35 +41,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GetConfigurationsResponse }
+     * Create an instance of {@link SetDeviceConfig }
      * 
      */
-    public GetConfigurationsResponse createGetConfigurationsResponse() {
-        return new GetConfigurationsResponse();
+    public SetDeviceConfig createSetDeviceConfig() {
+        return new SetDeviceConfig();
     }
 
     /**
-     * Create an instance of {@link GetConfigurations }
+     * Create an instance of {@link SetDeviceConfigResponse }
      * 
      */
-    public GetConfigurations createGetConfigurations() {
-        return new GetConfigurations();
-    }
-
-    /**
-     * Create an instance of {@link Init }
-     * 
-     */
-    public Init createInit() {
-        return new Init();
-    }
-
-    /**
-     * Create an instance of {@link InitResponse }
-     * 
-     */
-    public InitResponse createInitResponse() {
-        return new InitResponse();
+    public SetDeviceConfigResponse createSetDeviceConfigResponse() {
+        return new SetDeviceConfigResponse();
     }
 
     /**
@@ -81,14 +65,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SetDeviceConfig }
-     * 
-     */
-    public SetDeviceConfig createSetDeviceConfig() {
-        return new SetDeviceConfig();
-    }
-
-    /**
      * Create an instance of {@link CreateDeviceResponse }
      * 
      */
@@ -97,11 +73,35 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SetDeviceConfigResponse }
+     * Create an instance of {@link GetConfigurations }
      * 
      */
-    public SetDeviceConfigResponse createSetDeviceConfigResponse() {
-        return new SetDeviceConfigResponse();
+    public GetConfigurations createGetConfigurations() {
+        return new GetConfigurations();
+    }
+
+    /**
+     * Create an instance of {@link InitResponse }
+     * 
+     */
+    public InitResponse createInitResponse() {
+        return new InitResponse();
+    }
+
+    /**
+     * Create an instance of {@link Init }
+     * 
+     */
+    public Init createInit() {
+        return new Init();
+    }
+
+    /**
+     * Create an instance of {@link GetConfigurationsResponse }
+     * 
+     */
+    public GetConfigurationsResponse createGetConfigurationsResponse() {
+        return new GetConfigurationsResponse();
     }
 
     /**
