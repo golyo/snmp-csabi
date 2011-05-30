@@ -29,7 +29,9 @@ public class ObjectFactory {
     private final static QName _SetDeviceConfigResponse_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "setDeviceConfigResponse");
     private final static QName _SetDeviceConfig_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "setDeviceConfig");
     private final static QName _GetConfigurations_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "getConfigurations");
+    private final static QName _Init_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "init");
     private final static QName _GetConfigurationsResponse_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "getConfigurationsResponse");
+    private final static QName _InitResponse_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "initResponse");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: com.zh.snmp.snmpclient.generated
@@ -47,14 +49,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CreateDeviceResponse }
-     * 
-     */
-    public CreateDeviceResponse createCreateDeviceResponse() {
-        return new CreateDeviceResponse();
-    }
-
-    /**
      * Create an instance of {@link GetConfigurations }
      * 
      */
@@ -63,11 +57,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SetDeviceConfigResponse }
+     * Create an instance of {@link Init }
      * 
      */
-    public SetDeviceConfigResponse createSetDeviceConfigResponse() {
-        return new SetDeviceConfigResponse();
+    public Init createInit() {
+        return new Init();
+    }
+
+    /**
+     * Create an instance of {@link InitResponse }
+     * 
+     */
+    public InitResponse createInitResponse() {
+        return new InitResponse();
     }
 
     /**
@@ -84,6 +86,22 @@ public class ObjectFactory {
      */
     public SetDeviceConfig createSetDeviceConfig() {
         return new SetDeviceConfig();
+    }
+
+    /**
+     * Create an instance of {@link CreateDeviceResponse }
+     * 
+     */
+    public CreateDeviceResponse createCreateDeviceResponse() {
+        return new CreateDeviceResponse();
+    }
+
+    /**
+     * Create an instance of {@link SetDeviceConfigResponse }
+     * 
+     */
+    public SetDeviceConfigResponse createSetDeviceConfigResponse() {
+        return new SetDeviceConfigResponse();
     }
 
     /**
@@ -132,12 +150,30 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Init }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service.snmpweb.snmp.zh.com/", name = "init")
+    public JAXBElement<Init> createInit(Init value) {
+        return new JAXBElement<Init>(_Init_QNAME, Init.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetConfigurationsResponse }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://service.snmpweb.snmp.zh.com/", name = "getConfigurationsResponse")
     public JAXBElement<GetConfigurationsResponse> createGetConfigurationsResponse(GetConfigurationsResponse value) {
         return new JAXBElement<GetConfigurationsResponse>(_GetConfigurationsResponse_QNAME, GetConfigurationsResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InitResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service.snmpweb.snmp.zh.com/", name = "initResponse")
+    public JAXBElement<InitResponse> createInitResponse(InitResponse value) {
+        return new JAXBElement<InitResponse>(_InitResponse_QNAME, InitResponse.class, null, value);
     }
 
 }

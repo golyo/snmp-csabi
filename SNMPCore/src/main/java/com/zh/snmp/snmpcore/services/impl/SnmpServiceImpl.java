@@ -23,8 +23,6 @@ import com.zh.snmp.snmpcore.dao.UserDao;
 import com.zh.snmp.snmpcore.entities.HistoryEntity;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
-import com.zh.snmp.snmpcore.exception.ExceptionCodesEnum;
-import com.zh.snmp.snmpcore.exception.SystemException;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import java.util.Date;
 import java.util.List;
@@ -126,13 +124,13 @@ public class SnmpServiceImpl implements SnmpService {
     }
 
     @Override
-    public DeviceEntity setDeviceConfig(String ipAddress, String configCode) {
+    public DeviceEntity setDeviceConfig(String nodeId, String configCode) {
         DeviceConfigEntity config = findDeviceConfigByCode(configCode);
         if (config == null && configCode != null) {
             return null;
         } else {
             DeviceEntity filterClient = new DeviceEntity();
-            filterClient.setIpAddress(ipAddress);
+            filterClient.setNodeId(nodeId);
             //TODO
             DeviceEntity saveable = deviceDao.findExampleEntity(filterClient);
             if (saveable == null) {
