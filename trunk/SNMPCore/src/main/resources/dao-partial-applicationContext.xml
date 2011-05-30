@@ -15,6 +15,8 @@
         <property name="persistenceXmlLocation" value="classpath*:META-INF/persistence.xml"/>
     </bean>
 
+    <tx:jta-transaction-manager />
+    <!--
     <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
         <property name="transactionManager">
             <bean class="org.springframework.jndi.JndiObjectFactoryBean">
@@ -24,7 +26,8 @@
             </bean>
         </property>
     </bean>
-
+    -->
+    
     <bean id="loadTimeWeaver" class="com.zh.snmp.snmpcore.util.JpaAwareLoadTimeWeaver"/>
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">

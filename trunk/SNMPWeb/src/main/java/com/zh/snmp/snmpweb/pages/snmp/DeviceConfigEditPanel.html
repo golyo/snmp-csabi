@@ -19,6 +19,10 @@
                 <input wicket:id="uploadFile" id="uploadFile" type="file"/>
             </p>
         </wicket:enclosure>
-        <p><input wicket:id="submit" value="submit" type="submit"/><input wicket:id="delete" value="delete" type="submit"/><input wicket:id="cancel" value="cancel" type="submit"/></p>
+        <p>
+            <input wicket:id="submit" wicket:message="value:link.submit" type="submit"/>
+            <input wicket:id="delete" wicket:message="value:link.delete" type="submit"/>
+            <input wicket:id="cancel" wicket:message="value:link.cancel" type="submit"/>
+        </p>
     </form>
 </wicket:panel>

@@ -24,8 +24,12 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _Hello_QNAME = new QName("http://snmpweb.snmp.zh.com/", "hello");
-    private final static QName _HelloResponse_QNAME = new QName("http://snmpweb.snmp.zh.com/", "helloResponse");
+    private final static QName _CreateDevice_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "createDevice");
+    private final static QName _CreateDeviceResponse_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "createDeviceResponse");
+    private final static QName _SetDeviceConfigResponse_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "setDeviceConfigResponse");
+    private final static QName _SetDeviceConfig_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "setDeviceConfig");
+    private final static QName _GetConfigurations_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "getConfigurations");
+    private final static QName _GetConfigurationsResponse_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "getConfigurationsResponse");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: com.zh.snmp.snmpclient.generated
@@ -35,37 +39,105 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Hello }
+     * Create an instance of {@link GetConfigurationsResponse }
      * 
      */
-    public Hello createHello() {
-        return new Hello();
+    public GetConfigurationsResponse createGetConfigurationsResponse() {
+        return new GetConfigurationsResponse();
     }
 
     /**
-     * Create an instance of {@link HelloResponse }
+     * Create an instance of {@link CreateDeviceResponse }
      * 
      */
-    public HelloResponse createHelloResponse() {
-        return new HelloResponse();
+    public CreateDeviceResponse createCreateDeviceResponse() {
+        return new CreateDeviceResponse();
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Hello }{@code >}}
+     * Create an instance of {@link GetConfigurations }
      * 
      */
-    @XmlElementDecl(namespace = "http://snmpweb.snmp.zh.com/", name = "hello")
-    public JAXBElement<Hello> createHello(Hello value) {
-        return new JAXBElement<Hello>(_Hello_QNAME, Hello.class, null, value);
+    public GetConfigurations createGetConfigurations() {
+        return new GetConfigurations();
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link HelloResponse }{@code >}}
+     * Create an instance of {@link SetDeviceConfigResponse }
      * 
      */
-    @XmlElementDecl(namespace = "http://snmpweb.snmp.zh.com/", name = "helloResponse")
-    public JAXBElement<HelloResponse> createHelloResponse(HelloResponse value) {
-        return new JAXBElement<HelloResponse>(_HelloResponse_QNAME, HelloResponse.class, null, value);
+    public SetDeviceConfigResponse createSetDeviceConfigResponse() {
+        return new SetDeviceConfigResponse();
+    }
+
+    /**
+     * Create an instance of {@link CreateDevice }
+     * 
+     */
+    public CreateDevice createCreateDevice() {
+        return new CreateDevice();
+    }
+
+    /**
+     * Create an instance of {@link SetDeviceConfig }
+     * 
+     */
+    public SetDeviceConfig createSetDeviceConfig() {
+        return new SetDeviceConfig();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CreateDevice }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service.snmpweb.snmp.zh.com/", name = "createDevice")
+    public JAXBElement<CreateDevice> createCreateDevice(CreateDevice value) {
+        return new JAXBElement<CreateDevice>(_CreateDevice_QNAME, CreateDevice.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CreateDeviceResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service.snmpweb.snmp.zh.com/", name = "createDeviceResponse")
+    public JAXBElement<CreateDeviceResponse> createCreateDeviceResponse(CreateDeviceResponse value) {
+        return new JAXBElement<CreateDeviceResponse>(_CreateDeviceResponse_QNAME, CreateDeviceResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SetDeviceConfigResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service.snmpweb.snmp.zh.com/", name = "setDeviceConfigResponse")
+    public JAXBElement<SetDeviceConfigResponse> createSetDeviceConfigResponse(SetDeviceConfigResponse value) {
+        return new JAXBElement<SetDeviceConfigResponse>(_SetDeviceConfigResponse_QNAME, SetDeviceConfigResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SetDeviceConfig }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service.snmpweb.snmp.zh.com/", name = "setDeviceConfig")
+    public JAXBElement<SetDeviceConfig> createSetDeviceConfig(SetDeviceConfig value) {
+        return new JAXBElement<SetDeviceConfig>(_SetDeviceConfig_QNAME, SetDeviceConfig.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetConfigurations }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service.snmpweb.snmp.zh.com/", name = "getConfigurations")
+    public JAXBElement<GetConfigurations> createGetConfigurations(GetConfigurations value) {
+        return new JAXBElement<GetConfigurations>(_GetConfigurations_QNAME, GetConfigurations.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetConfigurationsResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service.snmpweb.snmp.zh.com/", name = "getConfigurationsResponse")
+    public JAXBElement<GetConfigurationsResponse> createGetConfigurationsResponse(GetConfigurationsResponse value) {
+        return new JAXBElement<GetConfigurationsResponse>(_GetConfigurationsResponse_QNAME, GetConfigurationsResponse.class, null, value);
     }
 
 }

@@ -3,20 +3,21 @@ package com.zh.snmp.snmpclient.generated;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for hello complex type.
+ * <p>Java class for createDeviceResponse complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="hello">
+ * &lt;complexType name="createDeviceResponse">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="name" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="return" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -26,35 +27,36 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "hello", propOrder = {
-    "name"
+@XmlType(name = "createDeviceResponse", propOrder = {
+    "_return"
 })
-public class Hello {
+public class CreateDeviceResponse {
 
-    protected String name;
+    @XmlElement(name = "return")
+    protected Boolean _return;
 
     /**
-     * Gets the value of the name property.
+     * Gets the value of the return property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link Boolean }
      *     
      */
-    public String getName() {
-        return name;
+    public Boolean isReturn() {
+        return _return;
     }
 
     /**
-     * Sets the value of the name property.
+     * Sets the value of the return property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link Boolean }
      *     
      */
-    public void setName(String value) {
-        this.name = value;
+    public void setReturn(Boolean value) {
+        this._return = value;
     }
 
 }
