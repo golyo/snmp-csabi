@@ -57,6 +57,7 @@ public class DeviceListPanel extends DataTablePanel<DeviceEntity> {
             new TextFilteredPropertyColumn<DeviceEntity, String>(new ResourceModel("device.nodeId"), "nodeId"),
             new TextFilteredPropertyColumn<DeviceEntity, String>(new ResourceModel("device.macAddress"), "macAddress"),
             new TextFilteredPropertyColumn<DeviceEntity, String>(new ResourceModel("device.ipAddress"), "ipAddress"),
+            /*
             new ChoiceFilteredPropertyColumn<DeviceEntity, DeviceConfigEntity>(new ResourceModel("device.config"), "config", "config", new DetachableDeviceConfigListModel()) {
                 @Override
                 protected IChoiceRenderer<DeviceConfigEntity> getChoiceRenderer() {
@@ -68,7 +69,7 @@ public class DeviceListPanel extends DataTablePanel<DeviceEntity> {
                     Serializable o = (Serializable)DetachableDeviceConfigListModel.DEVICE_CONFIG_RENDERER.getDisplayValue(rowModel.getObject().getConfig());
                     return Model.of(o);
                 }
-            },
+            },*/
             new RowLinkColumn<DeviceEntity>(new ResourceModel("title.options"), new ResourceModel("link.details"), null) {
                 @Override
                 protected void onRowSelect(AjaxRequestTarget target, IModel<DeviceEntity> rowModel) {

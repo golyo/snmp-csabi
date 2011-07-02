@@ -98,6 +98,6 @@ table.dataview tr.odd {
 
 label {
     width: 200px;
-    float: left;
+    clear: left;
     font-weight: bold;
 }

@@ -17,13 +17,17 @@
 package com.zh.snmp.snmpcore.entities;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 /**
@@ -37,7 +41,7 @@ public class DeviceEntity implements BaseEntity, Serializable {
     private String nodeId;
     private String macAddress;
     private String ipAddress;
-    private DeviceConfigEntity config;
+    private Set<DeviceConfigEntity> configurations;
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -59,14 +63,16 @@ public class DeviceEntity implements BaseEntity, Serializable {
         this.ipAddress = ipAddress;
     }
 
-    @ManyToOne()
-    @JoinColumn(name="CONFIGID")
-    public DeviceConfigEntity getConfig() {
-        return config;
+    @ManyToMany()
+    @JoinTable(name="CONFIGMAP", 
+            joinColumns=@JoinColumn(name="DEVICEID", referencedColumnName="ID"),
+            inverseJoinColumns=@JoinColumn(name="CONFIGID", referencedColumnName="ID"))
+    public Set<DeviceConfigEntity> getConfigurations() {
+        return configurations;
     }
 
-    public void setConfig(DeviceConfigEntity config) {
-        this.config = config;
+    public void setConfigurations(Set<DeviceConfigEntity> configurations) {
+        this.configurations = configurations;
     }
 
     @Basic
@@ -87,4 +93,33 @@ public class DeviceEntity implements BaseEntity, Serializable {
         this.nodeId = nodeId;
     }
     
+    public DeviceConfigEntity findConfiguration(DeviceType type) {
+        if (configurations != null) {
+            for (DeviceConfigEntity conf: configurations) {
+                if (conf.getDeviceType() == type) {
+                    return conf;
+                }
+            }            
+        }
+        return null;
+    }
+    
+    public DeviceConfigEntity changeConfig(DeviceConfigEntity newConfig) {
+        if (configurations == null) {
+            configurations = new HashSet<DeviceConfigEntity>();
+        }
+        Iterator<DeviceConfigEntity> it = configurations.iterator();
+        DeviceConfigEntity old = null;
+        DeviceConfigEntity act;
+        while (old == null && it.hasNext()) {
+            act = it.next();
+            if (act.getDeviceType() == newConfig.getDeviceType()) {
+                old = act;
+                it.remove();
+            }
+        }
+        configurations.add(newConfig);
+        setConfigurations(configurations);
+        return old;
+    }
 }

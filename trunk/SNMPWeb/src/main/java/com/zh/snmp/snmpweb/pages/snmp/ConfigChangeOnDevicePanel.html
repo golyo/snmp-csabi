@@ -7,15 +7,19 @@
         <div wicket:id="feedback">errors</div>
         <p>
             <label for="nodeId">Node azonosító</label>
-            <input wicket:id="nodeId"/>
+            <span wicket:id="nodeId"/>
         </p>
         <p>
             <label for="macAddress">MAC cím</label>
-            <input wicket:id="macAddress"/>
+            <span wicket:id="macAddress"/>
         </p>
         <p>
             <label for="ipAddress">IP cím</label>
-            <input wicket:id="ipAddress"/>
+            <span wicket:id="ipAddress"/>
+        </p>
+        <p>
+            <label for="config" wicket:id="selectedType"></label>
+            <select wicket:id="newConfig"></select>
         </p>
         <p><input wicket:id="submit" value="submit" type="submit"/><input wicket:id="delete" value="delete" type="submit"/><input wicket:id="cancel" value="cancel" type="submit"/></p>
     </form>

@@ -17,7 +17,20 @@
         <span wicket:id="ipAddress"/>
     </p>
     <p>
-        <label for="config">Konfiguráció</label>
-        <span wicket:id="config.code"/>-<span wicket:id="config.name"/>
+        <label for="config">Konfigurációk</label>
     </p>
+    <table class="dataview">
+        <tr>
+            <th>Típus</th>
+            <th>Kód</th>
+            <th>Megnevezés</th>
+            <th></th>
+        </tr>
+        <tr wicket:id="configurations">
+            <td wicket:id="type"></td>
+            <td wicket:id="code"></td>
+            <td wicket:id="name"></td>
+            <td><a wicket:id="setConfig">Cserél</a></td>
+        </tr>
+    </table>
 </wicket:panel>

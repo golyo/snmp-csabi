@@ -146,7 +146,8 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://service.snmpweb.snmp.zh.com/", name = "getConfigurations")
     public JAXBElement<GetConfigurations> createGetConfigurations(GetConfigurations value) {
-        return new JAXBElement<GetConfigurations>(_GetConfigurations_QNAME, GetConfigurations.class, null, value);
+        JAXBElement<GetConfigurations> getconfs = new JAXBElement<GetConfigurations>(_GetConfigurations_QNAME, GetConfigurations.class, null, value);
+        return getconfs;
     }
 
     /**

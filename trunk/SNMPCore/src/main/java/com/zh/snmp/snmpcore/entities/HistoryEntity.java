@@ -27,6 +27,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
+import javax.persistence.Transient;
 
 /**
  *
@@ -103,4 +104,8 @@ public class HistoryEntity implements BaseEntity, Serializable {
         this.user = user;
     }
     
+    @Transient
+    public DeviceType getDeviceType() {
+        return oldConfig != null ? oldConfig.getDeviceType() : newConfig.getDeviceType();
+    }
 }

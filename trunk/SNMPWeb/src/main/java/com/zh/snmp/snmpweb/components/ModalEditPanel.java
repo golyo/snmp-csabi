@@ -87,7 +87,7 @@ public abstract class ModalEditPanel<T extends BaseEntity> extends Panel {
     protected abstract boolean onModalSave(AjaxRequestTarget target);
     
     protected void onModalCancel(AjaxRequestTarget target) {
-
+        
     }
 
     protected boolean onModalDelete(AjaxRequestTarget target) {

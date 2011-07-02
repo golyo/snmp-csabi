@@ -14,15 +14,16 @@ public class App
 {
     public static void main( String[] args )
     {
-
+        System.setProperty("com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump", "true");
         SnmpWebService_Service service = new SnmpWebService_Service();
         SnmpWebService srv = service.getSnmpWebServicePort();
         
-        List<String> confd = srv.getConfigurations(); 
-        System.out.println("++++++++++++" + confd);
+        boolean succes = srv.createDevice("testCreate1", "testIpAddr1", "testMacAddr1");
+        //List<String> confd = srv.getConfigurations(); 
+        //System.out.println("++++++++++++" + confd);
         
         
-        boolean succes = srv.setDeviceConfig("nodeidTest", "aa"); 
+        //boolean succes = srv.setDeviceConfig("nodeidTest", "aa"); 
         System.out.println("++++++++++++" + succes);
     }
 }
