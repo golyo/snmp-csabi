@@ -40,7 +40,7 @@ public class DeviceConfigEntity implements BaseEntity, Serializable {
     private String code;
     private String name;
     private String snmpDescriptor;
-    private DeviceType deviceType = DeviceType.ACCES;
+    private DeviceType deviceType;
     private Boolean active = Boolean.TRUE;
 
     @Id

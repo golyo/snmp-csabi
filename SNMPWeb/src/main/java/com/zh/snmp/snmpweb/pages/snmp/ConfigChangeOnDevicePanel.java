@@ -16,59 +16,65 @@
  */
 package com.zh.snmp.snmpweb.pages.snmp;
 
+import com.zh.snmp.snmpcore.entities.BaseEntity;
+import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
+import com.zh.snmp.snmpcore.entities.DeviceType;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import com.zh.snmp.snmpweb.components.ModalEditCloseListener;
 import com.zh.snmp.snmpweb.components.ModalEditPanel;
+import com.zh.snmp.snmpweb.model.DetachableDeviceConfigListModel;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.basic.EnumLabel;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 /**
  *
  * @author Golyo
  */
-public class DeviceEditPanel extends ModalEditPanel<DeviceEntity> implements ModalEditCloseListener {
+public class ConfigChangeOnDevicePanel extends ModalEditPanel<DeviceEntity> implements ModalEditCloseListener {
     @SpringBean
     private SnmpService service;
+    private IModel<DeviceConfigEntity> selected;
     
-    public DeviceEditPanel(ModalWindow modal, IModel<DeviceEntity> model) {
+    public ConfigChangeOnDevicePanel(ModalWindow modal, IModel<DeviceEntity> model, DeviceType type) {
         super(modal, model, false);
-        boolean isEdit = model.getObject().getId() != null;
         form.setDefaultModel(new CompoundPropertyModel<DeviceEntity>(model.getObject()));
-        form.add(new TextField("nodeId").setRequired(true).setEnabled(!isEdit));
-        form.add(new TextField("macAddress").setRequired(true));
-        form.add(new TextField("ipAddress").setRequired(true));
-        /*
-        ListView<DeviceType> configList = new ListView<DeviceType>("configurations", Arrays.asList(DeviceType.values())) {
-            @Override
-            protected void populateItem(ListItem<DeviceType> item) {
-                item.add(new EnumLabel("type", item.getModelObject()));
-                item.add(new Label("value", getEntityObject().findConfiguration(item.getModelObject()).getCode()));
-            }
-        };
-        form.add(configList);
-         * 
-         */
+        form.add(new Label("nodeId"));
+        form.add(new Label("macAddress"));
+        form.add(new Label("ipAddress"));
+        
+        
+        DeviceConfigEntity actValue = model.getObject().findConfiguration(type);
+        selected = Model.of(actValue);
+        form.add(new EnumLabel("selectedType", type));
+        
+        DeviceConfigEntity filter = new DeviceConfigEntity();
+        filter.setActive(Boolean.TRUE);
+        filter.setDeviceType(type);
+        DetachableDeviceConfigListModel configs = new DetachableDeviceConfigListModel(filter);
+        
+        form.add(new DropDownChoice<DeviceConfigEntity>("newConfig", selected, configs, DetachableDeviceConfigListModel.DEVICE_CONFIG_RENDERER)); 
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+        selected.detach();
+    }
+    
+    @Override
     protected boolean onModalSave(AjaxRequestTarget target) {
-        String errKey = null;
-        DeviceEntity saveable = (DeviceEntity)form.getDefaultModelObject();
-        DeviceEntity checkCode = service.findDeviceByNodeId(saveable.getNodeId());
-        if (checkCode != null && !checkCode.getId().equals(saveable.getId())) {
-            errKey = "deviceEntity.error.nodeIdExists";
-            error(getString(errKey));
-            target.addComponent(feedback);
-            return false;
-        } else {
-            service.saveDevice(saveable);
-            return true;
-        }
+        String selectedKod = selected.getObject() != null ? selected.getObject().getCode() : null;
+        service.setDeviceConfig(getEntityObject().getNodeId(), selectedKod);
+        getBasePage().refreshPanel(target);
+        return true;
     }
 
     @Override

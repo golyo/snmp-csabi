@@ -17,14 +17,17 @@
 package com.zh.snmp.snmpweb.pages.snmp;
 
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
+import com.zh.snmp.snmpcore.entities.DeviceType;
 import com.zh.snmp.snmpcore.entities.HistoryEntity;
 import com.zh.snmp.snmpweb.components.DataTablePanel;
 import com.zh.snmp.snmpweb.components.DatePropertyColumn;
+import com.zh.snmp.snmpweb.components.EnumPropertyColumn;
 import com.zh.snmp.snmpweb.model.DetachableDeviceConfigListModel;
 import com.zh.snmp.snmpweb.model.HistoryProvider;
 import java.io.Serializable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.ChoiceFilteredPropertyColumn;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -48,6 +51,7 @@ public class HistoryListPanel extends DataTablePanel<HistoryEntity> {
     protected IColumn<HistoryEntity>[] createTableColumns() {
         return new IColumn[] {
             new DatePropertyColumn<HistoryEntity>(new ResourceModel("history.updateTime"), "updateTime", "updateTime", true),
+            new EnumPropertyColumn<DeviceType>(new ResourceModel("deviceConfig.deviceType"), "deviceType"),
             new PropertyColumn<HistoryEntity>(new ResourceModel("history.oldConfig"), "oldConfig") {
                 @Override
                 protected IModel<?> createLabelModel(IModel<HistoryEntity> rowModel) {

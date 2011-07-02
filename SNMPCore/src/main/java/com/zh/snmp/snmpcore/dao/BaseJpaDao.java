@@ -69,6 +69,7 @@ public abstract class BaseJpaDao<T extends BaseEntity> {
     
     protected List<T> find(T filterEntity, QueryByExamplePolicy policy, String sort, int start, int count) {
         ReadAllQuery q = new ReadAllQuery(filterEntity, policy);
+        q.setReferenceClass(clazz);
         q.setFirstResult(start);
         if (count >= 0) {
             q.setMaxRows(count);            

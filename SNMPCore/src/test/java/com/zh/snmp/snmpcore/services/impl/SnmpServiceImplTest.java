@@ -20,6 +20,7 @@ import com.zh.snmp.snmpcore.BaseTest;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.entities.HistoryEntity;
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
+import com.zh.snmp.snmpcore.entities.DeviceType;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import java.util.List;
 import org.junit.After;
@@ -54,6 +55,7 @@ public class SnmpServiceImplTest extends BaseTest {
         type.setActive(true);
         type.setName("testName");
         type.setCode("testCode");
+        type.setDeviceType(DeviceType.VOIP);
         type.setSnmpDescriptor("testDescriptor");
         DeviceConfigEntity saved = snmpService.saveDeviceConfig(type);
         assertNotNull(saved.getId());
@@ -78,11 +80,28 @@ public class SnmpServiceImplTest extends BaseTest {
         assertEquals(histories.size(), 1);
         
         device = snmpService.setDeviceConfig(nodeId, null);
-        assertNotNull(device);
-        assertNull(device.getConfig());
+        assertTrue(device.getConfigurations().isEmpty());
+        //assertNull(device.getConfig());
 
         histories = snmpService.getDeviceHistory(new HistoryEntity(), null, 0, -1);
         assertEquals(histories.size(), 2);
     }
 
+    @Test
+    public void testConfigs() {
+        DeviceConfigEntity conf1 = createConfVoip("test1");
+        DeviceConfigEntity conf2 = createConfVoip("test2");
+    }
+    
+    private DeviceConfigEntity createConfVoip(String code) {
+        DeviceConfigEntity type = new DeviceConfigEntity();
+        type.setActive(true);
+        type.setName(code);
+        type.setCode(code);
+        type.setDeviceType(DeviceType.VOIP);
+        type.setSnmpDescriptor("testDescriptor");
+        DeviceConfigEntity saved = snmpService.saveDeviceConfig(type);
+        assertNotNull(saved.getId());
+        return saved;        
+    }
 }
