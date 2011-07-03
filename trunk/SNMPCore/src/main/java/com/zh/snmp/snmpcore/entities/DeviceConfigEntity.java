@@ -126,4 +126,8 @@ public class DeviceConfigEntity implements BaseEntity, Serializable {
         return hash;
     }
     
+    @Override
+    public String toString() {
+        return "code: " + code + ", type:" + deviceType;
+    }
 }

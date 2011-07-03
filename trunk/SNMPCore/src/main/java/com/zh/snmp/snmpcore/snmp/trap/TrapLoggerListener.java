@@ -14,29 +14,23 @@
  *  ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR
  *  DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
  */
-package com.zh.snmp.snmpcore.snmp;
+package com.zh.snmp.snmpcore.snmp.trap;
 
-import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
-import com.zh.snmp.snmpcore.services.SnmpService;
-import java.util.List;
-import org.snmp4j.smi.VariableBinding;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.zh.snmp.snmpcore.message.MessageAppender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Golyo
  */
-public class DeviceConfigFactory {
+public class TrapLoggerListener implements TrapListener {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TrapListener.class);
+    
 
-    @Autowired
-    private SnmpService service;
-    
-    public List<VariableBinding> getSnmpConfig(String configCode) {
-        return getSnmpConfig(service.findDeviceConfigByCode(configCode));
-    }
-    
-    protected List<VariableBinding> getSnmpConfig(DeviceConfigEntity config) {
-        return null;
+    @Override
+    public void processTrapResponse(TrapManager.DeviceTrapInfo trapInfo, MessageAppender appender) {
+        LOGGER.debug("Trap received from" + trapInfo);
     }
     
 }

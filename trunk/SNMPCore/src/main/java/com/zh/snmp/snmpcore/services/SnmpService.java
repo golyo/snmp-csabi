@@ -34,6 +34,7 @@ public interface SnmpService {
     
     public DeviceEntity findDeviceById(Long id);
     public DeviceEntity findDeviceByNodeId(String nodeId);
+    public DeviceEntity findDeviceByFilter(DeviceEntity filter);
     public List<DeviceEntity> findDeviceByFilter(DeviceEntity filter, String sort, int start, int count);
     public DeviceEntity saveDevice(DeviceEntity device);
     public int countDevice(DeviceEntity filter);

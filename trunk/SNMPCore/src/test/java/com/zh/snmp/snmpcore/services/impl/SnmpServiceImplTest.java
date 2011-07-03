@@ -22,6 +22,7 @@ import com.zh.snmp.snmpcore.entities.HistoryEntity;
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import com.zh.snmp.snmpcore.entities.DeviceType;
 import com.zh.snmp.snmpcore.services.SnmpService;
+import java.io.IOException;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
@@ -88,20 +89,9 @@ public class SnmpServiceImplTest extends BaseTest {
     }
 
     @Test
-    public void testConfigs() {
-        DeviceConfigEntity conf1 = createConfVoip("test1");
-        DeviceConfigEntity conf2 = createConfVoip("test2");
+    public void testConfigs() throws IOException {
+        //DeviceConfigEntity conf1 = createConfVoip("test1");
+        //DeviceConfigEntity conf2 = createConfVoip("test2");
     }
     
-    private DeviceConfigEntity createConfVoip(String code) {
-        DeviceConfigEntity type = new DeviceConfigEntity();
-        type.setActive(true);
-        type.setName(code);
-        type.setCode(code);
-        type.setDeviceType(DeviceType.VOIP);
-        type.setSnmpDescriptor("testDescriptor");
-        DeviceConfigEntity saved = snmpService.saveDeviceConfig(type);
-        assertNotNull(saved.getId());
-        return saved;        
-    }
 }

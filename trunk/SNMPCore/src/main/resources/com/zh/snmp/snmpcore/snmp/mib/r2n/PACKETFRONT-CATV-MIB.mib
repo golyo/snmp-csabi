@@ -1,0 +1,318 @@
+PACKETFRONT-CATV-MIB DEFINITIONS ::= BEGIN
+
+-- Copyright (c) 2008,2009 Packetfront Systems AB
+
+IMPORTS
+  MODULE-IDENTITY,
+  OBJECT-TYPE,
+  NOTIFICATION-TYPE,
+  Integer32
+    FROM SNMPv2-SMI
+
+  pfMgmt
+    FROM PACKETFRONT-SMI
+  
+  productMacAddress,
+  productIdentity
+    FROM PACKETFRONT-DRG-MIB
+;
+
+
+-- *****************************************************************************
+-- catvMIB
+--
+-- ***************************************************************************** 
+pfCatvMib MODULE-IDENTITY
+    LAST-UPDATED "200801070652Z" -- January 7th, 2008
+    ORGANIZATION "PacketFront Systems AB"
+    CONTACT-INFO
+    "PacketFront Systems AB
+     Customer Service
+
+     Mail : Isafjordsgatan 35
+            SE-164 28 Kista
+            Sweden
+
+     Tel  : +46 8 5090 1500
+
+     E-mail: snmp@packetfront.com
+     Web   : http://www.packetfront.com"
+    DESCRIPTION
+    "The MIB module for managing Packetfront CATV modules"
+    REVISION "200801070652Z" -- January 7th, 2008
+    DESCRIPTION
+    "Initial release."
+
+       ::= { pfMgmt 6 }
+
+
+catvNotification OBJECT IDENTIFIER ::= { pfCatvMib 0 }
+catvConfig       OBJECT IDENTIFIER ::= { pfCatvMib 1 }
+catvConformance  OBJECT IDENTIFIER ::= { pfCatvMib 2 }
+
+
+-- *****************************************************************************
+-- productInfo contains product-specific information regarding the physical
+-- device, its firmware and operator configuration.
+--
+-- *****************************************************************************
+
+catvAdmin  OBJECT IDENTIFIER ::= { catvConfig 1 }
+catvPower  OBJECT IDENTIFIER ::= { catvConfig 2 }
+
+
+-- *****************************************************************************
+-- productInfo contains product-specific information regarding the physical
+-- device, its firmware and operator configuration.
+--
+-- *****************************************************************************
+
+catvModuleType OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..32))
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "Reports the type of CATV module installed (if known)"
+      ::= { catvAdmin 1 }
+
+catvModuleOptionSupport OBJECT-TYPE
+    SYNTAX BITS {
+      catvSupportInputPowerMeasure(0),
+      catvSupportOutputPowerMeasure(1),
+      catvSupportOutputPowerDetect(2)
+    }
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "Defines various optional features that may be supported by a CATV module"
+      ::= { catvAdmin 2 }
+
+catvModuleAdminStatus OBJECT-TYPE
+    SYNTAX INTEGER {
+      enabled(1),
+      disabled(2)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The administrative status of the module, this can be enabled(1) or
+    disabled(2)."
+    DEFVAL { 2 }
+      ::= { catvAdmin 3 }
+
+catvModuleOperStatus OBJECT-TYPE
+    SYNTAX INTEGER {
+      enabled(1),
+      disabled(2),
+      errorDetected(3)
+    }
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "This object provides the operational status of the CATV module - some CATV
+    modules are able to report errors, and this is indicated by the use of
+    errorDetected(3)."
+      ::= { catvAdmin 4 }
+
+catvModuleFilterAdminStatus OBJECT-TYPE
+    SYNTAX INTEGER {
+      enabled(1),
+      disabled(2)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Controls the availability of a range of RF channels by filtering them. This
+    typically used for premium services. Setting this object to enabled(1) turns
+    on the filter and disables the output of the affected RF channels."
+    DEFVAL { enabled }
+      ::= { catvAdmin 5 }
+
+catvModuleFilterOperStatus OBJECT-TYPE
+    SYNTAX INTEGER {
+      enabled(1),
+      disabled(2),
+      errorDetected(3)
+    }
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "This object provides the operational status of the RF filter - some CATV
+    modules are able to report errors, and this is indicated by the use of
+    errorDetected(3)."
+      ::= { catvAdmin 6 }
+
+catvModulePowerFaultNotifyAdmin OBJECT-TYPE
+    SYNTAX INTEGER {
+      enabled(1),
+      disabled(2)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "enabled(1) will permit detected power fault notifications to be sent to 
+    the NMS"
+    DEFVAL { enabled }
+      ::= { catvAdmin 7 }
+
+catvModuleSecurityAlarmNotifyAdmin OBJECT-TYPE
+    SYNTAX INTEGER {
+      enabled(1),
+      disabled(2)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "enabled(1) will cause detected security alarms to send a security alarm 
+    notifications to the NMS"
+    DEFVAL { 1 }
+      ::= { catvAdmin 8 }
+
+
+-- *****************************************************************************
+-- catvPower defines objects to allow the operator to determine the current
+-- status of the CATV module in respect of the optical input power and output
+-- RF power.
+--
+-- *****************************************************************************
+
+catvModuleInputPowerThresholdMin OBJECT-TYPE
+    SYNTAX Integer32
+    UNITS "dBm"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The minimum acceptable input power. If the input optical power falls below
+    this threshold a fault alarm will be sent to the NMS."
+      ::= { catvPower 1 }
+
+catvModuleInputPowerThresholdMax OBJECT-TYPE
+    SYNTAX Integer32
+    UNITS "dBm"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The maximum acceptable input power. If the input optical power rises above
+    this threshold a fault alarm will be sent to the NMS."
+      ::= { catvPower 2 }
+
+catvModuleInputPower OBJECT-TYPE
+    SYNTAX Integer32
+    UNITS "dBm"
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "The measured power at the optical input of the CATV module. Note that some 
+    modules do not support this feature, indicated by 
+    catvSupportInputPowerMeasure, and these will return a value of 0dBm."
+      ::= { catvPower 3 }
+
+catvModuleOutputPowerThresholdMin OBJECT-TYPE
+    SYNTAX Integer32
+    UNITS "dBm"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The minimum acceptable output power. If the output RF power falls below
+    this threshold a fault alarm will be sent to the NMS."
+      ::= { catvPower 4 }
+
+catvModuleOutputPowerThresholdMax OBJECT-TYPE
+    SYNTAX Integer32
+    UNITS "dBm"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The maximum acceptable output power. If the output RF power rises above
+    this threshold a fault alarm will be sent to the NMS."
+      ::= { catvPower 5 }
+
+catvModuleOutputPower OBJECT-TYPE
+    SYNTAX Integer32
+    UNITS "dBm"
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "The measured power at the RF output of the CATV module. Note that some 
+    modules do not support this feature, indicated by 
+    catvSupportOutputPowerMeasure, and these will return a value of 0dBm"
+      ::= { catvPower 6 }
+
+catvModuleOutputDetect OBJECT-TYPE
+    SYNTAX INTEGER {
+      unknown(0),
+      detected(1),
+      notDetected(2)
+    }
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "If no output RF power is detected, then notDetected shall be reported,
+    else detected shall be reported. Note that some modules do not support 
+    this feature, indicated by catvSupportOutputPowerDetect, and these will 
+    return unknown(0)"
+      ::= { catvPower 7 }
+
+
+-- *****************************************************************************
+-- All CATV notifications are defined here.  These can be sent as traps or as
+-- informs.
+--
+-- *****************************************************************************
+
+notifyCatvInputPowerFault  NOTIFICATION-TYPE
+    OBJECTS {
+      productMacAddress,
+      productIdentity,
+      catvModuleInputPower
+    }
+    STATUS      current
+    DESCRIPTION
+    "The input optical power measurement is reported if it falls outside the 
+    specified min and max threshold range."
+      ::= { catvNotification 1 }
+
+notifyCatvOutputPowerFault  NOTIFICATION-TYPE
+    OBJECTS {
+      productMacAddress,
+      productIdentity,
+      catvModuleOutputPower
+    }
+    STATUS      current
+    DESCRIPTION
+    "The output RF power measurement is reported if it falls outside the 
+    specified min and max threshold range."
+      ::= { catvNotification 2 }
+
+notifyCatvStatusAlarm  NOTIFICATION-TYPE
+    OBJECTS {
+      productMacAddress,
+      productIdentity,
+      catvModuleAdminStatus,
+      catvModuleOperStatus,
+      catvModuleOutputPower
+    }
+    STATUS      current
+    DESCRIPTION
+    "The operational status is enabled, while the administrative status is
+    disabled. This may indicate fraudulent service access."
+      ::= { catvNotification 3 }
+
+notifyCatvFilterStatusAlarm  NOTIFICATION-TYPE
+    OBJECTS {
+      productMacAddress,
+      productIdentity,
+      catvModuleFilterAdminStatus,
+      catvModuleFilterOperStatus,
+      catvModuleOutputPower
+    }
+    STATUS      current
+    DESCRIPTION
+    "The premium service operational status is enabled, while the premium 
+    service administrative status is disabled. This may indicate fraudulent 
+    service access."
+      ::= { catvNotification 4 }
+
+
+END
+

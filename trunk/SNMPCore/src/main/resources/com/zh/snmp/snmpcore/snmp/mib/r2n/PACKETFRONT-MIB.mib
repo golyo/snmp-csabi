@@ -1,0 +1,1641 @@
+PACKETFRONT-MIB DEFINITIONS ::= BEGIN
+--
+-- This is the PacketFront Management Information Base definition for iBOS, to be
+-- to be used with PacketFront products which use the operating system.
+--
+-- Copyright (c) 2002 PacketFront Sweden AB
+-- Copyright (c) 2007,2008,2009 PacketFront Systems AB
+
+IMPORTS
+        MODULE-IDENTITY,
+        OBJECT-IDENTITY,
+        OBJECT-TYPE,
+        NOTIFICATION-TYPE,
+        Integer32,
+        Unsigned32,
+        Counter64,
+        Gauge32,
+        TimeTicks
+	FROM SNMPv2-SMI
+	
+	DisplayString
+	FROM SNMPv2-TC
+	
+        pfMgmt,
+        pfExperiment
+        FROM PACKETFRONT-SMI;
+
+
+--
+-- PacketFront IBOS
+--
+ibos    MODULE-IDENTITY
+    LAST-UPDATED "200903271104Z"
+    ORGANIZATION "PacketFront Systems AB"
+    CONTACT-INFO
+        "PacketFront Systems AB
+         Customer Service
+
+         Mail : Isafjordsgatan 35
+                SE-164 28 Kista
+                Sweden
+
+         Tel  : +46 8 5090 1500
+
+         E-mail: snmp@packetfront.com
+         Web   : http://www.packetfront.com"
+    DESCRIPTION
+        "The PacketFront MIB describing iBOS functionality of ASRs"
+
+    REVISION "200903271104Z"
+    DESCRIPTION
+        "Added pfEnvironmentNotifications extensions to the MIB."
+    REVISION "200903231102Z"
+    DESCRIPTION
+        "Updated telephone information in contact-info. Reordered revision
+         information. Fixed enumerated types not starting from zero"
+    REVISION "200804301426Z"
+    DESCRIPTION
+        "Moved pfRpm to PACKETFRONT-RPM-MIB
+         Moved pfIgmp to PACKETFRONT-IGMP-CACHE-MIB
+         Moved pfProduct to PACKETFRONT-PRODUCTS-MIB
+         Moved boilerplate to PACKETFRONT-SMI and PACKETFRONT-TC"
+    REVISION "200710031835Z"
+    DESCRIPTION
+        "Added pfRpm"
+    REVISION "200706131437Z"
+    DESCRIPTION
+        "Added pfIgmp"
+    REVISION "200610181341Z"
+    DESCRIPTION
+        "Corrected pfAccounting member types"
+    REVISION "200608231100Z"
+    DESCRIPTION
+        "Added pfVersionString OID"
+    REVISION "200601251330Z"
+    DESCRIPTION
+        "Changed name of pfNeighbourPlatform to pfNeighbourModel.  Added OID for ASR10K."
+    REVISION "200505101124Z"
+    DESCRIPTION
+        "Added missing connector type SC."
+    REVISION "200502010911Z"
+    DESCRIPTION
+        "Corrected pfPolicyTable entry types. Added description for pfPolicyUseCnt."
+    REVISION "200501141500Z"
+    DESCRIPTION
+        "Added pfAccounting extensions to the MIB."
+    REVISION "200410201434Z"
+    DESCRIPTION
+        "Added the ipdConfig object"
+    REVISION "200405141155Z"
+    DESCRIPTION
+        "Updated to reflect PacketFronts new corporate address"
+
+
+        ::= { pfMgmt 1 }
+
+
+--
+-- System management objects
+pfSystem      	OBJECT-IDENTITY
+                STATUS current
+                DESCRIPTION
+                        "System management objects"
+               ::= { ibos 1 }
+
+-- Test object
+pfWritedummy	OBJECT-TYPE
+                SYNTAX Integer32 (0..2147483647)
+                MAX-ACCESS read-write
+                STATUS current
+                DESCRIPTION
+                        "This object is a read-write object that accept an
+                         integer. The value written has no effect on the
+                         system, but a successful write indicate that 
+                         SNMP write operations are possible on the target
+                         router. The last written value can be read back"
+                ::= { pfSystem 1 }
+
+-- Restart the system
+pfReload      	OBJECT-TYPE
+                SYNTAX Integer32 (0..2147483647)
+                MAX-ACCESS read-write
+                STATUS current
+                DESCRIPTION
+                        "This object is used to restart the target router
+                         by setting the number of seconds until system
+                         reload. A value of 0 cancels any pending reload.
+                         The value returned when reading the object is the
+                         number of seconds remaining until reload"
+                ::= { pfSystem 2 }
+
+-- System iBOS version
+pfVersion  	OBJECT-TYPE
+                SYNTAX Integer32 (0..2147483647)
+                MAX-ACCESS read-only
+                STATUS current
+                DESCRIPTION
+                        "The iBOS version indicator"
+                ::= { pfSystem 3 }
+
+-- System iBOS version
+pfAsrRevision  	OBJECT-TYPE
+                SYNTAX Integer32 (0..2147483647)
+                MAX-ACCESS read-only
+                STATUS current
+                DESCRIPTION
+                        "The ASR hardware revision"
+                ::= { pfSystem 4 }
+
+-- System iBOS version string
+pfVersionString OBJECT-TYPE
+                SYNTAX DisplayString
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+		    "A textual representation of the iBOS version.
+		     For iBOS versions after 3.2, this field should be
+		     used to identify the iBOS version instead of the
+		     old pfVersion OID"
+	        ::= { pfSystem 5 }
+
+--
+-- Environment data
+pfEnvironment 	OBJECT-IDENTITY
+		STATUS current
+		DESCRIPTION
+			"Environtment data"
+		::= { ibos 2 }
+
+-- Temperature table
+pfTempTable 	OBJECT-TYPE
+		SYNTAX SEQUENCE OF PfTempEntry
+		MAX-ACCESS not-accessible
+		STATUS current
+		DESCRIPTION
+			"Table of values from temperature sensors."
+		::= { pfEnvironment 1 }
+
+pfTempEntry	OBJECT-TYPE
+		SYNTAX PfTempEntry
+		MAX-ACCESS not-accessible
+		STATUS current
+		DESCRIPTION
+			"An entry for a temperature sensor."
+		INDEX { pfTempSensor }
+		::= { pfTempTable 1 }
+
+PfTempEntry ::=
+	SEQUENCE {
+		pfTempSensor 		Unsigned32,
+		pfTempMeasured		Integer32,
+		pfTempTOS 		Integer32,
+		pfTempTHYST 		Integer32,
+		pfTempThresholdLow 	Integer32,
+		pfTempThresholdHigh 	Integer32,
+		pfTempStatus 		INTEGER
+	}
+
+pfTempSensor	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Sensor number."
+		::= { pfTempEntry 1 }
+
+pfTempMeasured	OBJECT-TYPE
+		SYNTAX Integer32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Measured temperature in 100ths of degrees centigrade."
+		::= { pfTempEntry 2 }
+
+pfTempTOS	OBJECT-TYPE
+		SYNTAX Integer32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"TOS in 100ths of degrees centigrade."
+		::= { pfTempEntry 3 }
+
+pfTempTHYST	OBJECT-TYPE
+		SYNTAX Integer32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"THYST in 100ths of degrees centigrade."
+		::= { pfTempEntry 4 }
+
+pfTempThresholdLow	OBJECT-TYPE
+		SYNTAX Integer32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Threshold (low) in 100ths of degrees centigrade."
+		::= { pfTempEntry 5 }
+
+pfTempThresholdHigh	OBJECT-TYPE
+		SYNTAX Integer32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Threshold (high) in 100ths of degrees centigrade."
+		::= { pfTempEntry 6 }
+	    
+pfTempStatus	OBJECT-TYPE
+                SYNTAX INTEGER {
+                          failed(-1),
+                          ok(0),
+                          high(1),
+                          low(2),
+                          disabled(4)
+                }
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Status (measurement compared to threshold)."
+		::= { pfTempEntry 7 }
+
+-- Voltage table
+pfVoltTable 	OBJECT-TYPE
+		SYNTAX SEQUENCE OF PfVoltEntry
+		MAX-ACCESS not-accessible
+		STATUS current
+		DESCRIPTION
+			"Table of measured board voltages."
+		::= { pfEnvironment 2 }
+
+pfVoltEntry	OBJECT-TYPE
+		SYNTAX PfVoltEntry
+		MAX-ACCESS not-accessible
+		STATUS current
+		DESCRIPTION
+			"An entry for a board voltage."
+		INDEX { pfVoltChannel }
+		::= { pfVoltTable 1 }
+
+PfVoltEntry ::=
+	SEQUENCE {
+		pfVoltChannel 		Unsigned32,
+		pfVoltNominal 		Integer32,
+		pfVoltMeasured		Integer32,
+		pfVoltThresholdLow 	Integer32,
+		pfVoltThresholdHigh 	Integer32,
+		pfVoltStatus 		INTEGER
+	}
+
+pfVoltChannel	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Voltage channel number."
+		::= { pfVoltEntry 1 }
+
+pfVoltNominal	OBJECT-TYPE
+		SYNTAX Integer32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Nominal voltage in mV for channel."
+		::= { pfVoltEntry 2 }
+
+pfVoltMeasured	OBJECT-TYPE
+		SYNTAX Integer32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Measured voltage in mV for channel."
+		::= { pfVoltEntry 3 }
+
+pfVoltThresholdLow	OBJECT-TYPE
+		SYNTAX Integer32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Threshold (low) voltage in mV for channel."
+		::= { pfVoltEntry 4 }
+
+pfVoltThresholdHigh	OBJECT-TYPE
+		SYNTAX Integer32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Threshold (high) voltage in mV for channel."
+		::= { pfVoltEntry 5 }
+	    
+pfVoltStatus	OBJECT-TYPE
+                SYNTAX INTEGER {
+			na(-3),
+			failed(-1),
+			ok(0),
+			high(1),
+			low(2),
+			notPresent(3),
+			disabled(4)
+                }
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Status (measurement compared to threshold)."
+		::= { pfVoltEntry 6 }
+
+
+-- Fan speed table
+pfFanTable 	OBJECT-TYPE
+		SYNTAX SEQUENCE OF PfFanEntry
+		MAX-ACCESS not-accessible
+		STATUS current
+		DESCRIPTION
+			"Table of measured rotation speeds for external fans."
+		::= { pfEnvironment 3 }
+
+pfFanEntry	OBJECT-TYPE
+		SYNTAX PfFanEntry
+		MAX-ACCESS not-accessible
+		STATUS current
+		DESCRIPTION
+			"An entry for a fan."
+		INDEX { pfFanNumber }
+		::= { pfFanTable 1 }
+
+PfFanEntry ::=
+	SEQUENCE {
+		pfFanNumber 		Unsigned32,
+		pfFanRPM 		Integer32
+	}
+
+pfFanNumber	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Fan number."
+		::= { pfFanEntry 1 }
+
+pfFanRPM	OBJECT-TYPE
+		SYNTAX Integer32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Fan speed in revolutions per minute."
+		::= { pfFanEntry 2 }
+
+-- Fan driving voltage
+pfFanVoltage	OBJECT-TYPE
+		SYNTAX Integer32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Fan driving voltage (in mV)."
+		::= { pfEnvironment 4 }
+
+--
+-- Trap objects
+pfEnvironmentNotifications      OBJECT-IDENTITY
+                                STATUS current
+                                DESCRIPTION
+                                        "Packetfront Environment related Trap objects"
+                                ::= { pfEnvironment 5 }
+
+pfTempLow       NOTIFICATION-TYPE
+                OBJECTS { pfTempSensor, pfTempMeasured, pfTempThresholdLow, pfTempStatus }
+                STATUS current
+                DESCRIPTION
+                        "A pfTempLow trap signifies that the SNMP entity, acting
+                        in an agent role, has detected that one of its
+                        temperature sensors is outside of the predefined low
+                        threshold."
+                ::= { pfEnvironmentNotifications 1 }
+
+pfTempHigh      NOTIFICATION-TYPE
+                OBJECTS { pfTempSensor, pfTempMeasured, pfTempThresholdHigh, pfTempStatus }
+                STATUS current
+                DESCRIPTION
+                        "A pfTempHigh trap signifies that the SNMP entity,
+                        acting in an agent role, has detected that one of its
+                        temperature sensors is outside of the predefined high
+                        threshold."
+                ::= { pfEnvironmentNotifications 2 }
+
+pfVoltLow       NOTIFICATION-TYPE
+                OBJECTS { pfVoltChannel, pfVoltMeasured, pfVoltThresholdLow, pfVoltStatus }
+                STATUS current
+                DESCRIPTION
+                        "A pfVoltLow trap signifies that the SNMP entity, acting
+                        in an agent role, has detected that one of its voltage
+                        channels is outside of the predefined low threshold."
+                ::= { pfEnvironmentNotifications 3 }
+
+pfVoltHigh      NOTIFICATION-TYPE
+                OBJECTS { pfVoltChannel, pfVoltMeasured, pfVoltThresholdHigh, pfVoltStatus }
+                STATUS current
+                DESCRIPTION
+                        "A pfVoltHigh trap signifies that the SNMP entity,
+                        acting in an agent role, has detected that one of its
+                        voltage channels is outside of the predefined high
+                        threshold."
+                ::= { pfEnvironmentNotifications 4 }
+
+pfFanRPMLow     NOTIFICATION-TYPE
+                OBJECTS { pfFanNumber, pfFanRPM }
+                STATUS current
+                DESCRIPTION
+                        "A pfFanRPMLow trap signifies that the SNMP entity,
+                        acting in an agent role, has detected that one of its
+                        fans's RPM is lower than the system defined threshold."
+                ::= { pfEnvironmentNotifications 5 }
+
+pfFanOutVoltLow NOTIFICATION-TYPE
+                OBJECTS { pfFanVoltage }
+                STATUS current
+                DESCRIPTION
+                        "A pfFanOutVoltLow trap signifies that the SNMP entity,
+                        acting in an agent role, has detected that its fan
+                        output voltage is lower than the system defined
+                        threshold."
+                ::= { pfEnvironmentNotifications 6 }
+
+--
+-- PFDP data
+pfPFDP	 	OBJECT-IDENTITY
+		STATUS current
+		DESCRIPTION
+			"PFDP data"
+		::= { ibos 3 }
+
+
+-- PFDP Neighbours Table
+pfNeighboursTable 	OBJECT-TYPE
+		SYNTAX SEQUENCE OF PfNeighboursEntry
+		MAX-ACCESS not-accessible
+		STATUS current
+		DESCRIPTION
+			"Table of discovered PFDB Neighbours."
+		::= { pfPFDP 1 }
+
+pfNeighboursEntry	OBJECT-TYPE
+		SYNTAX PfNeighboursEntry
+		MAX-ACCESS not-accessible
+		STATUS current
+		DESCRIPTION
+			"An entry for a neighbour."
+		INDEX { pfNeighbourIfIndex, pfNeighbourNIndex }
+		::= { pfNeighboursTable 1 }
+
+PfNeighboursEntry ::=
+	SEQUENCE {
+		pfNeighbourIfIndex	Unsigned32,
+		pfNeighbourNIndex	Unsigned32,
+		pfNeighbourHostname	DisplayString,
+		pfNeighbourLocalIf	DisplayString,
+		pfNeighbourRemoteIf	DisplayString,
+		pfNeighbourModel	DisplayString,
+		pfNeighbourLastAct	Integer32,
+		pfNeighbourOSVersion	DisplayString,
+		pfNeighbourSNPA		OCTET STRING,
+		pfNeighbourUptime	Unsigned32,
+		pfNeighbourState	INTEGER,
+		pfNeighbourDBCount	Unsigned32,
+		pfNeighbourCreated	TimeTicks,
+		pfNeighbourPacketsIn	Unsigned32,
+		pfNeighbourPacketErrorsrIn	Unsigned32
+	}
+
+pfNeighbourIfIndex	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Neighbour interface index."
+		::= { pfNeighboursEntry 1 }
+
+pfNeighbourNIndex	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Neighbour index."
+		::= { pfNeighboursEntry 2 }
+
+pfNeighbourHostname	OBJECT-TYPE
+		SYNTAX DisplayString
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Neighbour hostname."
+		::= { pfNeighboursEntry 3 }
+
+pfNeighbourLocalIf	OBJECT-TYPE
+		SYNTAX DisplayString
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Local interface that neighbour is on."
+		::= { pfNeighboursEntry 4 }
+
+pfNeighbourRemoteIf	OBJECT-TYPE
+		SYNTAX DisplayString
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Remote interface of neighbour."
+		::= { pfNeighboursEntry 5 }
+
+pfNeighbourModel	OBJECT-TYPE
+		SYNTAX DisplayString
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Neighbour model."
+		::= { pfNeighboursEntry 6 }
+
+pfNeighbourLastAct	OBJECT-TYPE
+		SYNTAX Integer32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Time in seconds since last neighbour advertisment."
+		::= { pfNeighboursEntry 7 }
+
+pfNeighbourOSVersion	OBJECT-TYPE
+		SYNTAX DisplayString
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Neighbour OS version."
+		::= { pfNeighboursEntry 8 }
+
+pfNeighbourSNPA		OBJECT-TYPE
+		SYNTAX OCTET STRING
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"SNPA of neighbour interface."
+		::= { pfNeighboursEntry 9 }
+
+pfNeighbourUptime	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Uptime in seconds for neighbour."
+		::= { pfNeighboursEntry 10 }
+
+pfNeighbourState	OBJECT-TYPE
+		SYNTAX INTEGER {
+				bidirectional(1),
+				unidirectional(2)
+		       }
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"State of neighbour."
+		::= { pfNeighboursEntry 11 }
+
+pfNeighbourDBCount	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Database entries for neighbour."
+		::= { pfNeighboursEntry 12 }
+
+pfNeighbourCreated	OBJECT-TYPE
+		SYNTAX TimeTicks
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The value of sysUpTime at the time the neighbour
+			 first appeared on the interface."
+		::= { pfNeighboursEntry 13 }
+
+pfNeighbourPacketsIn	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Number of PFDP packets received from neighbour."
+		::= { pfNeighboursEntry 14 }
+
+pfNeighbourPacketErrorsrIn	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Number of erroneous PFDP packets received from 
+			 neighbour."
+		::= { pfNeighboursEntry 15 }
+
+-- PFDP Neighbour Ports Table
+pfNeighbourPortsTable 	OBJECT-TYPE
+		SYNTAX SEQUENCE OF PfNeighbourPortsEntry
+		MAX-ACCESS not-accessible
+		STATUS current
+		DESCRIPTION
+			"Table of ports of discovered PFDB Neighbours."
+		::= { pfPFDP 2 }
+
+pfNeighbourPortsEntry	OBJECT-TYPE
+		SYNTAX PfNeighbourPortsEntry
+		MAX-ACCESS not-accessible
+		STATUS current
+		DESCRIPTION
+			"An entry for a port of a neighbour."
+		INDEX { pfNeighbourPortIfIndex, pfNeighbourPortNIndex, pfNeighbourPortPIndex }
+		::= { pfNeighbourPortsTable 1 }
+
+PfNeighbourPortsEntry ::=
+	SEQUENCE {
+		pfNeighbourPortIfIndex			Unsigned32,
+		pfNeighbourPortNIndex			Unsigned32,
+		pfNeighbourPortPIndex			Unsigned32,
+		pfNeighbourPortName			DisplayString,
+		pfNeighbourPortState			BITS,
+		pfNeighbourPortTxOctets			Counter64,
+		pfNeighbourPortTxDropPkts		Unsigned32,
+		pfNeighbourPortTxBroadcastPkts		Unsigned32,
+		pfNeighbourPortTxMulticastPkts		Unsigned32,
+		pfNeighbourPortTxUnicastPkts		Unsigned32,
+		pfNeighbourPortTxCollisions		Unsigned32,
+		pfNeighbourPortTxDeferredTransmit	Unsigned32,
+		pfNeighbourPortTxFrameInDisc		Unsigned32,
+		pfNeighbourPortRxOctets			Counter64,
+		pfNeighbourPortRxUndersizePkts		Unsigned32,
+		pfNeighbourPortPkts64Octets		Unsigned32,
+		pfNeighbourPortPkts65to127Octets	Unsigned32,
+		pfNeighbourPortPkts128to255Octets	Unsigned32,
+		pfNeighbourPortPkts256to511Octets	Unsigned32,
+		pfNeighbourPortPkts512to1023Octets	Unsigned32,
+		pfNeighbourPortPkts1024to1522Octets	Unsigned32,
+		pfNeighbourPortRxOversizePkts		Unsigned32,
+		pfNeighbourPortRxJabbers		Unsigned32,
+		pfNeighbourPortRxAlignmentErrors	Unsigned32,
+		pfNeighbourPortRxFCSErrors		Unsigned32,
+		pfNeighbourPortRxGoodOctets		Counter64,
+		pfNeighbourPortRxDropPkts		Unsigned32,
+		pfNeighbourPortRxUnicastPkts		Unsigned32,
+		pfNeighbourPortRxMulticastPkts		Unsigned32,
+		pfNeighbourPortRxBroadcastPkts		Unsigned32,
+		pfNeighbourPortRxFragments		Unsigned32,
+		pfNeighbourPortRxExcessSizeDisc		Unsigned32,
+		pfNeighbourPortRxSymbolError		Unsigned32
+	}
+
+pfNeighbourPortIfIndex	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Neighbour interface index."
+		::= { pfNeighbourPortsEntry 1 }
+
+pfNeighbourPortNIndex	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Neighbour index."
+		::= { pfNeighbourPortsEntry 2 }
+
+pfNeighbourPortPIndex	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Neighbour port index."
+		::= { pfNeighbourPortsEntry 3 }
+
+pfNeighbourPortName	OBJECT-TYPE
+		SYNTAX DisplayString
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Name of neighbour port."
+		::= { pfNeighbourPortsEntry 4 }
+
+pfNeighbourPortState	OBJECT-TYPE
+		SYNTAX BITS {
+			reserved0(0),
+			reserved1(1),
+			reserved2(2),
+			reserved3(3),
+			vlaninfo(4),
+			s100mbit(5),
+			fullduplex(6),
+			up(7)
+		}
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"State of neighbour port."
+		::= { pfNeighbourPortsEntry 5 }
+		
+pfNeighbourPortTxOctets	OBJECT-TYPE
+		SYNTAX Counter64
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The total number of good bytes of data transmitted by 
+			 a port (excluding preamble but including FCS)."
+		::= { pfNeighbourPortsEntry 6 }
+
+pfNeighbourPortTxDropPkts	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"This counter is incremented every time a transmit 
+			 packet is dropped due to lack of resources (e.g., 
+			 transmit FIFO underflow), or an internal MAC sublayer 
+			 transmit error not counted by.in either the 
+			 TxLateCollision or the TxExcessiveCollision counters."
+		::= { pfNeighbourPortsEntry 7 }
+
+pfNeighbourPortTxBroadcastPkts	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of good packets transmitted by a port that
+			 are directed to a broadcast address. This counter does
+			 not include errored broadcast packets or valid 
+			 multicast packets."
+		::= { pfNeighbourPortsEntry 8 }
+
+pfNeighbourPortTxMulticastPkts	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of good packets transmitted by a port that 
+			 are directed to a multicast address. This counter does
+			 not include errored multicast packets or valid 
+			 broadcast packets."
+		::= { pfNeighbourPortsEntry 9 }
+
+pfNeighbourPortTxUnicastPkts	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of good packets transmitted by a port that 
+			 are addressed to a unicast address."
+		::= { pfNeighbourPortsEntry 10 }
+
+pfNeighbourPortTxCollisions	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of collisions experienced by a port during
+			 packet transmissions."
+		::= { pfNeighbourPortsEntry 11 }
+
+pfNeighbourPortTxDeferredTransmit	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of packets transmitted by a port for which 
+			 the first transmission attempt is delayed because the 
+			 medium is busy."
+		::= { pfNeighbourPortsEntry 12 }
+
+pfNeighbourPortTxFrameInDisc	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of valid packets received which are 
+			 discarded by the forwarding process due to lack of 
+			 space on an output queue."
+		::= { pfNeighbourPortsEntry 13 }
+
+pfNeighbourPortRxOctets	OBJECT-TYPE
+		SYNTAX Counter64
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of bytes of data received by a port 
+			 (excluding preamble but including FCS), including 
+			 bad packets."
+		::= { pfNeighbourPortsEntry 14 }
+
+pfNeighbourPortRxUndersizePkts	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of good packets received by a port that are
+			 less than 64 bytes long (excluding framing bits but 
+			 including the FCS)."
+		::= { pfNeighbourPortsEntry 15 }
+
+pfNeighbourPortPkts64Octets	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of packets (including error packets) that 
+			 are 64 bytes long."
+		::= { pfNeighbourPortsEntry 16 }
+
+pfNeighbourPortPkts65to127Octets	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of packets (including error packets) that 
+			 are between 65 and 127 bytes long."
+		::= { pfNeighbourPortsEntry 17 }
+
+pfNeighbourPortPkts128to255Octets	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of packets (including error packets) that 
+			 are between 128 and 255 bytes long."
+		::= { pfNeighbourPortsEntry 18 }
+
+pfNeighbourPortPkts256to511Octets	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of packets (including error packets) that 
+			 are between 256 and 511 bytes long."
+		::= { pfNeighbourPortsEntry 19 }
+
+pfNeighbourPortPkts512to1023Octets	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of packets (including error packets) that 
+			 are between 512 and 1023 bytes long."
+		::= { pfNeighbourPortsEntry 20 }
+
+pfNeighbourPortPkts1024to1522Octets	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of packets (including error packets) that 
+			 are between 1024 and 1522 bytes long."
+		::= { pfNeighbourPortsEntry 21 }
+
+pfNeighbourPortRxOversizePkts	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of good packets received by a port that are
+			 greater than 1522 bytes inclusive (excluding framing 
+			 bits but including the FCS). Note that this counter 
+			 alone will be incremented for packets in the range
+			 1523-1536 bytes inclusive, whereas both this counter
+			 and the RxExcessSizeDisc counter will be incremented
+			 for packets of 1537 bytes and higher."
+		::= { pfNeighbourPortsEntry 22 }
+
+pfNeighbourPortRxJabbers	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of packets received by a port that are 
+			longer than 1522 bytes and have either an FCS error or 
+			an alignment error."
+		::= { pfNeighbourPortsEntry 23 }
+
+pfNeighbourPortRxAlignmentErrors	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of packets received by a port that have a 
+			 length (excluding framing bits but including FCS) 
+			 between 64 and 1522 bytes, inclusive, and have a bad 
+			 FCS with a nonintegral number of bytes."
+		::= { pfNeighbourPortsEntry 24 }
+
+pfNeighbourPortRxFCSErrors	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of packets received by a port that have a 
+			 length (excluding framing bits but including FCS) 
+			 between 64 and 1522 bytes inclusive, and have a bad 
+			 FCS with an integral number of bytes."
+		::= { pfNeighbourPortsEntry 25 }
+
+pfNeighbourPortRxGoodOctets	OBJECT-TYPE
+		SYNTAX Counter64
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The total number of bytes in all good packets received
+			 by a port (excluding framing bits but including FCS)."
+		::= { pfNeighbourPortsEntry 26 }
+
+pfNeighbourPortRxDropPkts	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of good packets received by a port that were
+			 dropped due to lack of resources (e.g., lack of input
+			 buffers) or were dropped due to lack of resources 
+			 before a determination of the validity of the packet
+			 was able to be made (e.g., receive FIFO overflow). The
+			 counter is only incremented if the receive error was 
+			 not counted by.either the RxExcessSizeDisc, the 
+			 RxAlignmentErrors or the RxFCSErrors counters."
+		::= { pfNeighbourPortsEntry 27 }
+
+pfNeighbourPortRxUnicastPkts	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of good packets received by a port that are
+			 addressed to a unicast address."
+		::= { pfNeighbourPortsEntry 28 }
+
+pfNeighbourPortRxMulticastPkts	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of good packets received by a port that are
+			 directed to a multicast address. This counter does not
+			 include errored multicast packets or valid broadcast
+			 packets."
+		::= { pfNeighbourPortsEntry 29 }
+
+pfNeighbourPortRxBroadcastPkts	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of good packets received by a port that are
+			 directed to the broadcast address. This counter does 
+			 not include errored broadcast packets or valid 
+			 multicast packets."
+		::= { pfNeighbourPortsEntry 30 }
+
+pfNeighbourPortRxFragments	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of packets received by a port that are less
+			 than 64 bytes (excluding framing bits) and have either
+			 an FCS error or an alignment error."
+		::= { pfNeighbourPortsEntry 31 }
+
+pfNeighbourPortRxExcessSizeDisc	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The number of good packets received by a port that are
+			 greater than 1536 bytes (excluding framing bits but
+			 including the FCS) and were discarded due to excessive
+			 length. Note that the RxOversizePkts counter alone is
+			 incremented for packets in the range 1523-1536 bytes
+			 inclusive, whereas both this counter and the 
+			 RxOversizePkts counter are incremented for packets of
+			 1537 bytes and higher."
+		::= { pfNeighbourPortsEntry 32 }
+
+pfNeighbourPortRxSymbolError	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"The total number of times a valid length packet was
+			 received at a port and at least one invalid data 
+			 symbol was detected. Counter only increment once per
+			 carrier event and does not increment on detection of
+			 collision during the carrier event."
+		::= { pfNeighbourPortsEntry 33 }
+
+
+
+-- PFDP Neighbour Ports SNPA Table
+pfNeighbourPortSNPATable 	OBJECT-TYPE
+		SYNTAX SEQUENCE OF PfNeighbourPortSNPAEntry
+		MAX-ACCESS not-accessible
+		STATUS current
+		DESCRIPTION
+			"Table of known SNPA on ports of discovered PFDB Neighbours."
+		::= { pfPFDP 3 }
+
+pfNeighbourPortSNPAEntry	OBJECT-TYPE
+		SYNTAX PfNeighbourPortSNPAEntry
+		MAX-ACCESS not-accessible
+		STATUS current
+		DESCRIPTION
+			"An entry for a known SNPA on a port of a neighbour."
+		INDEX { pfNeighbourPortSNPAIfIndex, pfNeighbourPortSNPANIndex, 
+			pfNeighbourPortSNPAPIndex, pfNeighbourPortSNPASIndex }
+		::= { pfNeighbourPortSNPATable 1 }
+
+PfNeighbourPortSNPAEntry ::=
+	SEQUENCE {
+		pfNeighbourPortSNPAIfIndex		Unsigned32,
+		pfNeighbourPortSNPANIndex		Unsigned32,
+		pfNeighbourPortSNPAPIndex		Unsigned32,
+		pfNeighbourPortSNPASIndex		Unsigned32,
+		pfNeighbourPortSNPASMCast		Integer32,
+		pfNeighbourPortSNPA			OCTET STRING
+	}
+
+pfNeighbourPortSNPAIfIndex	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Neighbour interface index."
+		::= { pfNeighbourPortSNPAEntry 1 }
+
+pfNeighbourPortSNPANIndex	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Neighbour index."
+		::= { pfNeighbourPortSNPAEntry 2 }
+
+pfNeighbourPortSNPAPIndex	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Neighbour port index."
+		::= { pfNeighbourPortSNPAEntry 3 }
+
+pfNeighbourPortSNPASIndex	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Neighbour port SNPA index."
+		::= { pfNeighbourPortSNPAEntry 4 }
+
+pfNeighbourPortSNPASMCast	OBJECT-TYPE
+		SYNTAX Integer32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Set to 1 if SNPA is a multicast address, 0 otherwise."
+		::= { pfNeighbourPortSNPAEntry 5 }
+
+pfNeighbourPortSNPA		OBJECT-TYPE
+		SYNTAX OCTET STRING
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Known SNPA on neighbour port."
+		::= { pfNeighbourPortSNPAEntry 6 }
+
+--
+-- SFP Table
+pfSFPTable 	OBJECT-TYPE
+		SYNTAX SEQUENCE OF PfSFPEntry
+		MAX-ACCESS not-accessible
+		STATUS current
+		DESCRIPTION
+			"Table with information on SFPs."
+		::= { ibos 4 }
+
+pfSFPEntry	OBJECT-TYPE
+		SYNTAX PfSFPEntry
+		MAX-ACCESS not-accessible
+		STATUS current
+		DESCRIPTION
+			"An entry for an SFP."
+		INDEX { pfSFPIndex }
+		::= { pfSFPTable 1 }
+
+PfSFPEntry ::=
+	SEQUENCE {
+		pfSFPIndex 		Unsigned32,
+		pfSFPStatus 		INTEGER,
+		pfSFPConnector 		INTEGER,
+		pfSFPTransceiver 	BITS,
+		pfSFPEncoding 		INTEGER,
+		pfSFPBitrate 		Unsigned32,
+		pfSFPSingleModeLen 	Unsigned32,
+		pfSFPMultiMode50Len 	Unsigned32,
+		pfSFPMultiMode625Len 	Unsigned32,
+		pfSFPCopperLen 		Unsigned32,
+		pfSFPTempStatus 	INTEGER,
+		pfSFPTemp 		Integer32,
+		pfSFPVoltStatus 	INTEGER,
+		pfSFPVolt 		Integer32,
+		pfSFPTXCurrentStatus 	INTEGER,
+		pfSFPTXCurrent 		Integer32,
+		pfSFPTXPowerStatus 	INTEGER,
+		pfSFPTXPower		Integer32,
+		pfSFPRXPowerStatus 	INTEGER,
+		pfSFPRXPower 		Integer32
+	}
+
+pfSFPIndex	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"SFP number."
+		::= { pfSFPEntry 1 }
+
+pfSFPStatus	OBJECT-TYPE
+		SYNTAX INTEGER {
+			ok(0),
+			missing(1),
+			invalid(2)
+		}
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"SFP status."
+		::= { pfSFPEntry 2 }
+
+pfSFPConnector 	OBJECT-TYPE
+		SYNTAX INTEGER {
+			sc(1),
+			fiberJack(6),
+			lc(7),
+			mtrj(8),
+			mu(9),
+			sg(10),
+			opticalPigtail(11),
+			hssdcii(32),
+			copperPigtail(33)
+		}
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Connector type."
+		::= { pfSFPEntry 3 }
+
+pfSFPTransceiver	OBJECT-TYPE
+		SYNTAX BITS {
+			reserved0(0),
+			reserved1(1),
+			reserved2(2),
+			reserved3(3),
+			s1000BaseT(4),
+			s1000BaseCX(5),
+			s1000BaseLX(6),
+			s1000BaseSX(7)
+		}
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Transceiver capablities."
+		::= { pfSFPEntry 4 }
+
+pfSFPEncoding 	OBJECT-TYPE
+		SYNTAX INTEGER {
+			e8B10B(1),
+			e4B5B(2),
+			eNRZ(3),
+			eManchester(4)
+		}
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Encoding type."
+		::= { pfSFPEntry 5 }
+
+pfSFPBitrate	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"SFP Bitrate (Mbps)."
+		::= { pfSFPEntry 6 }
+
+pfSFPSingleModeLen	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Supported single mode fiber link length (m).
+			A value of 255000 means > 254000 m."
+		::= { pfSFPEntry 7 }
+
+pfSFPMultiMode50Len	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Supported 50um multi-mode fiber link length (m).
+			A value of 2550 means > 2540 m."
+		::= { pfSFPEntry 8 }
+
+pfSFPMultiMode625Len	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Supported 62.5um multi-mode fiber link length (m).
+			A value of 2550 means > 2540 m."
+		::= { pfSFPEntry 9 }
+
+pfSFPCopperLen	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Supported copper link length (m).
+			A value of 255 means > 254 m."
+		::= { pfSFPEntry 10 }
+
+pfSFPTempStatus 	OBJECT-TYPE
+		SYNTAX INTEGER {
+                       unknown(0),
+                       alarmLow(1),
+                       warnLow(2),
+                       ok(3),
+                       warnHigh(4),
+                       alarmHigh(5)
+                }
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Temperature status."
+		::= { pfSFPEntry 11 }
+
+
+pfSFPTemp	OBJECT-TYPE
+		SYNTAX Integer32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Measured temperature in degrees centigrade."
+		::= { pfSFPEntry 12 }
+
+pfSFPVoltStatus 	OBJECT-TYPE
+		SYNTAX INTEGER {
+                       unknown(0),
+                       alarmLow(1),
+                       warnLow(2),
+                       ok(3),
+                       warnHigh(4),
+                       alarmHigh(5)
+                }
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Voltage status."
+		::= { pfSFPEntry 13 }
+
+
+pfSFPVolt	OBJECT-TYPE
+		SYNTAX Integer32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Measured voltage (mV)."
+		::= { pfSFPEntry 14 }
+
+pfSFPTXCurrentStatus 	OBJECT-TYPE
+		SYNTAX INTEGER {
+                       unknown(0),
+                       alarmLow(1),
+                       warnLow(2),
+                       ok(3),
+                       warnHigh(4),
+                       alarmHigh(5)
+                }
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"TX Current status."
+		::= { pfSFPEntry 15 }
+
+
+pfSFPTXCurrent	OBJECT-TYPE
+		SYNTAX Integer32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Measured TX current (mA)."
+		::= { pfSFPEntry 16 }
+
+pfSFPTXPowerStatus 	OBJECT-TYPE
+		SYNTAX INTEGER {
+                       unknown(0),
+                       alarmLow(1),
+                       warnLow(2),
+                       ok(3),
+                       warnHigh(4),
+                       alarmHigh(5)
+                }
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"TX power status."
+		::= { pfSFPEntry 17 }
+
+
+pfSFPTXPower	OBJECT-TYPE
+		SYNTAX Integer32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Measured TX power (uW)."
+		::= { pfSFPEntry 18 }
+
+pfSFPRXPowerStatus 	OBJECT-TYPE
+		SYNTAX INTEGER {
+                       unknown(0),
+                       alarmLow(1),
+                       warnLow(2),
+                       ok(3),
+                       warnHigh(4),
+                       alarmHigh(5)
+                }
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"RX power status."
+		::= { pfSFPEntry 19 }
+
+
+pfSFPRXPower	OBJECT-TYPE
+		SYNTAX Integer32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Measured RX power (uW)."
+		::= { pfSFPEntry 20 }
+
+--
+-- Accounting objects
+pfAccounting   	OBJECT-IDENTITY
+                STATUS current
+                DESCRIPTION
+                        "Accounting objects"
+               ::= { ibos 5 }
+
+pfPolicyTable 	OBJECT-TYPE
+		SYNTAX SEQUENCE OF PfPolicyEntry
+		MAX-ACCESS not-accessible
+		STATUS current
+		DESCRIPTION
+			"Table of policy accounting information."
+		::= { pfAccounting 1 }
+
+pfPolicyEntry	OBJECT-TYPE
+		SYNTAX PfPolicyEntry
+		MAX-ACCESS not-accessible
+		STATUS current
+		DESCRIPTION
+			"An entry for a policy."
+		INDEX { pfPolicyIfIndex, pfPolicyName }
+		::= { pfPolicyTable 1 }
+
+PfPolicyEntry ::=
+	SEQUENCE {
+		pfPolicyIfIndex		Unsigned32,
+		pfPolicyIfName		DisplayString,
+		pfPolicyName 		DisplayString,
+		pfPolicyCookie		DisplayString,
+		pfPolicyInPkts		Counter64,
+		pfPolicyInBytes		Counter64,
+		pfPolicyInDrops		Counter64,
+		pfPolicyOutPkts		Counter64,
+		pfPolicyOutBytes	Counter64,
+		pfPolicyOutDrops	Counter64,
+		pfPolicyUsedCnt		Gauge32
+	}
+
+pfPolicyIfIndex	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Interface index of policy accounting entry."
+		::= { pfPolicyEntry 1 }
+
+pfPolicyIfName  OBJECT-TYPE
+                SYNTAX DisplayString
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+		        "Interface name of policy accountin entry"
+	        ::= { pfPolicyEntry 2 }
+
+pfPolicyName	OBJECT-TYPE
+		SYNTAX DisplayString
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Name of policy."
+		::= { pfPolicyEntry 3 }
+
+pfPolicyCookie	OBJECT-TYPE
+		SYNTAX DisplayString
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Name of policy cookie."
+		::= { pfPolicyEntry 4 }
+
+pfPolicyInPkts	OBJECT-TYPE
+		SYNTAX Counter64
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Input packets counter."
+		::= { pfPolicyEntry 5 }
+
+pfPolicyInBytes	OBJECT-TYPE
+		SYNTAX Counter64
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Input bytes counter."
+		::= { pfPolicyEntry 6 }
+
+pfPolicyInDrops	OBJECT-TYPE
+		SYNTAX Counter64
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Number input packets dropped."
+		::= { pfPolicyEntry 7 }
+
+pfPolicyOutPkts	OBJECT-TYPE
+		SYNTAX Counter64
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Output packets counter."
+		::= { pfPolicyEntry 8 }
+
+pfPolicyOutBytes	OBJECT-TYPE
+		SYNTAX Counter64
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Output bytes counter."
+		::= { pfPolicyEntry 9 }
+
+pfPolicyOutDrops	OBJECT-TYPE
+		SYNTAX Counter64
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Number input packets dropped."
+		::= { pfPolicyEntry 10 }
+
+pfPolicyUsedCnt	OBJECT-TYPE
+		SYNTAX Gauge32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"Number policy maps set to use this policy."
+		::= { pfPolicyEntry 11 }
+
+
+
+--
+-- The file copy functions
+pfCopy 		OBJECT-IDENTITY
+                STATUS current
+                DESCRIPTION
+                        "The root object of the file copying objects"
+                ::= { pfExperiment 2 }
+
+-- Get filehandle
+pfCopyNextState	OBJECT-TYPE
+                SYNTAX Unsigned32
+                MAX-ACCESS read-only
+                STATUS current
+                DESCRIPTION
+                        "Generate a unique filehandle. The filehandle is
+                         used with the other objects in the pfCopy branch
+                         to set the source and destination and commence
+                         file transfer activities."
+                ::= { pfCopy 1 }
+
+-- the pf Copy table
+-- Table with states of current copy sessions.
+pfCopyTable 	OBJECT-TYPE
+		SYNTAX SEQUENCE OF PfCopyEntry
+		MAX-ACCESS not-accessible
+		STATUS current
+		DESCRIPTION
+			"A list of current copy sessions. The next available entry is
+			 given by the value of pfCopyNextState."
+		::= { pfCopy 2 }
+
+pfCopyEntry	OBJECT-TYPE
+		SYNTAX PfCopyEntry 
+		MAX-ACCESS not-accessible
+		STATUS current
+		DESCRIPTION
+			"An entry for a copy session."
+		INDEX { pfCopyIndex }
+		::= { pfCopyTable 1 }
+
+PfCopyEntry ::=
+	SEQUENCE {
+		pfCopyIndex		Unsigned32,
+		pfCopySource		DisplayString,
+		pfCopyDestination	DisplayString,
+		pfCopyStatus		INTEGER,
+		pfCopyError		DisplayString
+	}
+
+
+pfCopyIndex	OBJECT-TYPE
+		SYNTAX Unsigned32
+		MAX-ACCESS read-only
+		STATUS current
+		DESCRIPTION
+			"A unique value for each copy session."
+		::= { pfCopyEntry 1 }
+
+-- Set copy source
+pfCopySource 	OBJECT-TYPE
+                SYNTAX DisplayString (SIZE (0..255))
+                MAX-ACCESS read-write
+                STATUS current
+                DESCRIPTION
+                        "The source URL for a filhandle. The string 
+                         provided must match an acceptable URL as 
+                         typed in the command line interface copy command."
+                ::= { pfCopyEntry 2 }
+
+-- Set copy destination
+pfCopyDestination	OBJECT-TYPE
+                        SYNTAX DisplayString (SIZE (0..255))
+                        MAX-ACCESS read-write
+                        STATUS current
+                        DESCRIPTION
+                                "The destination filename for a filehandle. The
+                                 string provided must match an acceptable destination
+                                 as typed in the command line interface copy command."
+                        ::= { pfCopyEntry 3 }
+
+-- Set/Get copy status
+pfCopyStatus   	OBJECT-TYPE
+                SYNTAX INTEGER {
+                       notused(0),
+                       start(1),
+                       stop(2),
+                       destroy(3),
+                       init(4),
+                       inprogress(5),
+                       failed(6),
+                       finished(7)
+                }
+                MAX-ACCESS read-write
+                STATUS current
+                DESCRIPTION
+                        "The status of a filehandle
+
+                         notused - Get: The filehandle has not been used during the last 24 hours
+                                   Set: Not possible
+                         start - Get: Not possible
+                                 Set: Start filetransfer
+                         stop - Get: Not possible
+                                Set: Stop filetransfer in progress
+                         destroy - Get: Not possible
+                                   Set: Remove source and destination entries for filehandle
+                         init - Get: Filtransfer started
+                                Set: Not possible
+                         inprogress - Get: Filetransfer in progress
+                                      Set: Not possible
+                         failed - Get: A failure occured during last filetransfer
+                                  Set: Not possible
+                         finished - Get: The file was successfully transferred and stored 
+                                    Set: not possible
+                        "
+                ::= { pfCopyEntry 4 }
+
+pfCopyError	OBJECT-TYPE
+                SYNTAX DisplayString (SIZE (0..255))
+                MAX-ACCESS read-only
+                STATUS current
+                DESCRIPTION
+                        "A textual description of the filehandle last
+                         error status. If the filehandle does not exist or
+                         has not been used for the last 24 hours, a 'No Error'
+                         message is returned."
+                ::= { pfCopyEntry 5 }
+
+
+END

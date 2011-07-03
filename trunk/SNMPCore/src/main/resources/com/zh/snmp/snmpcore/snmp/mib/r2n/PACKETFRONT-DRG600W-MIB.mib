@@ -1,0 +1,807 @@
+PACKETFRONT-DRG600W-MIB DEFINITIONS ::= BEGIN
+
+-- Copyright (c) 2008,2009 Packetfront Systems AB
+
+IMPORTS
+  MODULE-IDENTITY,
+  OBJECT-TYPE,
+  NOTIFICATION-TYPE,
+  Integer32,
+  Unsigned32
+    FROM SNMPv2-SMI
+
+  InterfaceIndex
+    FROM IF-MIB
+
+  pfMgmt
+    FROM PACKETFRONT-SMI
+
+  productMacAddress,
+  productIdentity
+    FROM PACKETFRONT-DRG-MIB
+;
+
+
+-- *****************************************************************************
+-- drg600wMIB defines the platform-specific objects for the DRG600 WiFi module
+--
+-- ***************************************************************************** 
+pfDrg600wMib MODULE-IDENTITY
+    LAST-UPDATED "200903231601Z"
+    ORGANIZATION "PacketFront Systems AB"
+    CONTACT-INFO
+        "PacketFront Systems AB
+         Customer Service
+
+         Mail : Isafjordsgatan 35
+                SE-164 28 Kista
+                Sweden
+
+         Tel  : +46 8 5090 1500
+
+         E-mail: snmp@packetfront.com
+         Web   : http://www.packetfront.com"
+    DESCRIPTION
+        "The MIB module for managing Packetfront DRG devices"
+
+    REVISION    "200903231601Z" -- March 21, 2009
+    DESCRIPTION
+        "Update telephone information in contact-info"
+    REVISION    "200801030000Z" -- Jan 03, 2007
+    DESCRIPTION
+        "Initial release."
+
+      ::= { pfMgmt 8 }
+
+
+drg600wNotification OBJECT IDENTIFIER ::= { pfDrg600wMib 0 }
+drg600wConfig       OBJECT IDENTIFIER ::= { pfDrg600wMib 1 }
+drg600wConformance  OBJECT IDENTIFIER ::= { pfDrg600wMib 2 }
+
+
+-- *****************************************************************************
+-- Base 
+--
+-- *****************************************************************************
+drg600wBaseConfig OBJECT IDENTIFIER ::= {drg600wConfig 1} 
+
+drg600wFiberTransceiverCap OBJECT-TYPE
+  SYNTAX BITS {
+    transceiverNotFiber(0),
+    transceiver100M(1),
+    transceiver1000M(2)
+  } 
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+  "Flag field which describes the fiber transceiver capabilities"
+    ::= { drg600wBaseConfig 1 }
+
+drg600wModuleStatus OBJECT-TYPE
+  SYNTAX BITS {
+    module1(0),
+    module2(1)
+  } 
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+  "Flag field which indicates the presence or not of modules attached to the
+  DRG600 access device. A '1' indicates that a module is present, while a '0'
+  indicates that no module is present.
+  Module1 and module2 are the left and right hand modules respectively."
+    ::= { drg600wBaseConfig 2 }
+
+drg600wSnmpAtomicSet OBJECT-TYPE
+  SYNTAX INTEGER {
+    idle(1),
+    stage(2),
+    apply(3)
+  }
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "Complex operations involving numerous set commands can cause problems due
+  to the lack of atomic operation by the network management system. This object
+  may be used to ensure that all required changes for this MIB are made in a
+  single atomic operation.
+   This can be achieved by setting this object to stage(2), then setting all
+  required objects, and then setting this object to apply(3). The object value
+  will return to idle(1) once the atomic set operation has been completed."
+    ::= { drg600wBaseConfig 3 }
+
+
+
+-- *****************************************************************************
+-- Information about Ethernet ports.
+--
+-- *****************************************************************************
+drg600wPortConfig OBJECT IDENTIFIER ::= {drg600wConfig 2} 
+
+drg600wPortNumPorts OBJECT-TYPE
+   SYNTAX Integer32
+   MAX-ACCESS read-only
+   STATUS current
+   DESCRIPTION
+  "Number of ports in the bridge."
+    ::= { drg600wPortConfig 1 }
+
+drg600wPortTable OBJECT-TYPE
+   SYNTAX SEQUENCE OF Drg600wPortEntry
+   MAX-ACCESS   not-accessible
+   STATUS       current
+   DESCRIPTION
+      "A list of port entries."
+     ::= { drg600wPortConfig 3 }
+
+drg600wPortEntry OBJECT-TYPE
+   SYNTAX Drg600wPortEntry
+   MAX-ACCESS not-accessible
+   STATUS current
+   DESCRIPTION
+   "An entry containing information for a particular switched port. The
+   number of entries is fixed by the platform, and are not created or deleted
+   by a management entity."
+   INDEX { drg600wPortIndex }
+   ::= { drg600wPortTable 1 }
+
+Drg600wPortEntry ::=
+    SEQUENCE {
+     drg600wPortIndex InterfaceIndex,
+-- can do the same job with ifDescr, but this can be a functional name, e.g. VoIP, Wifi etc
+     drg600wPortName OCTET STRING,
+     drg600wPortDuplexAdmin INTEGER,
+     drg600wPortDuplexStatus INTEGER,
+     drg600wPortFlowControlAdmin INTEGER,
+     drg600wPortFlowControlStatus INTEGER,
+     drg600wPortSpeedAdmin INTEGER,
+     drg600wPortIgmpSnoop INTEGER,
+     drg600wPortVlanMode INTEGER,
+     drg600wPortVlanEgressMode INTEGER,
+     drg600wPortVlanId Integer32,
+     drg600wPortVlanPriority Integer32,
+     drg600wPortVlanSubscriberTagTypeState INTEGER,
+     drg600wPortSubscriberTagType Integer32,
+     
+-- QoS classification
+    drg600wPortQoSVTUPriorityOverride INTEGER,
+    drg600wPortQoSIPPriorityOverride INTEGER,
+    drg600wPortQoSVlanPriorityOverride INTEGER,
+    drg600wPortQueueNumber Integer32,
+    drg600wPortQueueAlgorithm INTEGER,
+    drg600wPortQueueWeight Integer32,
+    drg600wPortMacAddressLimitMax Integer32,
+    drg600wPortMacAddressLimit Integer32,
+     
+-- storm protection & rate limiting
+    drg600wPortIngressRateLimitControl INTEGER,
+    drg600wPortRateLimitIngress Integer32,
+    drg600wPortRateLimitEgress Integer32
+
+-- Error thresholds
+--    drg600wPortCRCErrorThreshold Integer32,
+
+-- Port VLANs
+--     drg600wPortVlanGroupSupport Integer32,
+--     drg600wPortVlanGroupMembershipTable INTEGER,
+  }
+
+drg600wPortIndex OBJECT-TYPE
+   SYNTAX InterfaceIndex
+   MAX-ACCESS read-only
+   STATUS current
+   DESCRIPTION
+      "A unique value greater than zero for each port."
+   ::= { drg600wPortEntry 1 }
+
+drg600wPortName OBJECT-TYPE
+   SYNTAX OCTET STRING  (SIZE(0..32))
+-- If this is not different to ifName what is its point?
+   MAX-ACCESS read-write
+   STATUS current
+   DESCRIPTION
+	"A textual string containing name specifying the port. This may be used as a
+	functional hint or to indicate the service etc."
+   ::= { drg600wPortEntry 2 }
+
+drg600wPortDuplexAdmin OBJECT-TYPE
+  SYNTAX INTEGER {
+    halfDuplex(1),
+    fullDuplex(2)
+  }
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "The required duplex mode of the port"
+    ::= { drg600wPortEntry 3 }
+
+drg600wPortDuplexStatus OBJECT-TYPE
+    SYNTAX INTEGER {
+      halfDuplex(1),
+      fullDuplex(2)
+    }
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "The current duplex status of the port - if the port is in autonegotiation
+    mode, then this will reflect the negotiated duplex, else the configure duplex."
+      ::= { drg600wPortEntry 4 }
+
+drg600wPortFlowControlAdmin OBJECT-TYPE
+    SYNTAX INTEGER {
+      enabled(1),
+      disabled(2)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Controls the required flow control mode of the port"
+      ::= { drg600wPortEntry 5 }
+
+drg600wPortFlowControlStatus OBJECT-TYPE
+    SYNTAX INTEGER {
+      enabled(1),
+      disabled(2)
+    }
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "The current flow control status of the port - if the port is in autonegotiation
+    mode, then this will reflect the negotiated flow control state, else the configured state duplex."
+    ::= { drg600wPortEntry 6 }
+
+drg600wPortSpeedAdmin OBJECT-TYPE
+  SYNTAX INTEGER {
+    autoNegotiate(1),
+    s10e06(10000000),
+    s100e06(100000000)
+  }
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "The object controls the speed of the port, and whether autonegotiation is
+  used with the link partner. If autoNegotiate(1) is used, then the device will
+  use the Ethernet autonegotiate procedure to determine the link configuration.
+  However, if a speed is configured, the autonegotiate will not be used the
+  speed, duplex and flow control will be determined by their relevant objects."
+    ::= { drg600wPortEntry 7 }
+
+drg600wPortIgmpSnoop OBJECT-TYPE
+  SYNTAX INTEGER {
+    enabled(1),
+    disabled(2)
+  }
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "Defines whether IGMP snooping shall be performed on the port. If enabled,
+  IGMP frames received are forwarded to the CPU for processing. Valid IGMP
+  messages will cause multicast entries to be made in the forwarding
+  table, the forwarded upstream to any IGMP multicast routers"
+    ::= { drg600wPortEntry 8 }
+
+drg600wPortVlanMode OBJECT-TYPE
+    SYNTAX INTEGER {
+      disabled(0),
+      secure(1),
+      check(2),
+      fallback(3)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "This object determines the VLAN ingress and egress policy for a port.
+
+    disabled - VLAN tags are not checked, this allows frames which are tagged or
+               untagged to ingress or egress the port.
+    secure - if supported, on ingress the frame VLAN idenfifier must be 
+             contained within VLAN table, and the port must be a member of the
+             VLAN. On egress, the port must be a member of the VLAN, and be
+             included in the same port VLAN group as the ingress port.
+    check  - if supported, on ingress the frame VLAN identifier must be
+             contained within the VLAN table.  On egress, the port must be a 
+             member of the VLAN, and be included in the same port VLAN group as
+             the ingress port.
+    fallback - if supported, no check is performed on ingress. On egress, the
+               port must be included in the same port VLAN group as the ingress
+               port."
+      ::= { drg600wPortEntry 9 }
+
+drg600wPortVlanEgressMode OBJECT-TYPE
+  SYNTAX INTEGER {
+    unmodified(1),
+    tag(2),
+    untag(3),
+    alwaysTagged(4)
+  }
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "This object determines the port egress behaviour.
+    unmodified - Frames egress the port in an unmodified state, i.e. remain
+                 tagged or untagged depending upon their state on ingress.
+    tag        - Untagged frames are tagged with the ingress port default VID.
+    untag      - Tagged frames are untagged.
+    alwaysTagged - Frames egressing the port are tagged with the ingress port
+                 subscriber tag. In the case where a VLAN tagged frame is
+                 egressing the port, this results in the frame being double, or
+                 Q-in-Q tagged"
+    ::= { drg600wPortEntry 10 }
+
+
+-- *****************************************************************************
+-- Port VLAN configuration
+--
+-- *****************************************************************************
+drg600wPortVlanId OBJECT-TYPE
+    SYNTAX Integer32 (1..4094)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Untagged packets received on this port are associated with this VLAN ID if
+    tagging is enabled on the egress port."
+      ::= { drg600wPortEntry 11 }
+
+drg600wPortVlanPriority OBJECT-TYPE
+    SYNTAX Integer32 (0..7)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Untagged packets received on this port are associated with this VLAN
+    priority if tagging is enabled on the egress port."
+      ::= { drg600wPortEntry 12 }
+
+drg600wPortVlanSubscriberTagTypeState OBJECT-TYPE
+    SYNTAX INTEGER {
+      enabled(1),
+      disabled(2)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "This object controls whether the subscriber tag (S-Tag) ether type applied 
+    to frames if VLAN stacking is enabled is the standard value (0x8100) or the 
+    value configured in drg600wPortSubscriberTagType."
+    DEFVAL { disabled }
+      ::= { drg600wPortEntry 13 }
+   
+drg600wPortSubscriberTagType OBJECT-TYPE
+    SYNTAX Integer32 (0..65535)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The subscriber tag (S-Tag) ether type applied to frames if VLAN stacking
+     and drg600wPortVlanSubscriberTagTypeState is enabled."
+    DEFVAL { 37120 }  -- 0x9100
+      ::= { drg600wPortEntry 14 }
+
+
+-- *****************************************************************************
+-- Port QoS configuration
+--
+-- *****************************************************************************
+drg600wPortQoSVTUPriorityOverride OBJECT-TYPE
+    SYNTAX INTEGER {
+      enabled(1),
+      disabled(2)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "When enabled(1) the ingressing frame VLAN priority may, if permitted, be 
+    overridden by the priority value of the assigned VLAN entry."
+      ::= { drg600wPortEntry 15 }
+
+drg600wPortQoSIPPriorityOverride OBJECT-TYPE
+    SYNTAX INTEGER {
+      enabled(1),
+      disabled(2)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "When enabled(1) use the IPv4 TOS and/or Diffserv fields and/or IPv6
+    traffic class fields for priority data"
+      ::= { drg600wPortEntry 16 }
+
+drg600wPortQoSVlanPriorityOverride OBJECT-TYPE
+    SYNTAX INTEGER {
+      enabled(1),
+      disabled(2)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "When enabled(1) and the ingressing frame is IEEE802.1ac tagged, use the
+    IEEE802.1p traffic class field for priority data."
+      ::= { drg600wPortEntry 17 }
+
+
+drg600wPortQueueNumber OBJECT-TYPE
+  SYNTAX Integer32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+  "The number of queues supported by this port"
+    ::= { drg600wPortEntry 18 }
+
+drg600wPortQueueAlgorithm OBJECT-TYPE
+  SYNTAX INTEGER {
+    strictPriorityQueue(1), 
+    weightedFairQueue(2)
+  }
+  MAX-ACCESS   read-write
+  STATUS       current
+  DESCRIPTION
+  "Defines the queueing algorithm that is to be used on the port. strictPriority-
+   Queue(1) means that the high priority queue always get served when it contains
+   frames and that the low priority queue is served only when no high priority 
+   frames are present. weightedFairQueue(2) means that high priority queues are 
+   processed before low priority queues, and that a specified number of frames 
+   are transmitted from any queue at one time. In this way, all queues are 
+   processed so that no queue is blocked by higher priority traffic"
+    ::= { drg600wPortEntry 19 }
+
+drg600wPortQueueWeight OBJECT-TYPE
+    SYNTAX Integer32 (0..128)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The weight of ... TODO..."
+    ::= { drg600wPortEntry 20 }
+
+drg600wPortMacAddressLimitMax OBJECT-TYPE
+    SYNTAX Integer32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "Indicates the maximum number of addresses which can be stored in the address 
+    table for the port. A value of 0 indicates that setting a limit is not supported"
+    ::= { drg600wPortEntry 21 }
+
+drg600wPortMacAddressLimit OBJECT-TYPE
+    SYNTAX Integer32
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Controls the maximum MAC addresses that may be stored in the address table for a
+    port. This has the effect of limiting the number of endpoints which may be
+    simultaneously connected to a port. 0 indicates that the limit is whatever is
+    supported in hardware, while any other value indicates the maximum number of
+    addresses"
+    ::= { drg600wPortEntry 22 }
+
+-- *****************************************************************************
+-- Port xcast storm protection and rate limit configuration
+--
+-- *****************************************************************************
+drg600wPortIngressRateLimitControl OBJECT-TYPE
+  SYNTAX INTEGER {
+    limitAll(1),
+    limitMBU(2),
+    limitMB(3),
+    limitBroadcast(4)
+  }
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "Controls what type of traffic is ingress rate limited. limitAll(1) applies
+  the limit to all traffic types, limitMBU(2) applies the limit to multicast,
+  broadcast and flooded unicast. limitMB(3) applies the limit to multicast and
+  broadcast traffic, and limitB(4) limits the ingress rate of broadcast frames.
+  Note that flooded unicast refers to unicast traffic where the destination
+  address is unknown, so frames are flooded to all ports except the ingress
+  port."
+    ::= { drg600wPortEntry 23 }
+
+drg600wPortRateLimitIngress OBJECT-TYPE
+  SYNTAX Integer32 (0..1000000000)
+  UNITS "bits per second"
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "Defines the maximum ingress rate in bits per second. This is best used for
+   storm protection, and not TCP/IP rate limiting. The actual rate used is
+   hardware dependant, and will be approximated from the value defined. The
+   value should not be greater than the maximum rate of the interface. If it is
+   then the value shall be ignored, and no rate limit will be applied.
+   Use a value of 0 to disable rate limiting"
+    ::= { drg600wPortEntry 24 }
+
+drg600wPortRateLimitEgress OBJECT-TYPE
+  SYNTAX Integer32 (0..1000000000)
+  UNITS "bits per second"
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "Defines the maximum egress rate in bits per second. This is best used for
+   storm protection, and not TCP/IP rate limiting. The actual rate used is
+   hardware dependant, and will be approximated from the value defined. The
+   value should not be greater than the maximum rate of the interface. If it is
+   then the value shall be ignored, and no rate limit will be applied.
+   Use a value of 0 to disable rate limiting"
+    ::= { drg600wPortEntry 25 }
+
+
+-- *****************************************************************************
+-- Port error threshold
+--
+-- *****************************************************************************
+--drg600wPortCRCErrorThreshold OBJECT-TYPE
+--    SYNTAX Integer32
+--    MAX-ACCESS read-write
+--    STATUS current
+--    DESCRIPTION
+--    "Controls the threshold at which CRC errors will cause an alarm to be sent
+--    to the management system. The default value of 0 means that no alarm signal
+--    shall be sent. Any positive integer will result in an alarm being sent when
+--    the number of CRC errors exceeds the threshold."
+--    DEFVAL { 0 }
+--    ::= { drg600wPortEntry 26 }
+
+
+--drg600wPortVlanGroupSupport OBJECT-TYPE
+--    SYNTAX Integer32
+--    MAX-ACCESS read-only
+--    STATUS current
+--    DESCRIPTION
+--    "The maximum number of supported port VLAN groups. 0 indicates that port VLANs
+--    are not supported."
+--      ::= { drg600wPortEntry 27 }
+	
+
+-- *****************************************************************************
+-- QoS configuration
+--
+-- *****************************************************************************
+drg600wQosConfig OBJECT IDENTIFIER ::= {drg600wConfig 3} 
+
+drg600wQosVlanPriorityNum OBJECT-TYPE
+   SYNTAX Integer32
+   MAX-ACCESS read-only
+   STATUS current
+   DESCRIPTION
+  "Number of port vlan priority maps in the bridge."
+    ::= { drg600wQosConfig 1 }
+
+-- This table is of fixed size because there are only 8 possible VLAN priority values
+drg600wQosVlanPriorityMapTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF Drg600wQosVlanPriorityMapEntry 
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+  "A table of the mapping between the IEEE802.1p tag values and the egress queue priority"
+    ::= { drg600wQosConfig 2 }
+
+drg600wQosVlanPriorityMapEntry OBJECT-TYPE
+   SYNTAX Drg600wQosVlanPriorityMapEntry
+   MAX-ACCESS not-accessible
+   STATUS current
+   DESCRIPTION
+      "One row of the table."
+   INDEX { drg600wQosVlanPriorityMapIndex }
+   ::= { drg600wQosVlanPriorityMapTable 1 }
+
+Drg600wQosVlanPriorityMapEntry ::=
+  SEQUENCE {
+    drg600wQosVlanPriorityMapIndex Integer32,
+    drg600wQosVlanPriorityMapPriority Integer32,  -- Should just use this as the index? There can only be 8 entries...
+    drg600wQosVlanPriorityMapQueue Integer32
+  }
+
+drg600wQosVlanPriorityMapIndex OBJECT-TYPE
+  SYNTAX Integer32 (1..8)
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+  "A unique value greater than zero for each row"
+    ::= { drg600wQosVlanPriorityMapEntry 1 }
+
+drg600wQosVlanPriorityMapPriority OBJECT-TYPE
+  SYNTAX Integer32 (0..7)
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+  "Currently, There can only be 8 entries in port vlan priority map"
+    ::= { drg600wQosVlanPriorityMapEntry 2 }
+
+drg600wQosVlanPriorityMapQueue OBJECT-TYPE
+  SYNTAX Integer32 (0..3)
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "The mapped queue for the specific priority tag"
+    ::= { drg600wQosVlanPriorityMapEntry 3 }
+
+drg600wQosIpDSCPNum OBJECT-TYPE
+   SYNTAX Integer32
+   MAX-ACCESS read-only
+   STATUS current
+   DESCRIPTION
+  "Number of port ip DSCP priority maps in the bridge."
+    ::= { drg600wQosConfig 6 }
+
+-- This table is of fixed size because there are only 64 possible DSCP values
+drg600wQosIpDSCPMapTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF Drg600wQosIpDSCPMapEntry 
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+  "A table of the mapping between the IP DSCP values and the egress queue priority"
+    ::= { drg600wQosConfig 3 }
+
+drg600wQosIpDSCPMapEntry OBJECT-TYPE
+  SYNTAX Drg600wQosIpDSCPMapEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+  "One row of the table."
+  INDEX { drg600wQosIpDSCPMapIndex }
+    ::= { drg600wQosIpDSCPMapTable 1 }
+
+Drg600wQosIpDSCPMapEntry ::=
+  SEQUENCE {
+    drg600wQosIpDSCPMapIndex Integer32,
+    drg600wQosIpDSCPMapQueue Integer32
+  }
+
+drg600wQosIpDSCPMapIndex OBJECT-TYPE
+  SYNTAX Integer32 (0..63)
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+  "A unique value greater than zero for each row"
+    ::= { drg600wQosIpDSCPMapEntry 1 }
+
+drg600wQosIpDSCPMapQueue OBJECT-TYPE
+  SYNTAX Integer32 (0..3)
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "The mapped queue for the specific priority tag"
+    ::= { drg600wQosIpDSCPMapEntry 2 }
+
+
+
+-- *****************************************************************************
+-- Port VLAN management configuration 
+-- 
+-- *****************************************************************************
+--portPortVlanMembershipTable OBJECT-TYPE
+--  SYNTAX SEQUENCE OF PortPortVlanMembershipTable
+--  MAX-ACCESS not-accessible
+--  STATUS current
+--  DESCRIPTION
+--  "A table of entries descibing the membership of a port VLAN group."
+--  ::= { drg600wPortEntry 14 }
+
+--portPortVlanMembershipEntry OBJECT-TYPE
+--   SYNTAX PortPortVlanMembershipEntry
+--   MAX-ACCESS not-accessible
+--   STATUS current
+--   DESCRIPTION
+--   ""
+--   INDEX { portPortVlanGroupName, portPortVlanGroupIndex }
+--   ::= { portPortVlanMembershipTable 1 }
+
+--PortPortVlanMembershipEntry ::= SEQUENCE
+--  {
+--    portPortVlanGroupName OCTET STRING,
+--    portPortVlanGroupIndex Integer32
+--    portPortVlanGroupList PortList
+--  }
+
+--portPortVlanGroupName OBJECT-TYPE
+--   SYNTAX OCTET STRING  (SIZE(1..16))
+--   MAX-ACCESS read-write
+--   STATUS current
+--   DESCRIPTION
+--   "A descriptive name for the port VLAN group."
+--    ::= { portPortVlanMembershipEntry 1 }  
+    
+--portPortVlanGroupIndex OBJECT-TYPE
+--  SYNTAX Integer32
+--  MAX-ACCESS read-write
+--  STATUS current
+--  DESCRIPTION
+--  "A unique index... TODO."
+--    ::= { portPortVlanMembershipEntry 2 }
+      
+--portPortVlanGroupList OBJECT-TYPE
+--  SYNTAX PortList
+--  SYNTAX OCTET STRING
+--  MAX-ACCESS read-write
+--  STATUS current
+--    ::= { portPortVlanMembershipEntry 3 }
+--    
+
+
+-- *****************************************************************************
+-- Selftest functionality. Used for production test or operation verification.
+--
+-- *****************************************************************************
+selfTest OBJECT IDENTIFIER ::= { drg600wConfig 5 }
+
+--selfTestResultNotify OBJECT-TYPE
+--  SYNTAX INTEGER {
+--    disabled(1),
+--    always(2),
+--    onlyErrors(3)
+--  }
+--  MAX-ACCESS read-write
+--  STATUS current
+--  DESCRIPTION
+--  "Setting the object to disabled(1) causes the system to not send any
+--  selfTestNotifyResult traps. Setting the object to always(2) causes the system
+--  to send selfTestNotifyResult after every selftest irrespective of the result.
+--  Setting the object to onlyErrors(3) causes the system to send
+--  selfTestNotifyResult traps when an error occurs during a selftest operation."
+--    ::= { selfTest 1 }
+
+--selfTestResult OBJECT-TYPE
+--  SYNTAX INTEGER {
+--    noTestPerformed(0),
+--    pass(1),
+--    fail(2)
+--  }
+--  MAX-ACCESS read-only
+--  STATUS current
+--  DESCRIPTION
+--  "Provides the result of the last test performed. If no test has been performed
+--  since boot, then noTestPerformed(0) is returned."
+--    ::= { selfTest 2 }
+   
+--selfTestLANPort OBJECT-TYPE
+--   SYNTAX INTEGER {
+--      idle(0)
+--      inProgress(1),
+--      }
+--   MAX-ACCESS read-write
+--   STATUS current
+--   DESCRIPTION
+--   "Perform Time Domain Reflectometry test on specified port. Note that only one
+--   port may be tested at once, and that devices connected to the port will
+--   temporarily lose link connectivity"
+-- TODO this is too hardcoded, needs to be abstracted somehow
+-- Need some way to pass back further information - this could simply be done as a text string or in notify information...
+--   ::= { selfTest 3 }
+      
+--selfTestSpinlock OBJECT-TYPE      
+--  SYNTAX TruthValue
+--  MAX-ACCESS read-write
+--  STATUS current
+--  DESCRIPTION
+--  "Spinlock..."
+--    ::= { selfTest 3 }   
+
+
+-- *****************************************************************************
+-- All notifications are defined here.  These can be sent as traps or as informs.
+--
+-- *****************************************************************************
+notifyModuleState  NOTIFICATION-TYPE
+  OBJECTS
+  {
+    productMacAddress,
+    productIdentity,
+    drg600wModuleStatus
+  }
+  STATUS      current
+  DESCRIPTION
+  "On reset, or after a change in state of any modules, this notification is
+  sent to the network management system. This notification includes the details
+  of all known modules."
+    ::= { drg600wNotification 1 }
+
+
+-- *****************************************************************************
+-- drg600wGroups, drg600wCompliance define the groups and hence compliance of a
+-- device
+--
+-- *****************************************************************************
+
+drg600wGroups        OBJECT IDENTIFIER  ::=  { drg600wConformance 1 }
+drg600wCompliance    OBJECT IDENTIFIER  ::=  { drg600wConformance 2 }
+drg600wCompatibility OBJECT IDENTIFIER  ::=  { drg600wConformance 3 }
+
+END
+

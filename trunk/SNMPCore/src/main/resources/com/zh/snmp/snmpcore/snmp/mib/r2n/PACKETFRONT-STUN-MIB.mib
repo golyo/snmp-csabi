@@ -1,0 +1,173 @@
+PACKETFRONT-STUN-MIB DEFINITIONS ::= BEGIN
+
+-- Copyright (c) 2008, 2009 Packetfront Systems AB
+
+IMPORTS
+
+    MODULE-IDENTITY,
+    OBJECT-TYPE,
+    Integer32,
+    IpAddress
+    FROM SNMPv2-SMI
+
+    pfMgmt
+    FROM PACKETFRONT-SMI
+;
+
+
+-- *****************************************************************************
+-- pfStunClient
+--
+-- ***************************************************************************** 
+
+pfStunClient MODULE-IDENTITY
+    LAST-UPDATED "200904210000Z"
+    ORGANIZATION "PacketFront Systems AB"
+    CONTACT-INFO
+        "PacketFront Systems AB
+         Customer Service
+
+         Mail : Isafjordsgatan 35
+                SE-164 28 Kista
+                Sweden
+
+         Tel  : +46 8 5090 1500
+
+         E-mail: snmp@packetfront.com
+         Web   : http://www.packetfront.com"
+    DESCRIPTION
+        "The MIB module for Packetfront STUN clients"
+
+    REVISION "200904210000Z" 	-- April 21, 2009
+    DESCRIPTION
+        "Initial release."
+
+    ::= { pfMgmt 12 }
+
+
+stunClientNotification OBJECT IDENTIFIER ::= { pfStunClient 0 }
+stunClientConfig       OBJECT IDENTIFIER ::= { pfStunClient 1 }
+stunClientStatus       OBJECT IDENTIFIER ::= { pfStunClient 2 }
+stunClientConformance  OBJECT IDENTIFIER ::= { pfStunClient 3 }
+
+
+-- *****************************************************************************
+-- stunClientConfig provides control of the built in STUN client
+--
+-- *****************************************************************************
+
+stunAdminStatus OBJECT-TYPE
+  SYNTAX INTEGER {
+    enabled(1),
+    disabled(2)
+  }
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "Provides control over the operation of the STUN client. enabled(1)
+  causes the client to run, while setting the object to disabled(2)
+  causes the client to stop."
+    ::= { stunClientConfig 1 }
+
+-- STUN Server Configuration Table definition
+stunServerTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF StunServerEntry
+  MAX-ACCESS   not-accessible
+  STATUS       current
+  DESCRIPTION
+  "A table containing STUN Server configuration information."
+    ::= { stunClientConfig 2 }
+
+stunServerEntry OBJECT-TYPE
+  SYNTAX StunServerEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+  "STUN Server Address Configurations for STUN Client."
+  INDEX { stunServerIndex }
+    ::= { stunServerTable 1 }
+
+StunServerEntry ::=
+  SEQUENCE {
+    stunServerIndex       Integer32,
+    stunServerAddress     OCTET STRING,
+    stunServerPort        Integer32
+  }
+
+
+stunServerIndex OBJECT-TYPE
+  SYNTAX      Integer32 (1..4)
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+  "The locally arbitrary, but unique identifier associated with this stunServerEntry."
+    ::= { stunServerEntry 1 }
+
+stunServerAddress OBJECT-TYPE
+  SYNTAX      OCTET STRING (SIZE(0..64))
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+  "The IP address or FQDN of the STUN server to be used"
+    ::= { stunServerEntry 2 }
+
+stunServerPort OBJECT-TYPE
+  SYNTAX      Integer32 (0..65535)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+  " The port number to which STUN requests shall be sent. "
+  DEFVAL     { 3478 }
+    ::= { stunServerEntry 3 }
+
+-- STUN Server Configuration Table definition  end
+
+stunClientState OBJECT-TYPE
+  SYNTAX INTEGER {
+    running(1),
+    stopped(2)
+  }
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+  "Provides details of the status of the STUN client."
+    ::= { stunClientStatus 1 }
+
+stunClientNatType OBJECT-TYPE
+  SYNTAX INTEGER {
+    unknown(1),
+    udpBlocked(2),
+    none(3),
+    fullCone(4),
+    restrictedCone(5),
+    portRestrictedCone(6),
+    symmetric(7),
+    symmetricUdp(8)
+  }
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+  "The discovered NAT type."
+    ::= { stunClientStatus 2 }
+
+stunClientExternalIpAddress OBJECT-TYPE
+  SYNTAX IpAddress
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+  "The discovered external IP address of the device."
+    ::= { stunClientStatus 3 }
+
+
+-- *****************************************************************************
+-- stunClientNotification
+--
+-- *****************************************************************************
+
+-- *****************************************************************************
+-- stunClientConformance
+--
+-- *****************************************************************************
+
+END
+

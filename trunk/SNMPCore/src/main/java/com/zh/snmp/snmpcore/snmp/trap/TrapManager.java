@@ -14,10 +14,10 @@
  *  ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR
  *  DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
  */
-package com.zh.snmp.snmpcore.snmp;
+package com.zh.snmp.snmpcore.snmp.trap;
 
-import com.zh.snmp.snmpcore.entities.DeviceEntity;
-import com.zh.snmp.snmpcore.services.SnmpService;
+import com.zh.snmp.snmpcore.message.MaxMessageAppender;
+import com.zh.snmp.snmpcore.message.MessageAppender;
 import java.io.IOException;
 import java.util.List;
 import org.slf4j.Logger;
@@ -31,6 +31,7 @@ import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.mp.MPv1;
 import org.snmp4j.mp.MPv2c;
+import org.snmp4j.mp.StateReference;
 import org.snmp4j.security.Priv3DES;
 import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.smi.OctetString;
@@ -43,7 +44,6 @@ import org.snmp4j.transport.DefaultTcpTransportMapping;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.snmp4j.util.MultiThreadedMessageDispatcher;
 import org.snmp4j.util.ThreadPool;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -52,33 +52,74 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class TrapManager implements CommandResponder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TrapManager.class);
-    
-    @Autowired
-    private SnmpService service;
+    private final static String MSG_TRAP_RECEIVED = "snmp.trapReceived";
+    //private final Object synchObj = new Object();
+    //private boolean interrupted;
     
     private String trapListenerAddress;
-    private DeviceChecker deviceChecker;
+    private TrapListener trapListener;
+    private AbstractTransportMapping transport;
+    private MessageAppender msgAppender = new MaxMessageAppender(10);
+    
 
-    public void TrapManager(String trapListenerAddress) {
-        this.trapListenerAddress = trapListenerAddress;
-        deviceChecker = new DeviceChecker();
+    
+    public TrapListener getTrapListener() {
+        return trapListener;
     }
 
+    public void setTrapListener(TrapListener trapListener) {
+        this.trapListener = trapListener;
+    }
+
+    public String getTrapListenerAddress() {
+        return trapListenerAddress;
+    }
+
+    public void setTrapListenerAddress(String trapListenerAddress) {
+        this.trapListenerAddress = trapListenerAddress;
+    }
+    
     public void start() throws IOException {
-        deviceChecker.start();
-        listenTrap(new UdpAddress(null));
+        listenTrap(new UdpAddress(trapListenerAddress));
+        /*
+        synchronized (synchObj) {
+            while (!interrupted) {
+                try {
+                    synchObj.wait();                    
+                } catch (InterruptedException e) {
+                    LOGGER.debug("Thread interrupted");
+                }
+            }
+        }
+         * 
+         */
     }
 
     public void stop() throws IOException {
-        deviceChecker.stop();
+        transport.close();
+        /*
+        synchronized (synchObj) {
+            interrupted = true;
+            synchObj.notifyAll();
+            transport.close();
+        } 
+         * 
+         */
     }
 
+    public MessageAppender getMessageAppender() {
+        return msgAppender;
+    }
+    
     @Override
-    public void processPdu(CommandResponderEvent cmdRespEvent) {
-        LOGGER.info("Start process pdu ");
-        PDU pdu = cmdRespEvent.getPDU();        
+    public void processPdu(CommandResponderEvent cmdRespEvent) {        
         try {
-            DeviceTrapInfo trapInfo = new DeviceTrapInfo(pdu.getVariableBindings());
+            DeviceTrapInfo trapInfo = new DeviceTrapInfo(cmdRespEvent);
+            if (trapListener != null) {
+                msgAppender.addMessage(MSG_TRAP_RECEIVED, trapInfo);
+                trapListener.processTrapResponse(trapInfo, msgAppender);
+            }            
+            /*
             DeviceEntity device = service.findDeviceByNodeId(trapInfo.nodeId);
             if (device == null) {
                 LOGGER.error("Unregistered device found to " + trapInfo.nodeId + " at " + trapInfo.ipAddress);
@@ -102,7 +143,6 @@ public class TrapManager implements CommandResponder {
 
     
     private void listenTrap(TransportIpAddress address) throws IOException {
-        AbstractTransportMapping transport;
         if (address instanceof TcpAddress) {
             transport = new DefaultTcpTransportMapping((TcpAddress) address);
         } else {
@@ -128,35 +168,41 @@ public class TrapManager implements CommandResponder {
         snmp.addCommandResponder(this);
 
         transport.listen();
-        System.out.println("Listening on " + address);
-
+        LOGGER.debug("Listening on " + address);
+/*
         try {
+            this.stop();
             this.wait();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
+ * 
+ */
     }
     
-    private static final String IPADDRESS_OID = "";
     private static final String NODEID_OID = "";
     
     public static class DeviceTrapInfo {
         private String nodeId;
         private String ipAddress;
 
-        private DeviceTrapInfo(List<VariableBinding> variables) throws IOException {
+        private DeviceTrapInfo(CommandResponderEvent cmdRespEvent) throws IOException {
+            List<VariableBinding> variables = cmdRespEvent.getPDU().getVariableBindings();
+            StateReference stateReference = cmdRespEvent.getStateReference();
+            ipAddress = stateReference.getAddress().toString();
             for (VariableBinding vb: variables) {
                 if (vb.getOid().toString().equals(NODEID_OID)) {
                     nodeId = vb.getVariable().toString();
-                } else if (vb.getOid().toString().equals(IPADDRESS_OID)) {
-                    ipAddress = vb.getVariable().toString();
                 }
             }
+            /*
             if (nodeId == null) {
                 throw new IOException("nodeId not defined at " + IPADDRESS_OID + " variables are: " + variables);
             }
+             * 
+             */
             if (ipAddress == null) {
-                throw new IOException("ipAddress not defined at " + IPADDRESS_OID + " variales are: " + variables);
+                throw new IOException("ipAddress not defined");
             }
         }
 
@@ -167,5 +213,34 @@ public class TrapManager implements CommandResponder {
         public String getIpAdress() {
             return ipAddress;
         }
+        
+        @Override
+        public String toString() {
+            return ipAddress + ", " + nodeId;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final DeviceTrapInfo other = (DeviceTrapInfo) obj;
+            if ((this.ipAddress == null) ? (other.ipAddress != null) : !this.ipAddress.equals(other.ipAddress)) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 97 * hash + (this.ipAddress != null ? this.ipAddress.hashCode() : 0);
+            return hash;
+        }
+        
+        
     }
 }

@@ -122,4 +122,9 @@ public class DeviceEntity implements BaseEntity, Serializable {
         setConfigurations(configurations);
         return old;
     }
+    
+    @Override
+    public String toString() {
+        return "node:" + nodeId + ", ip:" + ipAddress + ", configs: " + getConfigurations(); 
+    }
 }

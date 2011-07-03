@@ -16,6 +16,7 @@
  */
 package com.zh.snmp.snmpcore.snmp;
 
+import com.zh.snmp.snmpcore.snmp.trap.TrapManager;
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import java.io.IOException;
 import org.snmp4j.CommunityTarget;
