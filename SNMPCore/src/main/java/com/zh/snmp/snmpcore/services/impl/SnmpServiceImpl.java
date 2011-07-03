@@ -96,6 +96,11 @@ public class SnmpServiceImpl implements SnmpService {
     }
     
     @Override
+    public DeviceEntity findDeviceByFilter(DeviceEntity filter) {
+        return deviceDao.findExampleEntity(filter);
+    }    
+    
+    @Override
     public DeviceEntity saveDevice(DeviceEntity device) {      
         return deviceDao.save(device); 
         /*

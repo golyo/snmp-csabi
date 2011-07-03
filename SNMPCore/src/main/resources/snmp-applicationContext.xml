@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
+       default-autowire="byName">
+
+    <bean id="urlListFactory"
+          class="org.jsmiparser.util.url.ClassPathURLListFactory">
+        <property name="rootPath" value="com/zh/snmp/snmpcore/snmp/mib/"/>
+        <property name="children">
+            <list>
+                <value>r2n/PACKETFRONT-DRG600A-MIB.mib</value>                
+                <value>r2n/PACKETFRONT-DRG-MIB.mib</value>                
+                <value>r2n/PACKETFRONT-TC.mib</value>
+                <value>r2n/PACKETFRONT-SMI.mib</value>
+                <!--
+                <value>ietf/IF-MIB</value>
+                -->
+                <value>ietf/SNMPv2-SMI</value>
+                <value>ietf/SNMPv2-TC</value>
+                <value>ietf/SNMPv2-CONF</value>
+                <value>ietf/SNMPv2-MIB</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="problemEventHandler"
+          class="org.jsmiparser.util.problem.DefaultProblemEventHandler"/>
+
+    <bean id="parser"
+          class="org.jsmiparser.parser.SmiDefaultParser">
+        <constructor-arg ref="problemEventHandler"/>
+        <property name="fileParserPhase">
+            <bean class="org.jsmiparser.phase.file.FileParserPhase">
+                <constructor-arg ref="problemEventHandler"/>
+                <property name="inputUrls">
+                    <bean factory-bean="urlListFactory"
+                          factory-method="create"/>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="mib"
+          factory-bean="parser"
+          factory-method="parse"/>
+          
+    <bean id="mibParser" class="com.zh.snmp.snmpcore.snmp.mib.MibParser"/>
+    <bean id="snmpManager" class="com.zh.snmp.snmpcore.snmp.SnmpManager"/>
+</beans>
+

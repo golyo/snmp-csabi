@@ -1,0 +1,2289 @@
+PACKETFRONT-VOIP-MIB DEFINITIONS ::= BEGIN
+
+-- Copyright (c) 2007,2008,2009 Packetfront Systems AB
+
+IMPORTS
+  TruthValue
+    FROM SNMPv2-TC
+
+  MODULE-IDENTITY,
+  OBJECT-TYPE,
+  NOTIFICATION-TYPE,
+  Integer32,
+  IpAddress
+    FROM SNMPv2-SMI
+
+  InterfaceIndex
+    FROM IF-MIB
+
+  pfMgmt
+    FROM PACKETFRONT-SMI
+
+  productMacAddress,
+  productIdentity
+    FROM PACKETFRONT-DRG-MIB
+;
+
+
+-- *****************************************************************************
+-- PACKETFRONT-VOIP-MIB
+--
+-- *****************************************************************************
+pfVoipMib MODULE-IDENTITY
+    LAST-UPDATED "200903231603Z"
+    ORGANIZATION "PacketFront Systems AB"
+    CONTACT-INFO
+        "PacketFront Systems AB
+         Customer Service
+
+         Mail : Isafjordsgatan 35
+                SE-164 28 Kista
+                Sweden
+
+         Tel  : +46 8 5090 1500
+
+        E-mail: snmp@packetfront.com
+        Web   : http://www.packetfront.com"
+    DESCRIPTION
+        "Describes the VoIP service and line interface objects for the DRG platforms.
+         The objects are protocol-agnostic except where this is not possible"
+
+    REVISION "200903231603Z" -- March 23, 2009
+    DESCRIPTION
+        "Updated telephone information in contact-info"
+    REVISION "200801171524Z" -- January 17th 2008
+    DESCRIPTION
+        "Initial release"
+
+    ::= { pfMgmt 4 }
+
+
+-- *****************************************************************************
+-- Global information for the telephony applications in DRGs
+--
+-- *****************************************************************************
+
+drgVoipNotifications	OBJECT IDENTIFIER ::= { pfVoipMib 0 }
+drgVoipObjects		OBJECT IDENTIFIER ::= { pfVoipMib 1 }
+drgVoipConformance	OBJECT IDENTIFIER ::= { pfVoipMib 2 }
+
+
+-- *****************************************************************************
+-- Base
+--
+-- *****************************************************************************
+
+voipConfigBase        OBJECT IDENTIFIER       ::= { drgVoipObjects 1 }
+
+voipIfCount OBJECT-TYPE
+     SYNTAX Integer32
+     MAX-ACCESS read-only
+     STATUS current
+     DESCRIPTION
+     "The number of IP telephony interfaces in this device."
+       ::= { voipConfigBase 1 }
+
+voipDialTimeout OBJECT-TYPE 
+    SYNTAX Integer32
+    UNITS "seconds"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The time the system waits for another digit to be pressed before the call 
+    is sent to the call controller."
+      ::= { voipConfigBase 2 }
+
+voipRegResultNotify OBJECT-TYPE
+    SYNTAX INTEGER {
+      disabled(1),
+      always(2),
+      onlyErrors(3)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Setting the object to always(2) causes the system to send
+    notifyVoipRegistration after every registration procedure
+    no matter of result.
+
+    Setting the object to onlyErrors(3) cause the system to
+    send NotifyVoipRegistration when an error occurs during
+    the registration procedure.
+
+    Setting the object to disabled(1) cause the system to
+    not send any notifyVoipRegistration."
+      ::= { voipConfigBase 3 }
+
+voipDialPlan OBJECT-TYPE 
+   SYNTAX OCTET STRING  (SIZE(0..255))
+   MAX-ACCESS read-write
+   STATUS current
+   DESCRIPTION
+    "The calling dialplan - describes what are valid dial patterns and
+    allow the call signalling protocols to know when they can send the
+    dialled digits to the call server"
+   ::= { voipConfigBase 4 }
+
+voipRtpStartPort OBJECT-TYPE
+    SYNTAX Integer32 (1024..65535)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The start of the port range for sending RTP media."
+      ::= { voipConfigBase 5 }
+
+voipRtpEndPort OBJECT-TYPE
+    SYNTAX Integer32 (1024..65535)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The end of the port range for sending RTP media."
+      ::= { voipConfigBase 6 }
+
+voipCountry OBJECT-TYPE 
+    SYNTAX INTEGER {     
+      sweden(1),
+      uk(2),
+      belgium(3),
+      germany(4),
+      japan(5),
+      us(6),
+      denmark(7),
+      france(8),
+      italy(9),
+      china(10),
+      venezuala(11),
+      norway(12),
+      finland(13),
+      netherlands(14),
+      etsiDuringRinging(15),
+      etsiPriorDtAs(16),
+      etsiPriorRpAs(17),
+      etsiPriorLrPlusDtAs(18),
+      bellcore(19)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the termination impedance and the CLIP standard to be used"
+      ::= { voipConfigBase 7 }
+
+voipQuickDialEnabled OBJECT-TYPE 
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Control the use of the # key to instigate quick dial function. If enabled
+    and the '#' key is pressed, the call setup message will be sent immediately,
+    i.e. no wait for dial timeout is used"
+      ::= { voipConfigBase 8 }
+
+voipHookflashTimerMin OBJECT-TYPE
+    SYNTAX Integer32 (0..800)
+    UNITS "milliseconds"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The minimum time the hook switch must be activated for an hookflash event
+    to be possible"
+      ::= { voipConfigBase 9 }
+
+voipHookflashTimerMax OBJECT-TYPE
+    SYNTAX Integer32 (0..800)
+    UNITS "milliseconds"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The maximum time the hook switch must be activated for an hookflash event
+    to be possible"
+      ::= { voipConfigBase 10 }
+
+voipCodecKeypadPayloadType OBJECT-TYPE
+    SYNTAX Integer32 (96..127)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The RTP payload type used when using RFC2833 to send out-of-band
+    telephone events"
+      ::= { voipConfigBase 11 }
+
+
+-- *****************************************************************************
+-- Quality of Service
+--
+-- *****************************************************************************
+
+voipQos OBJECT IDENTIFIER ::=  { drgVoipObjects 2 }
+
+voipQosSignalingDSCPTag OBJECT-TYPE 
+    SYNTAX Integer32 (0..63)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The DSCP tag used for call signaling packets"
+      ::= { voipQos 1 }
+
+voipQosSignalingVlanId OBJECT-TYPE 
+    SYNTAX Integer32 (1..4094)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The IEEE802.1Q VLAN id tag used for call signaling packets"
+      ::= { voipQos 2 }
+
+voipQosSignalingPriorityTag OBJECT-TYPE
+    SYNTAX Integer32 (0..7)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The IEEE802.1p VLAN priority tag used for call signaling packets"
+      ::= { voipQos 3 }
+
+voipQosRtpDSCPTag OBJECT-TYPE 
+    SYNTAX Integer32 (0..63)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The DSCP tag used for call media packets"
+      ::= { voipQos 4 }
+
+voipQosRtpVlanId OBJECT-TYPE 
+    SYNTAX Integer32 (1..4094)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The IEEE802.1Q VLAN id tag used for call media packets"
+      ::= { voipQos 5 }
+
+voipQosRtpPriorityTag OBJECT-TYPE
+    SYNTAX Integer32 (0..7)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The IEEE802.1p VLAN priority tag used for call media packets"
+      ::= { voipQos 6 }
+
+
+
+-- *****************************************************************************
+-- Jitter Buffer object
+--
+-- *****************************************************************************
+
+voipJitterBuffer OBJECT IDENTIFIER ::= { drgVoipObjects 3 }
+
+voipJitterBufferMode OBJECT-TYPE
+    SYNTAX INTEGER {
+      adaptive(1),
+      fixed(2)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Jitter buffer mode - adaptive(1) uses an adaptive size algorithm;
+    generally this is the mode which offers the best performance.
+    fixed(2) uses a fixed length buffer, this minimises delay."
+      ::= { voipJitterBuffer 1 }
+
+voipJitterBufferAutoSwitchEnabled OBJECT-TYPE  
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The use of an adaptive jitter buffer when sending faxes can cause poor
+    performance, therefore it is prefereable to use fixed jitter buffer mode
+    in this case. This object controls whether the mode will automatically
+    switch to fixed mode when a fax transmission is detected"
+      ::= { voipJitterBuffer 2 }
+
+voipJitterBufferAdaptiveLength OBJECT-TYPE  
+    SYNTAX Integer32 (40..300)
+    UNITS "milliseconds"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The maximum length of the adapative jitter buffer in milliseconds"
+      ::= { voipJitterBuffer 3 }
+
+voipJitterBufferFixedLength OBJECT-TYPE
+    SYNTAX Integer32 (40..120)
+    UNITS "milliseconds"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The maximum length of the fixed jitter buffer in milliseconds"
+      ::= { voipJitterBuffer 4 }
+
+
+-- *****************************************************************************
+-- Table to describe codec entries
+--
+-- *****************************************************************************
+
+voipCodec OBJECT IDENTIFIER ::= { drgVoipObjects 4 }
+
+voipCodecEntries OBJECT-TYPE
+    SYNTAX Integer32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "The number of codecs present within the device"
+      ::= { voipCodec 1 }
+
+voipCodecTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF VoipCodecEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION
+    "A table with information about available codecs."
+      ::= { voipCodec 2 }
+
+voipCodecEntry OBJECT-TYPE
+    SYNTAX VoipCodecEntry 
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+    "One row of the table."
+    INDEX { voipIfIndex, voipCodecIndex }
+      ::= { voipCodecTable 1 }
+
+VoipCodecEntry ::= SEQUENCE {
+    voipCodecLineNumber Integer32,
+    voipCodecIndex Integer32,
+    voipCodecEnabled TruthValue,
+    voipCodecPriority Integer32,
+    voipCodecType INTEGER,
+    voipCodecPacketizationPeriod Integer32,
+    voipCodecSilenceSuppressionEnabled TruthValue,
+    voipCodecEchoCancellationEnabled TruthValue,
+    voipCodecKeypadType INTEGER
+}
+
+voipCodecLineNumber OBJECT-TYPE
+    SYNTAX Integer32 (1..4)
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+    "Unique value greater than zero, for line number in each table row. "
+      ::= { voipCodecEntry 1 }
+
+voipCodecIndex OBJECT-TYPE
+    SYNTAX Integer32 (1..12)
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+    "Unique value greater than zero, for codec type in each table row. "
+      ::= { voipCodecEntry 2 }
+
+voipCodecEnabled OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "true if the codec entry is enabled, i.e. whether this code will be
+    included in the list of possible codecs"
+      ::= { voipCodecEntry 3 }
+
+voipCodecPriority OBJECT-TYPE
+    SYNTAX Integer32 (1..8)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The priority of this codec entry - priority 1 is the highest, lowest
+    priority will be equal to the number of codec entries present"
+      ::= { voipCodecEntry 4 }
+
+voipCodecType OBJECT-TYPE
+    SYNTAX INTEGER {
+      g711a(1),
+      g711u(2),
+      g723(3),
+      g729(4)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The type of codec defined for this entry"
+      ::= { voipCodecEntry 5 }
+
+voipCodecPacketizationPeriod OBJECT-TYPE
+    SYNTAX Integer32 (10..90)
+    UNITS "milliseconds"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Voice packet size in milliseconds - a mulitple of 10ms must be used"
+      ::= { voipCodecEntry 6 }
+
+voipCodecSilenceSuppressionEnabled OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Controls the generation of silence suppression frames during periods
+    of silence. If true, silence suppression frames will be generated, thus
+    reducing bandwidth usage"
+      ::= { voipCodecEntry 7 }
+
+voipCodecEchoCancellationEnabled OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Controls the use of the line and acoustic echo canceller (AEC). If true
+    echo cancellation is enabled. Note that AEC is automatically disabled when
+    fax or modem tones are detected."
+      ::= { voipCodecEntry 8 }
+
+voipCodecKeypadType OBJECT-TYPE
+    SYNTAX INTEGER {
+      none(1),
+      rfc2833(2),
+      sipInfo(3),	-- SIP specific
+      h225(4),		-- H323 specific
+      h245(5)		-- H323 specific
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The type of keypad support, i.e. whether telephone events are sent 
+    using an inband method, or an out-of-band method. Some choices are 
+    protocol specific"
+      ::= { voipCodecEntry 9 }
+
+
+-- *****************************************************************************
+-- Table which describes each endpoint instance, i.e. a logical telephone
+-- port
+--
+-- *****************************************************************************
+
+voipIf OBJECT IDENTIFIER ::= { drgVoipObjects 5 }
+
+voipIfTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF VoipIfEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION
+    "A table which describes the parameters required for a line to be unique"
+      ::= { voipIf 1 }
+
+voipIfEntry OBJECT-TYPE
+    SYNTAX VoipIfEntry 
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+    "One row of the table."
+    INDEX { voipIfIndex }
+      ::= { voipIfTable 1 }
+
+VoipIfEntry ::= SEQUENCE {
+    voipIfIndex InterfaceIndex,
+    voipIfAdmin INTEGER,
+    voipIfLineNumber OCTET STRING,
+    -- Access control
+    voipIfAuthUser OCTET STRING,
+    voipIfAuthPasswd OCTET STRING,
+    -- Caller ID
+    voipIfCallerIdEnabled INTEGER,
+    voipIfCallerIdName OCTET STRING,
+    -- Call server
+    voipIfPrimaryServerAddress OCTET STRING,
+    voipIfPrimaryServerPort  Integer32,
+    voipIfSecondaryServerAddress OCTET STRING,
+    voipIfSecondaryServerPort  Integer32,
+    voipIfLocalSignalPort Integer32,
+    voipIfHighAvailabilityServerMode INTEGER,
+    -- Call server access
+    voipIfDomain OCTET STRING,
+    voipIfSignalTransportProtocol INTEGER,
+    voipIfKeepaliveTimeout Integer32,
+    -- Services control
+    voipIfFaxAdmin INTEGER,
+    voipIfMsgWaitingAccount OCTET STRING,
+    -- Signals
+    voipIfRingSignal Integer32,
+    -- Status information
+    voipIfRegistrationResult INTEGER
+--    voipIfStatus INTEGER
+  }
+
+
+voipIfIndex OBJECT-TYPE
+    SYNTAX InterfaceIndex
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+    "A unique index value, greater than zero, for each VoIP interface."
+      ::= { voipIfEntry 1 }
+
+
+voipIfAdmin OBJECT-TYPE
+    SYNTAX INTEGER {
+      enabled(1),
+      disabled(2)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Setting the object to disabled causes the line to be disabled. The line is
+    not registered when in this state, and it is not possible to make or
+    receive calls."
+      ::= { voipIfEntry 2 }
+
+
+voipIfLineNumber OBJECT-TYPE 
+    SYNTAX OCTET STRING  (SIZE(0..64))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The E.164 telephone number assigned to this interface."
+      ::= { voipIfEntry 3 }
+
+
+voipIfAuthUser OBJECT-TYPE
+    SYNTAX OCTET STRING  (SIZE(0..64))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The user identifier used to identify the endpoint to the call server"
+      ::= { voipIfEntry 4 }
+
+voipIfAuthPasswd OBJECT-TYPE
+    SYNTAX OCTET STRING  (SIZE(0..64))
+    MAX-ACCESS read-write  -- Note that reading this would allow a hacker to get enough information to steal the users identity
+    STATUS current
+    DESCRIPTION
+    "The password associated with this VoIP user. Note that since reading this
+    object would potentially allow unauthorised access to telephony resources,
+    reads return an SHA1 one-way hash of the password. An authorised person
+    who knows the password should perform an SHA1 hash and compare the result to
+    the read object value to verify correctness"
+      ::= { voipIfEntry 5 }
+
+voipIfCallerIdEnabled OBJECT-TYPE 
+    SYNTAX INTEGER {
+      enabled(1),
+      disabled(2)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Controls the generation of caller line identification presentation (CLIP)
+    information via the line interface. When enabled, CLIP information will be
+    sent to the telephone if a valid caller id is received in the call setup"
+      ::= { voipIfEntry 6 }
+
+voipIfCallerIdName OBJECT-TYPE 
+    SYNTAX OCTET STRING  (SIZE(0..64))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the name sent in the call setup information when making a call"
+      ::= { voipIfEntry 7 }
+
+voipIfPrimaryServerAddress OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..255))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Primary IP addresses and/or FQDNs of telephony server 
+    (Gatekeeper, SIP server, MGC) to be used for establishing calls"
+      ::= { voipIfEntry 8 }
+
+voipIfPrimaryServerPort OBJECT-TYPE
+    SYNTAX Integer32 (1024..65535)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Primary destination ports used for communication with 
+    the telephony servers."
+      ::= { voipIfEntry 9 }
+
+voipIfSecondaryServerAddress OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..255))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Secondary IP addresses and/or FQDNs of telephony server 
+    (Gatekeeper, SIP server, MGC) to be used for establishing calls"
+      ::= { voipIfEntry 10 }
+
+voipIfSecondaryServerPort OBJECT-TYPE
+    SYNTAX Integer32 (1024..65535)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Secondary destination ports used for communication with 
+    the telephony servers."
+      ::= { voipIfEntry 11 }
+
+voipIfLocalSignalPort OBJECT-TYPE
+    SYNTAX Integer32 (1..65535)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The local port used to receive messages from the telephony server."
+      ::= { voipIfEntry 12 }
+
+voipIfHighAvailabilityServerMode OBJECT-TYPE
+    SYNTAX INTEGER {                       
+      off(1),
+      automatic(2),
+      fixed(3),
+      ms(4)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "off - no secondary telephony server is available.
+    automatic - the IP-address of the secondary telephony server
+    is configured automatically by the signaling protocol.
+    fixed - the IP-address of the secondary telephony server is 
+    configured by the operator ( see voipIfSecTelServerAddr )."
+      ::= { voipIfEntry 13 }
+
+voipIfDomain  OBJECT-TYPE 
+    SYNTAX OCTET STRING  (SIZE(0..255))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The name of the domain that is used for the telephony application. 
+    Used in registration as voipIfLineNumber@voipIfDomain.
+    URL_ID option in H323, endpoint domain in MGCP"
+      ::= { voipIfEntry 14 }
+
+voipIfSignalTransportProtocol OBJECT-TYPE
+    SYNTAX INTEGER {
+      udp(1),
+      tcp(2)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Controls the transport protocol that is used for the telephony signaling
+    protocols."
+      ::= { voipIfEntry 15 }
+
+voipIfKeepaliveTimeout OBJECT-TYPE
+   SYNTAX Integer32
+   MAX-ACCESS read-write
+   STATUS current
+   DESCRIPTION
+      "The time the system waits until it refreshes the server registration."
+   ::= { voipIfEntry 16 }
+
+voipIfFaxAdmin OBJECT-TYPE
+    SYNTAX INTEGER {
+      enabled(1),
+      disabled(2)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "When enabled the line is able to send and receive fax messages."
+      ::= { voipIfEntry 17 }
+
+voipIfMsgWaitingAccount OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..64))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Message waiting account username"
+      ::= { voipIfEntry 18 }
+
+voipIfRingSignal OBJECT-TYPE
+    SYNTAX Integer32 (0..9)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The ringsignal number that will be used to alert the subscriber of an incoming call
+     on this telephony line."
+      ::= { voipIfEntry 19 }
+
+voipIfRegistrationResult OBJECT-TYPE 
+    SYNTAX INTEGER {                
+      notAttempted(1),
+      success(2),
+      rejected(3),
+      redirected(4),
+      failed(5)
+    }
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "The result from the latest registration sequence."
+      ::= { voipIfEntry 20 }
+
+
+-- *****************************************************************************
+-- Line processing
+--
+-- *****************************************************************************
+
+voipLineConfig OBJECT IDENTIFIER ::= {drgVoipObjects 6 }
+
+voipLineTransmitGain OBJECT-TYPE
+    SYNTAX Integer32 (-640..60)
+    UNITS "0.1 dB"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Transmit gain in 0.1dB steps. This is the gain from the analog terminal
+     towards the IP network. Note that inserting a large attenuation may prevent
+     DTMF detection for dialing operating correctly."
+      ::= { voipLineConfig 1 }
+
+voipLineReceiveGain OBJECT-TYPE
+    SYNTAX Integer32 (-640..60)
+    UNITS "0.1 dB"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Receive gain in 0.1dB steps. This is the gain from the IP network to the
+     analog terminal"
+      ::= { voipLineConfig 2 }
+
+voipLineRingVoltage OBJECT-TYPE
+    SYNTAX Integer32 (15..94)
+    UNITS "Vrms"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Required ring voltage"
+      ::= { voipLineConfig 3 }
+
+voipLineRingFrequency OBJECT-TYPE
+    SYNTAX Integer32 (16..50)
+    UNITS "Hertz"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Required ring frequency in Hz. Note that only frequencies of 16, 20, 25
+    and 50Hz are supported. Other values will be ignored"
+      ::= { voipLineConfig 4 }
+
+voipLineLoopCurrentLimit OBJECT-TYPE
+    SYNTAX Integer32 (20..41)
+    UNITS "mA"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the maximum current used when driving the analog terminal loop."
+      ::= { voipLineConfig 5 }
+
+
+voipLineIfStatus OBJECT IDENTIFIER ::= {drgVoipObjects 7 }
+
+voipLineIfStatusTable OBJECT-TYPE
+   SYNTAX SEQUENCE OF VoipLineIfStatusEntry
+   MAX-ACCESS   not-accessible
+   STATUS       current
+   DESCRIPTION
+      "A table with information about the status of FXS line interface."
+   ::= { voipLineIfStatus 1 }
+
+voipLineIfStatusEntry OBJECT-TYPE
+    SYNTAX VoipLineIfStatusEntry 
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+    "One row of the table."
+    INDEX { voipIfIndex }
+      ::= { voipLineIfStatusTable 1 }
+
+VoipLineIfStatusEntry ::= SEQUENCE {
+    voipLineIfStatusLineNumber Integer32,
+    voipLineIfLineStatus INTEGER
+}
+
+voipLineIfStatusLineNumber OBJECT-TYPE
+    SYNTAX Integer32 (1..4)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "A unique value, greater than zero, for each table row. "
+      ::= { voipLineIfStatusEntry 1 }
+
+voipLineIfLineStatus OBJECT-TYPE
+    SYNTAX INTEGER {
+      onHook(1),
+      offHook(2),
+      ringing(3)
+    }
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "The current line status."
+      ::= { voipLineIfStatusEntry 2 }
+
+
+-- *****************************************************************************
+-- Tone generator configuration
+--
+-- *****************************************************************************
+
+voipTones OBJECT IDENTIFIER ::= { drgVoipObjects 8 }
+
+voipCallProgressTones OBJECT IDENTIFIER ::= { voipTones 1 }
+voipRingTones OBJECT IDENTIFIER ::= { voipTones 2 }
+voipCustomTones OBJECT IDENTIFIER ::= { voipTones 3 }
+voipRingCadences OBJECT IDENTIFIER ::= { voipTones 4 }
+
+
+-- *****************************************************************************
+-- Call progress tone definitions
+--
+-- *****************************************************************************
+
+voipCallProgressDialtone OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..64))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dialtone call progress tone frequency, level, patten and mode."
+      ::= { voipCallProgressTones 1 }
+
+voipCallProgressBusy OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..64))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the busy call progress tone frequency, level, patten and mode."
+      ::= { voipCallProgressTones 2 }
+
+voipCallProgressRingback OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..64))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the ringback call progress tone frequency, level, patten and mode."
+      ::= { voipCallProgressTones 3 }
+
+voipCallProgressCallWaiting OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..64))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the call waiting call progress tone frequency, level, patten and mode."
+      ::= { voipCallProgressTones 4 }
+
+voipCallProgressNetworkBusy OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..64))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the network busy call progress tone frequency, level, patten and mode."
+      ::= { voipCallProgressTones 5 }
+
+voipCallProgressCallForward OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..64))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the call forward call progress tone frequency, level, patten and mode."
+      ::= { voipCallProgressTones 6 }
+
+voipCallProgressConfirm OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..64))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the confirm call progress tone frequency, level, patten and mode."
+      ::= { voipCallProgressTones 7 }
+
+voipCallProgressStutterDial OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..64))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the stutter dial call progress tone frequency, level, patten and mode."
+      ::= { voipCallProgressTones 8 }
+
+voipCallProgressOffHookWarning OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..64))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the offhook warning tone frequency, level, patten and mode."
+      ::= { voipCallProgressTones 9 }
+
+voipCallProgressMessageWaitingIndicator OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..64))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the call waiting message indicator tone frequency, level, patten and mode."
+      ::= { voipCallProgressTones 10 }
+
+voipCallProgressReorder OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..64))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the reorder call progress tone frequency, level, patten and mode."
+      ::= { voipCallProgressTones 11 }
+
+
+-- *****************************************************************************
+-- Ring tone definitions
+--
+-- *****************************************************************************
+
+voipRingToneEntries OBJECT-TYPE
+    SYNTAX Integer32
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION
+    "The number of valid entries in the table supported on this platform"
+      ::= { voipRingTones 1 }
+
+voipRingToneTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF VoipRingToneEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION
+    "A table with information about ring tone definitions"
+      ::= { voipRingTones 2 }
+
+voipRingToneEntry OBJECT-TYPE
+    SYNTAX VoipRingToneEntry 
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+    "One row of the table."
+    INDEX { voipRingToneIndex }
+      ::= { voipRingToneTable 1 }
+
+VoipRingToneEntry ::= SEQUENCE {
+    voipRingToneIndex Integer32,
+    voipRingToneDefinition OCTET STRING
+}
+
+voipRingToneIndex OBJECT-TYPE
+    SYNTAX Integer32 (1..10)
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+    "Index to the rows of the table. Each row represents the columnar entity
+    for a ring tone definiton"
+      ::= { voipRingToneEntry 1 }
+
+voipRingToneDefinition OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..255)) 
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines a ring tone entry in the table"
+      ::= { voipRingToneEntry 2 }
+
+
+-- *****************************************************************************
+-- Custom tone definitions
+--
+-- *****************************************************************************
+
+voipCustomToneEntries OBJECT-TYPE
+    SYNTAX Integer32
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION
+    "The number of valid entries in the table supported on this platform"
+      ::= { voipCustomTones 1 }
+
+voipCustomToneTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF VoipCustomToneEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION
+    "A table with information about custom tone definitions"
+      ::= { voipCustomTones 2 }
+
+voipCustomToneEntry OBJECT-TYPE
+    SYNTAX VoipCustomToneEntry 
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+    "One row of the table."
+    INDEX { voipCustomToneIndex }
+      ::= { voipCustomToneTable 1 }
+
+VoipCustomToneEntry ::= SEQUENCE {
+    voipCustomToneIndex Integer32,
+    voipCustomToneDefinition OCTET STRING
+}
+
+voipCustomToneIndex OBJECT-TYPE
+    SYNTAX Integer32 (1..20)
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+    "Index to the rows of the table. Each row represents the columnar entity
+    for a ring tone definiton"
+      ::= { voipCustomToneEntry 1 }
+
+voipCustomToneDefinition OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..255)) 
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines a ring tone entry in the table"
+      ::= { voipCustomToneEntry 2 }
+
+
+-- *****************************************************************************
+-- Ring cadence definitions
+--
+-- *****************************************************************************
+
+voipRingCadenceEntries OBJECT-TYPE
+    SYNTAX Integer32
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION
+    "The number of valid entries in the table supported on this platform"
+      ::= { voipRingCadences 1 }
+
+voipRingCadenceTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF VoipRingCadenceEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION
+    "A table with information about ring cadence definitions"
+      ::= { voipRingCadences 2 }
+
+voipRingCadenceEntry OBJECT-TYPE
+    SYNTAX VoipRingCadenceEntry 
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+    "One row of the table."
+    INDEX { voipRingCadenceIndex }
+      ::= { voipRingCadenceTable 1 }
+
+VoipRingCadenceEntry ::= SEQUENCE {
+    voipRingCadenceIndex Integer32,
+    voipRingCadenceDefinition OCTET STRING
+}
+
+voipRingCadenceIndex OBJECT-TYPE
+    SYNTAX Integer32 (1..11)
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+    "Index to the rows of the table. Each row represents the columnar entity
+    for a ring tone definiton"
+      ::= { voipRingCadenceEntry 1 }
+
+voipRingCadenceDefinition OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..64))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines a ring tone entry in the table"
+      ::= { voipRingCadenceEntry 2 }
+
+
+-- *****************************************************************************
+-- T38 fax options
+--
+-- *****************************************************************************
+
+voipT38Fax OBJECT IDENTIFIER ::= { drgVoipObjects 9 }
+
+voipT38FaxTransportProtocol OBJECT-TYPE
+    SYNTAX INTEGER {
+      udp(1),
+      tcp(2),
+      rtp(3)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "This object controls the level of protection provided for the call
+    signaling and or media streams"
+      ::= { voipT38Fax 1 }
+
+voipT38FaxErrorCorrectionType OBJECT-TYPE
+    SYNTAX INTEGER {
+      none(1),
+      redundancy(2),
+      forwardErrorCorrection(3)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "This object controls the type of error correction mechanism used"
+      ::= { voipT38Fax 2 }
+
+voipT38FaxErrorCorrectionCount OBJECT-TYPE
+    SYNTAX Integer32 (0..2)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The number of redundant frames of data used for error correction when
+    voipT38FaxErrorCorrectionType is set to redundancy or forwardErrorCorrection"
+      ::= { voipT38Fax 3 }
+
+voipT38FaxRateManagement OBJECT-TYPE
+    SYNTAX INTEGER {
+      tcfTransferred(1),
+      local(2)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "This object controls the rate management scheme used for T38 transmission"
+      ::= { voipT38Fax 4 }
+
+
+-- *****************************************************************************
+-- Class 5 services
+--
+-- *****************************************************************************
+
+voipServices OBJECT IDENTIFIER ::= { drgVoipObjects 10 }
+
+voipServicesPrefix OBJECT IDENTIFIER ::= { voipServices 1 }
+voipIfServicesControl OBJECT IDENTIFIER ::= { voipServices 2 }
+
+
+voipServicesHoldPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to place the current call on hold"
+      ::= { voipServicesPrefix 1 }
+
+voipServicesDropPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to drop a call currently on hold"
+      ::= { voipServicesPrefix 2 }
+
+
+voipServicesFlashPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to send a hookflash message"
+      ::= { voipServicesPrefix 3 }
+
+
+voipServicesConfPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to initiate a conference call"
+      ::= { voipServicesPrefix 4 }
+
+
+voipServicesConfdropPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to drop a conference call"
+      ::= { voipServicesPrefix 5 }
+
+voipServicesCallWaitingOnPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to enable call waiting"
+      ::= { voipServicesPrefix 6 }
+
+voipServicesCallWaitingOffPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to disable call waiting"
+      ::= { voipServicesPrefix 7 }
+
+voipServicesCallWaitingStatusPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string for call waiting status"
+      ::= { voipServicesPrefix 8 }
+
+voipServicesCallTransPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Pre-dial string which causes the current call to 
+    support call transfer"
+      ::= { voipServicesPrefix 9 }
+
+voipServicesCallTransAttPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Pre-dial string which causes the current call to 
+    support call transfer attribute"
+      ::= { voipServicesPrefix 10 }
+
+voipServicesCcbsOnPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to enable CCBS"
+      ::= { voipServicesPrefix 11 }
+
+voipServicesCcbsOffPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to disable CCBS"
+      ::= { voipServicesPrefix 12 }
+
+voipServicesCallForwardUnconditionalOnPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to enable call forward unconditionally"
+      ::= { voipServicesPrefix 13 }
+
+voipServicesCallForwardUnconditionalOffPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to disable call forward unconditionally"
+      ::= { voipServicesPrefix 14 }
+
+voipServicesCallForwardBusyOnPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to enable call forward on busy"
+      ::= { voipServicesPrefix 15 }
+
+voipServicesCallForwardBusyOffPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to disable call forward on busy"
+      ::= { voipServicesPrefix 16 }
+
+voipServicesCallForwardNoAnswerOnPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to enable call forward on no-answer"
+      ::= { voipServicesPrefix 17 }
+
+voipServicesCallForwardNoAnswerOffPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to disable call forward on on-answer"
+      ::= { voipServicesPrefix 18 }
+
+voipServicesAnonymousCallOnPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Pre-dial string which causes the current call to be anonymous, i.e. not
+    send caller identity information in the call setup"
+      ::= { voipServicesPrefix 19 }
+
+voipServicesAnonymousCallOffPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Pre-dial string which causes the current call not to be anonymous, i.e.
+    send caller identity information in the call setup"
+      ::= { voipServicesPrefix 20 }
+
+voipServicesReturnCallPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to enable a return call"
+      ::= { voipServicesPrefix 21 }
+
+voipServicesCallWaitingDisablePerCallBasisPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to disable call waiting per call basis"
+      ::= { voipServicesPrefix 22 }
+
+voipServicesPermClirOnPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to enable permanent CLIR"
+      ::= { voipServicesPrefix 23 }
+
+voipServicesPermClirOffPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to disable permanent CLIR"
+      ::= { voipServicesPrefix 24 }
+
+voipServicesDonotDisturbOnPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to enable do not disturb functionality"
+      ::= { voipServicesPrefix 25 }
+
+voipServicesDonotDisturbOffPrefix OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..16))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the dial string required to disable do not disturb functionality"
+      ::= { voipServicesPrefix 26 }
+
+
+voipIfServicesControlTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF VoipIfServicesControlEntry
+    MAX-ACCESS   not-accessible
+    STATUS current
+    DESCRIPTION
+    "A table which allows the control of class 5 services on a per line basis"
+      ::= { voipIfServicesControl 1 }
+
+voipIfServicesControlEntry OBJECT-TYPE
+    SYNTAX VoipIfServicesControlEntry 
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+    "One row of the table."
+    INDEX { voipIfIndex }
+      ::= { voipIfServicesControlTable 1 }
+
+VoipIfServicesControlEntry ::= SEQUENCE {
+    voipIfServicesControlLineNumber Integer32,
+    voipIfServicesControlMode INTEGER,
+    voipIfServicesCallWaitingEnabled TruthValue,
+    voipIfServices3PartyCallEnabled TruthValue,
+    voipIfServicesCallForwardEnabled TruthValue,
+    voipIfServicesCallTransferEnabled TruthValue, 
+    voipIfServicesCcbsDuration Integer32,
+    voipIfServicesCcbsInterval Integer32,
+    voipIfServicesConfCallTransferEnabled TruthValue,
+    voipIfServicesClirEnabled TruthValue,
+    voipIfServicesCallForwardUnconditionalEnabled TruthValue,
+    voipIfServicesCallForwardUnconditionalNumber OCTET STRING,
+    voipIfServicesCallForwardBusyEnabled TruthValue,
+    voipIfServicesCallForwardBusyNumber OCTET STRING,
+    voipIfServicesCallForwardNoAnswerEnabled TruthValue,
+    voipIfServicesCallForwardNoAnswerNumber OCTET STRING
+}
+
+voipIfServicesControlLineNumber OBJECT-TYPE
+    SYNTAX Integer32 (1..4)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "A unique value, greater than zero, for each table row. "
+      ::= { voipIfServicesControlEntry 1 }
+
+voipIfServicesControlMode OBJECT-TYPE
+    SYNTAX INTEGER {
+      off(1),
+      internal(2),
+      external(3)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Controls the class 5 mode used:
+    'off' -  no class 5 services are available to the user
+    'internal' - class 5 services are provided by internal device call processing
+    'external' - class 5 services are provided by an external device"
+      ::= { voipIfServicesControlEntry 2 }
+
+voipIfServicesCallWaitingEnabled OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Enable call waiting tone generation if 'true'"
+      ::= { voipIfServicesControlEntry 3 }
+
+voipIfServices3PartyCallEnabled OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Enable three party conference calls if 'true'"
+      ::= { voipIfServicesControlEntry 4 }
+
+voipIfServicesCallForwardEnabled OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Enable call forwarding (on no answer, or busy) if 'true'"
+      ::= { voipIfServicesControlEntry 5 }
+
+voipIfServicesCallTransferEnabled OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Enable attended call transfer if 'true'"
+      ::= { voipIfServicesControlEntry 6 }
+
+voipIfServicesCcbsDuration OBJECT-TYPE
+    SYNTAX Integer32
+    UNITS "seconds"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "CCBS duration in seconds"
+      ::= { voipIfServicesControlEntry 7 }
+
+voipIfServicesCcbsInterval OBJECT-TYPE
+    SYNTAX Integer32
+    UNITS "seconds"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "CCBS interval in seconds"
+      ::= { voipIfServicesControlEntry 8 }
+
+voipIfServicesConfCallTransferEnabled OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Enable conference call transfer if 'true'"
+      ::= { voipIfServicesControlEntry 9 }
+
+voipIfServicesClirEnabled OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Enable CLIR if 'true'"
+      ::= { voipIfServicesControlEntry 10 }
+
+voipIfServicesCallForwardUnconditionalEnabled OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Enable unconditional call forwarding if 'true'"
+      ::= { voipIfServicesControlEntry 11 }
+
+voipIfServicesCallForwardUnconditionalNumber OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..32))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the E.164 telephone number used for unconditional call forwarding"
+      ::= { voipIfServicesControlEntry 12 }
+
+voipIfServicesCallForwardBusyEnabled OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Enable call forwarding on busy if 'true'"
+      ::= { voipIfServicesControlEntry 13 }
+
+voipIfServicesCallForwardBusyNumber OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..32))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the E.164 telephone number used for call forwarding on busy"
+      ::= { voipIfServicesControlEntry 14 }
+
+voipIfServicesCallForwardNoAnswerEnabled OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Enable call forwarding on noanswer if 'true'"
+      ::= { voipIfServicesControlEntry 15 }
+
+voipIfServicesCallForwardNoAnswerNumber OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..32))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the E.164 telephone number used for call forwarding on noanswer"
+      ::= { voipIfServicesControlEntry 16 }
+
+-- *****************************************************************************
+-- Call statistics 
+--
+-- *****************************************************************************
+voipCallQuality               OBJECT IDENTIFIER       ::= { drgVoipObjects 11 }
+
+voipCallQualityNotify OBJECT-TYPE
+    SYNTAX INTEGER {
+      disabled(1),
+      always(2),
+      onlyErrors(3)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Setting the object to always(2) causes the system to send
+    notifyVoipCallQuality after every call compeltes
+    no matter of result.
+
+    Setting the object to onlyErrors(3) cause the system to
+    send NotifyVoipCallQuality when an error occurs during
+    the call.
+
+    Setting the object to disabled(1) cause the system to
+    not send any notifyVoipCallQuality."
+      ::= { voipCallQuality 1 }
+
+voipCallQualityTable OBJECT-TYPE
+   SYNTAX SEQUENCE OF VoipCallQualityEntry
+   MAX-ACCESS   not-accessible
+   STATUS       current
+   DESCRIPTION
+      "A table with information about the status of FXS line interface."
+      ::= { voipCallQuality 2 }
+
+voipCallQualityEntry OBJECT-TYPE
+    SYNTAX VoipCallQualityEntry 
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+    "One row of the table."
+    INDEX { voipCallQualityIndex }
+      ::= { voipCallQualityTable 1 }
+
+VoipCallQualityEntry ::= SEQUENCE {
+    voipCallQualityIndex Integer32,
+    voipCallQualityJitter Integer32,
+    voipCallQualityLatency Integer32,
+    voipCallQualityPacketsLost Integer32,
+    voipCallQualityPacketsTotal Integer32,
+    voipCallQualityDuration Integer32,
+    voipCallQualityAPartyNumber OCTET STRING,
+    voipCallQualityAPartyName OCTET STRING,
+    voipCallQualityBPartyNumber OCTET STRING,
+    voipCallQualityBPartyName OCTET STRING,
+    voipCallQualityAPartyAddress IpAddress,
+    voipCallQualityBPartyAddress IpAddress
+}
+
+voipCallQualityIndex OBJECT-TYPE
+    SYNTAX Integer32 (1..4)
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+    "A unique index for the call results table. Each row represents the statistics
+    for the last call made on a specific line. Currently, only the statistics for
+    last call can be got no matter which line does that, so only one entry is available."
+      ::= { voipCallQualityEntry 1 }
+
+voipCallQualityJitter OBJECT-TYPE
+    SYNTAX Integer32
+    UNITS "milliseconds"
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "The average RTP jitter measured during the last call"
+      ::= { voipCallQualityEntry 2 }
+
+voipCallQualityLatency OBJECT-TYPE
+    SYNTAX Integer32
+    UNITS "milliseconds"
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "The average RTP latency measured during the last call"
+      ::= { voipCallQualityEntry 3 }
+
+voipCallQualityPacketsLost OBJECT-TYPE
+    SYNTAX Integer32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "The number of RTP frames not received in the last call. The loss could
+    be caused by network loss, or dropped by the jitter buffer due to late
+    arrival"
+      ::= { voipCallQualityEntry 4 }
+
+voipCallQualityPacketsTotal OBJECT-TYPE
+    SYNTAX Integer32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "The total number of expected packets in the last call."
+      ::= { voipCallQualityEntry 5 }
+
+voipCallQualityDuration OBJECT-TYPE
+    SYNTAX Integer32
+    UNITS "seconds"
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "The duration of the last call in seconds."
+      ::= { voipCallQualityEntry 6 }
+
+voipCallQualityAPartyNumber OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..32))
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "The A-party number associated with the last call. Note that if the number
+    is not known, then 'UNKNOWN' will be used instead"
+      ::= { voipCallQualityEntry 7 }
+
+voipCallQualityAPartyName OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..32))  
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "The A-party name associated with the last call. Note that if the name
+    is not known, then 'UNKNOWN' will be used instead"
+      ::= { voipCallQualityEntry 8 }
+
+voipCallQualityBPartyNumber OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..32))
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "The B-party number associated with the last call. Note that if the number
+    is not known, then 'UNKNOWN' will be used instead"
+      ::= { voipCallQualityEntry 9 }
+
+voipCallQualityBPartyName OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..32))  
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "The B-party name associated with the last call. Note that if the name
+    is not known, then 'UNKNOWN' will be used instead"
+      ::= { voipCallQualityEntry 10 }
+
+voipCallQualityAPartyAddress OBJECT-TYPE
+    SYNTAX IpAddress
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "The A-party IP address associated with the media stream. This is the
+    RTP gateway address, which is not necessarily the same as the signalling
+    address"
+      ::= { voipCallQualityEntry 11 }
+
+voipCallQualityBPartyAddress OBJECT-TYPE
+    SYNTAX IpAddress
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "The B-party IP address associated with the media stream. This is the
+    RTP gateway address, which is not necessarily the same as the signalling
+    address"
+      ::= { voipCallQualityEntry 12 }
+
+
+-- *****************************************************************************
+-- Protocol-specific options
+--
+-- *****************************************************************************
+
+voipProtocolOptions OBJECT IDENTIFIER ::= { drgVoipObjects 12 }
+
+voipSIPOptions OBJECT IDENTIFIER ::= { voipProtocolOptions 1 }
+voipH323Options OBJECT IDENTIFIER ::= { voipProtocolOptions 2 }
+voipMGCPOptions OBJECT IDENTIFIER ::= { voipProtocolOptions 3 }
+voipH248Options OBJECT IDENTIFIER ::= { voipProtocolOptions 4 }
+
+-- *****************************************************************************
+-- SIP signalling options
+--
+-- *****************************************************************************
+
+voipSIPIncludeStandardPort OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Setting the object to true causes the system to include the standard port
+    in SIP Request line URI. false causes the system to not include the standard
+    port in SIP Request line URI."
+      ::= { voipSIPOptions 1 }
+
+voipSIPSupportPrackMethod OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+	  "Support PRACK method with provisional response reliability"
+      ::= { voipSIPOptions 2 }
+
+voipSIPIncludeUserParameter OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+	  "Encode SIP URI with user parameter"
+      ::= { voipSIPOptions 3 }
+
+voipSIPNotifyKeepAliveEnabled OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+          "Control whether the use of sending NOTIFY constantly to keep NAT mapping is enabled. 
+           If YES is set, NOTIFY will be sent in order to keep NAT mapping 
+           with the cycle defined by voipSIPNotifyTimerValue. 
+           If NO is set, NOTIFY will not be sent."
+      ::= { voipSIPOptions 4 }
+
+voipSIPTimers OBJECT IDENTIFIER ::= { voipSIPOptions 5 }
+
+voipSIPInviteTimerValue OBJECT-TYPE
+    SYNTAX Integer32 (0..1000)  
+    UNITS "Seconds"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+	"Timer value ..., a value of 0 indicates that this option is disabled"
+      ::= { voipSIPTimers 1 }
+
+voipSIPSessionTimerValue OBJECT-TYPE
+    SYNTAX Integer32 (0..1000)  
+    UNITS "Seconds"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+	"Timer value ..., a value of 0 indicates that this option is disabled"
+      ::= { voipSIPTimers 2 }
+
+voipSIPNotifyTimerValue OBJECT-TYPE
+    SYNTAX Integer32 (0..1000)  
+    UNITS "Seconds"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+	"Timer value ..., a value of 0 indicates that this option is disabled"
+      ::= { voipSIPTimers 3 }
+
+voipSIPInviteIncludeSdp OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Controls whether SIP invite messages should include SDP parameters"
+      ::= { voipSIPOptions 6 }
+
+voipSIPTelephoneURIEnabled OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Controls whether the use of the telephone-URI method is enabled"
+      ::= { voipSIPOptions 7 }
+
+voipSIPAnonymous OBJECT IDENTIFIER ::= { voipSIPOptions 8 }
+
+voipSIPAnonymousTable OBJECT-TYPE
+   SYNTAX SEQUENCE OF VoipSIPAnonymousEntry
+   MAX-ACCESS   not-accessible
+   STATUS       current
+   DESCRIPTION
+   "Table describes the anonymous call behaviour. One row per line"
+   ::= { voipSIPAnonymous 1 }
+
+voipSIPAnonymousEntry OBJECT-TYPE
+    SYNTAX VoipSIPAnonymousEntry 
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+    "One row of the table."
+    INDEX { voipIfIndex }
+      ::= { voipSIPAnonymousTable 1 }
+
+VoipSIPAnonymousEntry ::= SEQUENCE {
+    voipSIPAnonymousLineNumber Integer32,
+    voipSIPAnonymousFromHeaderEnabled TruthValue,
+    voipSIPAnonymousToHeaderEnabled TruthValue,
+    voipSIPAnonymousProxyRequiresPrivacyEnabled TruthValue,
+    voipSIPAnonymousDisplayNameEnabled TruthValue
+}
+
+voipSIPAnonymousLineNumber OBJECT-TYPE
+    SYNTAX Integer32 (1..4)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "A unique value, greater than zero, for each table row. "
+      ::= { voipSIPAnonymousEntry 1 }
+
+voipSIPAnonymousFromHeaderEnabled OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Enable the use of an 'anonymous' in From and Contact headers."
+      ::= { voipSIPAnonymousEntry 2 }
+
+voipSIPAnonymousToHeaderEnabled OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Enable the use of 'anonymous' From header when transferring a call which
+    is made with temporary CLIR in force."
+      ::= { voipSIPAnonymousEntry 3 }
+
+voipSIPAnonymousProxyRequiresPrivacyEnabled OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Enable the inclusion of 'privacy' in ProxyRequires header when call is
+    made with temporary CLIR in force"
+      ::= { voipSIPAnonymousEntry 4 }
+
+voipSIPAnonymousDisplayNameEnabled OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Enable the use of an 'anonymous' display name when call is made with
+    temporary CLIR in force, and voipSIPAnonymousFromHeaderEnable is not
+    enabled."
+      ::= { voipSIPAnonymousEntry 5 }
+
+
+voipSIPFeatures OBJECT IDENTIFIER ::= { voipSIPOptions 9 }
+
+voipSIPFeaturesTable OBJECT-TYPE
+   SYNTAX SEQUENCE OF VoipSIPFeaturesEntry
+   MAX-ACCESS   not-accessible
+   STATUS       current
+   DESCRIPTION
+      "A table with information about the status of FXS line interface."
+   ::= { voipSIPFeatures 1 }
+
+voipSIPFeaturesEntry OBJECT-TYPE
+    SYNTAX VoipSIPFeaturesEntry 
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+    "One row of the table."
+    INDEX { voipIfIndex }
+      ::= { voipSIPFeaturesTable 1 }
+
+VoipSIPFeaturesEntry ::= SEQUENCE {
+    voipSIPFeaturesLineNumber Integer32,
+    voipSIPLocalRingingEnabled TruthValue,
+    voipSIPMediaDirection INTEGER,
+    voipSIPSuspendTimer Integer32,
+    voipSIPPayphoneReversePolarityEnabled TruthValue,
+    voipSIPOutOfBandFlashMethod INTEGER,
+    voipSIPOutboundProxyAddress OCTET STRING, 
+    voipSIPOutboundProxyPort Integer32
+}
+
+voipSIPFeaturesLineNumber OBJECT-TYPE
+    SYNTAX Integer32 (1..4)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "A unique value, greater than zero, for each table row. "
+      ::= { voipSIPFeaturesEntry 1 }
+
+voipSIPLocalRingingEnabled OBJECT-TYPE  
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Enable the support of local ringing generation when the instance receives
+    a call proceeding message"
+      ::= { voipSIPFeaturesEntry 2 }
+
+voipSIPMediaDirection OBJECT-TYPE  
+    SYNTAX INTEGER {
+      off(1),
+      active(2),
+      passive(3),
+      both(4),
+      reconnect(5)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Controls the default value used for SDP media direction tag. This is
+    useful when operating behind a NAT device"
+      ::= { voipSIPFeaturesEntry 3 }
+
+voipSIPSuspendTimer OBJECT-TYPE
+    SYNTAX Integer32 (0..120)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Determines the maximum time that a call can be placed in the SUSPEND state"
+      ::= { voipSIPFeaturesEntry 4 }
+
+voipSIPPayphoneReversePolarityEnabled OBJECT-TYPE  
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Enable line battery voltage reversal on call establishment and revert to
+    normal battery voltage on call completion. This feature is used by some
+    payphone systems to determine when to charge for a call."
+      ::= { voipSIPFeaturesEntry 5 }
+
+voipSIPOutOfBandFlashMethod OBJECT-TYPE  
+    SYNTAX INTEGER {
+      disabled(1),
+      sipInfo(2)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Determines if hookflash signals shall be sent using an out-of-band
+    method, and if they should, what method is used."
+      ::= { voipSIPFeaturesEntry 6 }
+
+voipSIPOutboundProxyAddress OBJECT-TYPE 
+    SYNTAX OCTET STRING (SIZE(0..255))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Comma delimited list of IP addresses and/or FQDNs for the outbound proxy 
+    server."
+      ::= { voipSIPFeaturesEntry 7 }
+
+voipSIPOutboundProxyPort OBJECT-TYPE
+    SYNTAX Integer32 (1024..65535)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Comma delimited list of destination ports used when communicating with an 
+    outbound proxy server."
+      ::= { voipSIPFeaturesEntry 8 }
+
+-- *****************************************************************************
+-- H323 signalling options
+--
+-- *****************************************************************************
+
+voipH323ProtocolOptions OBJECT IDENTIFIER ::= { voipH323Options 1 }
+voipH323GatekeeperOptions OBJECT IDENTIFIER ::= { voipH323Options 2 }
+voipH323SecurityOptions OBJECT IDENTIFIER ::= { voipH323Options 3 }
+voipH323MessageWaitingOptions OBJECT IDENTIFIER ::= { voipH323Options 4 }
+voipH323CallParkingOptions OBJECT IDENTIFIER ::= { voipH323Options 5 }
+
+
+-- Protocol options
+voipH323SupportFastConnect OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Support the Fast Connect method..."
+      ::= { voipH323ProtocolOptions 1 }
+
+voipH323SupportH245Tunnelling OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Support H245 Tunnelling..."
+      ::= { voipH323ProtocolOptions 2 }
+
+voipH323SupportEarlyH245 OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Support Early H245..."
+      ::= { voipH323ProtocolOptions 3 }
+
+
+-- Gatekeeper options
+voipH323GatekeeperDiscovery OBJECT-TYPE
+    SYNTAX INTEGER {
+      enabled(1),
+      disabled(2)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "If enabled use GRQ messages to discover location and identity of 
+    gatekeepers"
+      ::= { voipH323GatekeeperOptions 1 }
+
+voipH323SupportAlternateGatekeeper OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "If true enable the use of alternate gatekeeper information provided in
+    response to registration requests"
+      ::= { voipH323GatekeeperOptions 2 }
+
+voipH323GatekeeperFullRRQEnable OBJECT-TYPE
+    SYNTAX INTEGER {
+      enabled(1),
+      disabled(2)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "If enabled, use full RRQ messages for keepalive functions"
+      ::= { voipH323GatekeeperOptions 3 }
+
+voipH323GatekeeperIncludeURLID OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..32))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Include optional URL_ID element in registration requests"
+      ::= { voipH323GatekeeperOptions 4 }
+
+
+-- Security options
+voipH323SecurityH235Mode OBJECT-TYPE
+    SYNTAX INTEGER {
+      none(0),
+      setup(1),
+      ras(2),
+      rasArq(3),
+      setupArq(4)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the use of H235 protection on various messages. This can range
+    from no protection, to protection on all types of messages used for call
+    setup"
+      ::= { voipH323SecurityOptions 1 }
+
+voipH323SecurityH235Key OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..128))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Defines the key to be used for H235 protection. This consists of a
+    16-octet string"
+      ::= { voipH323SecurityOptions 2 }
+
+
+-- MWI options
+voipH323SupportMessageWaitingIndicationBlink OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "If true, phone LED will blink when messages are waiting. If false, phone
+     LED will not blink even if messages are waiting."
+      ::= { voipH323MessageWaitingOptions 1 }
+
+voipH323SupportMessageWaitingIndicationTone OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "If true, dialtone will be replaced with message waiting tone when messages 
+    are waiting."
+      ::= { voipH323MessageWaitingOptions 2 }
+
+
+-- Call parking options
+voipH323CallParkingTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF VoipH323CallParkingEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION
+    "Each row of this table controls the POTS line test operation"
+      ::= { voipH323CallParkingOptions 1 }
+
+voipH323CallParkingEntry OBJECT-TYPE
+    SYNTAX VoipH323CallParkingEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+    "One row of the table."
+    INDEX { voipIfIndex }
+      ::= { voipH323CallParkingTable 1 }
+
+VoipH323CallParkingEntry ::= SEQUENCE {
+    voipH323CallParkingIndex Integer32,
+    voipH323CallParkingAlertEnable TruthValue,
+    voipH323CallParkingNumber OCTET STRING
+}
+
+voipH323CallParkingIndex OBJECT-TYPE
+    SYNTAX Integer32
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+    "A unique index value for the voipH323CallParkingTable table. Each row
+    defines the call parking behaviour"
+      ::= { voipH323CallParkingEntry 1 }
+
+voipH323CallParkingAlertEnable OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "If true an alert will be generated when a call has been parked"
+      ::= { voipH323CallParkingEntry 2 }
+
+voipH323CallParkingNumber OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..32))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The number to which calls should be parked if call parking is enabled"
+      ::= { voipH323CallParkingEntry 3 }
+
+
+-- *****************************************************************************
+-- MGCP signalling options
+--
+-- *****************************************************************************
+
+voipMGCPServerMode OBJECT-TYPE 
+    SYNTAX BITS {
+      ietf01(0),	-- v0.1
+      ietf10(1),	-- v1.0
+      ncs10(2)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Controls which specific protocol mode will be used."
+      ::= { voipMGCPOptions 1 }
+
+voipMGCPMaxRSIPDelay OBJECT-TYPE
+    SYNTAX Integer32
+    UNITS "seconds"
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "The maximum delay in seconds before the endpoint will issue an RSIP command"
+      ::= { voipMGCPOptions 2 }
+
+voipMGCPSupportPiggyback OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Controls which piggybacking messages is supported"
+      ::= { voipMGCPOptions 3 }
+
+voipMGCPSquelchDTMF OBJECT-TYPE
+    SYNTAX INTEGER {
+      enabled(1),
+      disabled(2)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "If enabled locally generated DTMF tones which are detected will be
+    squelched, i.e. will be removed from the inband audio stream"
+      ::= { voipMGCPOptions 4 }
+
+
+-- *****************************************************************************
+-- H248 signaling options
+--
+-- *****************************************************************************
+
+voipH248Profile OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..64))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Controls which specific protocol mode will be used."
+      ::= { voipH248Options 1 }
+
+voipH248ProfileVersion OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..64))
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+    "Controls which specific protocol Version will be used."
+      ::= { voipH248Options 2 }
+
+-- *****************************************************************************
+-- Line testing controls
+--
+-- *****************************************************************************
+
+voipLineTest OBJECT IDENTIFIER ::= {drgVoipObjects 13}
+
+
+-- *****************************************************************************
+-- All VoIP notifications are defined here.  These can be sent as traps or as 
+-- informs.
+--
+-- *****************************************************************************
+
+notifyVoipRegistration  NOTIFICATION-TYPE
+    OBJECTS {
+      productMacAddress,
+      productIdentity,
+      voipIfAuthUser,
+      voipIfLineNumber,
+      voipIfRegistrationResult
+    }
+    STATUS      current
+    DESCRIPTION
+    "The result of the registration procedure is reported to the management system."
+      ::= { drgVoipNotifications 1 }
+
+notifyVoipCallQuality NOTIFICATION-TYPE
+    OBJECTS {
+      productMacAddress,
+      productIdentity,
+      voipIfAuthUser,
+      voipIfLineNumber,
+      voipCallQualityJitter,
+      voipCallQualityLatency,
+      voipCallQualityPacketsLost,
+      voipCallQualityPacketsTotal,
+      voipCallQualityDuration,
+      voipCallQualityAPartyNumber,
+      voipCallQualityAPartyName,
+      voipCallQualityBPartyNumber,
+      voipCallQualityBPartyName,
+      voipCallQualityAPartyAddress,
+      voipCallQualityBPartyAddress
+    }
+    STATUS      current
+    DESCRIPTION
+    "VoIP call quality statistics are reported to the management system."
+      ::= { drgVoipNotifications 2 }
+
+
+END
+

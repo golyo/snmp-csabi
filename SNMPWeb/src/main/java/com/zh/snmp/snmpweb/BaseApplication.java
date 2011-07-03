@@ -20,28 +20,23 @@ import org.springframework.context.ApplicationContextAware;
  * @see zh.Start#main(String[])
  */
 public class BaseApplication extends AuthenticatedWebApplication implements ApplicationContextAware {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseApplication.class);
-
     public static final String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
-
-
     /**
      * Constructor
      */
-    private ApplicationContext applicationContext;
+    private static ApplicationContext ctx;
 
     public BaseApplication() {
     }
+
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+        ctx = applicationContext;
         LOGGER.debug("Application context setted");
     }
-    
-    public ApplicationContext getApplicationContext() {
-        return applicationContext;
-    }
-    
+
     @Override
     public Class getHomePage() {
         return SnmpPage.class;
@@ -53,8 +48,8 @@ public class BaseApplication extends AuthenticatedWebApplication implements Appl
         getApplicationSettings().setAccessDeniedPage(SignInPage.class);
         /*
         if (applicationContext == null) {
-            applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-            LOGGER.debug("Application context initialized");
+        applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+        LOGGER.debug("Application context initialized");
         }
          * 
          */
@@ -62,12 +57,12 @@ public class BaseApplication extends AuthenticatedWebApplication implements Appl
 
     @Override
     protected void init() {
-        
+
         LOGGER.debug("JBET started");
         super.init();
 
-        	//add(new AnnotationsRoleAuthorizationStrategy(roleCheckingStrategy));
-		//add(new MetaDataRoleAuthorizationStrategy(roleCheckingStrategy));
+        //add(new AnnotationsRoleAuthorizationStrategy(roleCheckingStrategy));
+        //add(new MetaDataRoleAuthorizationStrategy(roleCheckingStrategy));
         getSecuritySettings().setAuthorizationStrategy(new AnnotationsRoleAuthorizationStrategy(this));
         getSecuritySettings().setUnauthorizedComponentInstantiationListener(this);
         setupSpring();
@@ -77,7 +72,6 @@ public class BaseApplication extends AuthenticatedWebApplication implements Appl
         addComponentInstantiationListener(new SpringComponentInjector(this));
     }
 
-    
     @Override
     protected Class<? extends WebPage> getSignInPageClass() {
         return SignInPage.class;
@@ -88,8 +82,11 @@ public class BaseApplication extends AuthenticatedWebApplication implements Appl
         return BaseSession.class;
     }
 
-    
-     public static BaseApplication get() {
-         return (BaseApplication)WebApplication.get();
-     }
+    public static BaseApplication get() {
+        return (BaseApplication) WebApplication.get();
+    }
+
+    public static ApplicationContext getCtx() {
+        return ctx;
+    }
 }

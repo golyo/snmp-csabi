@@ -1,0 +1,250 @@
+PACKETFRONT-HTTP-MIB DEFINITIONS ::= BEGIN
+
+-- Copyright (c) 2007,2007 Packetfront Systems AB
+
+IMPORTS
+
+    MODULE-IDENTITY,
+    OBJECT-TYPE,
+    NOTIFICATION-TYPE,
+    Integer32
+    FROM SNMPv2-SMI
+
+    pfMgmt
+    FROM PACKETFRONT-SMI
+  
+    productMacAddress,
+    productIdentity
+    FROM PACKETFRONT-DRG-MIB
+;
+
+
+-- *****************************************************************************
+-- serviceHttpServer
+--
+-- ***************************************************************************** 
+
+serviceHttpServer MODULE-IDENTITY
+    LAST-UPDATED "200903231530Z"
+    ORGANIZATION "PacketFront Systems AB"
+    CONTACT-INFO
+        "PacketFront Systems AB
+         Customer Service
+
+         Mail : Isafjordsgatan 35
+                SE-164 28 Kista
+                Sweden
+
+         Tel  : +46 8 5090 1500
+
+         E-mail: snmp@packetfront.com
+         Web   : http://www.packetfront.com"
+    DESCRIPTION
+        "The MIB module for Packetfront HTTP servers on DRG platforms"
+
+    REVISION "200903231530Z" -- March 23, 2009
+    DESCRIPTION
+        "Updated telephone information in contact-info"
+    REVISION "200711231400Z" -- November 23, 2007
+    DESCRIPTION
+        "Initial release."
+
+    ::= { pfMgmt 5 }
+
+
+httpServerNotification OBJECT IDENTIFIER ::= { serviceHttpServer 0 }
+httpServerConfig       OBJECT IDENTIFIER ::= { serviceHttpServer 1 }
+httpServerConformance  OBJECT IDENTIFIER ::= { serviceHttpServer 2 }
+
+
+-- *****************************************************************************
+-- httpServerConfig provides control of the built in HTTP server and GUI
+--
+-- *****************************************************************************
+
+httpStatus OBJECT-TYPE
+  SYNTAX INTEGER {
+    uninitialized(1),
+    running(2),
+    stopping(3),
+    stopped(4)
+  }
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+  "Provides details of the status of the server."
+    ::= { httpServerConfig 1 }
+
+httpAdminStatus OBJECT-TYPE
+  SYNTAX INTEGER {
+    enabled(1),
+    disabled(2)
+  }
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "Provides control over the operation of the HTTP server. enabled(1)
+  causes the server to run, while setting the object to disabled(2)
+  causes the server to stop. When stopped the server does not allow 
+  management through the web interface."
+    ::= { httpServerConfig 2 }
+
+httpPort OBJECT-TYPE
+  SYNTAX Integer32 (1..65535)
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "The TCP port number on which the internal web server listens."
+  DEFVAL { 80 }
+    ::= { httpServerConfig 3 }
+
+httpLoginSessionTimeout OBJECT-TYPE
+  SYNTAX Integer32 (0..86400)
+  UNITS "seconds"
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "Following a successful login, the duration of inactivity which shall cause
+  the server to drop the session and therefore require the user to login again."
+  DEFVAL { 300 }
+    ::= { httpServerConfig 4 }
+
+httpLoginAttempts OBJECT-TYPE
+  SYNTAX Integer32 (0..10)
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "The number of logins which can be attempted before the login failure
+  timeout procedure is enforced. After N attempts a long timeout period
+  (see httpLoginFailureTimeout) is enforced before offering the user 
+  another opportunity to log in."
+  DEFVAL { 3 }
+    ::= { httpServerConfig 5 }
+
+httpLoginFailureTimeout OBJECT-TYPE
+  SYNTAX Integer32 (0..86400)
+  UNITS "seconds"
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "Following a login failure (see httpLoginAttempts), the time which the 
+  server shall wait before offering the user another opportunity to log in."
+  DEFVAL { 10 }
+    ::= { httpServerConfig 6 }
+
+httpPasswordFormat OBJECT-TYPE
+  SYNTAX INTEGER {
+    cleartext(1),
+    crc16(2)
+  }
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "Defines the format used to store passwords. Cleartext passwords should not
+  be used as they reduce the overall system security. This object's value is
+  used when performing user authentication to allow comparison of the entered
+  password to that stored in the device."
+  DEFVAL { crc16 }
+    ::= { httpServerConfig 7 }
+
+httpOperatorUsername OBJECT-TYPE
+  SYNTAX OCTET STRING (SIZE (0..20))
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+  "The username which the operator may use to log into the HTTP server GUI"
+    ::= { httpServerConfig 8 }
+
+httpOperatorPassword OBJECT-TYPE
+  SYNTAX OCTET STRING (SIZE (0..40))
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "The password associated with the operator user - note that for security
+  reasons it is unsafe to transfer or store passwords as cleartext. Therefore
+  the password should be a hash of the username's password (see httpPasswordFormat)"
+    ::= { httpServerConfig 9 }
+
+httpAdminUsername OBJECT-TYPE
+  SYNTAX OCTET STRING (SIZE (0..20))
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+  "The username which the enduser may use to log into the HTTP server GUI"
+    ::= { httpServerConfig 10 }
+
+httpAdminPassword OBJECT-TYPE
+  SYNTAX OCTET STRING (SIZE (0..40))
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "The password associated with the enduser user - note that for security
+  reasons it is unsafe to transfer or store passwords as cleartext. Therefore
+  the password should be a hash of the username's password (see httpPasswordFormat)"
+    ::= { httpServerConfig 11 }
+
+httpAuthentication OBJECT-TYPE
+  SYNTAX INTEGER {
+    enabled(1),
+    disabled(2)
+  }
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "Provides control over the authentication of the HTTP server. enabled(1)
+  causes the server to request authentication of users, while setting the 
+  object to disabled disables authentication."
+  DEFVAL { enabled }
+    ::= { httpServerConfig 12 }
+
+httpLastLogin OBJECT-TYPE
+  SYNTAX INTEGER {
+    failure(1),
+    success(2)
+  }
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+  "Describes whether the last login attempt was successfull of failed. Used
+  in httpServerAuthTrap notification."
+    ::= { httpServerConfig 13 }
+
+httpEnableAuthTraps OBJECT-TYPE
+  SYNTAX INTEGER {
+    none(0),
+    always(1),
+    onFailure(2)
+  }
+  MAX-ACCESS read-write
+  STATUS current
+  DESCRIPTION
+  "Provides control over the generation of httpServerAuthentication traps.
+  none indicates that no traps shall be sent, always(1) indicates that a
+  trap shall be sent for each authentication whether successful or not, and
+  onFailure(2) indicates that a trap shall be sent when an authentication
+  failure occurs. If authentication is disabled via httpAuthentication
+  control, then no traps shall be sent."
+  DEFVAL { none }
+    ::= { httpServerConfig 14 }
+
+
+-- *****************************************************************************
+-- httpServerNotification
+--
+-- *****************************************************************************
+
+httpServerAuthTrap NOTIFICATION-TYPE
+  OBJECTS {
+    productMacAddress,
+    productIdentity,
+    httpLastLogin
+  }
+  STATUS  current
+  DESCRIPTION
+  "An httpServerAuthentication trap signifies that the httpServer entity, 
+  has received a login attempt. The httpEnableAuthTraps object indicates 
+  under which circumstances this trap will be generated."
+    ::= { httpServerNotification 1 }
+
+END
+
