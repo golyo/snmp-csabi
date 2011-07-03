@@ -16,6 +16,7 @@
  */
 package com.zh.snmp.snmpcore.snmp;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import org.snmp4j.smi.VariableBinding;
@@ -24,7 +25,7 @@ import org.snmp4j.smi.VariableBinding;
  *
  * @author Golyo
  */
-public class SnmpCommand {
+public class SnmpCommand implements Serializable {
     private List<VariableBinding> bindings;
     
     public SnmpCommand() {
