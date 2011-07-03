@@ -19,6 +19,8 @@ package com.zh.snmp.snmpweb.pages.snmp;
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.entities.DeviceType;
+import com.zh.snmp.snmpweb.monitoring.SnmpGetPanel;
+import com.zh.snmp.snmpweb.pages.BasePage;
 import com.zh.snmp.snmpweb.pages.BasePanel;
 import java.util.Arrays;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -67,7 +69,6 @@ public class DeviceDetailsPanel extends BasePanel<DeviceEntity> {
                         panel.show(target);
                     }
                 });
-
             }
         };
         add(configList);

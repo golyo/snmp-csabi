@@ -51,7 +51,7 @@ public class HistoryListPanel extends DataTablePanel<HistoryEntity> {
     protected IColumn<HistoryEntity>[] createTableColumns() {
         return new IColumn[] {
             new DatePropertyColumn<HistoryEntity>(new ResourceModel("history.updateTime"), "updateTime", "updateTime", true),
-            new EnumPropertyColumn<DeviceType>(new ResourceModel("deviceConfig.deviceType"), "deviceType"),
+            new EnumPropertyColumn<HistoryEntity>(new ResourceModel("deviceConfig.deviceType"), "deviceType"),
             new PropertyColumn<HistoryEntity>(new ResourceModel("history.oldConfig"), "oldConfig") {
                 @Override
                 protected IModel<?> createLabelModel(IModel<HistoryEntity> rowModel) {

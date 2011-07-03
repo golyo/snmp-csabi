@@ -14,28 +14,28 @@
  *  ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR
  *  DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
  */
-package com.zh.snmp.snmpweb.components;
+package com.zh.snmp.snmpweb.monitoring;
 
-import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
-import org.apache.wicket.markup.html.basic.EnumLabel;
-import org.apache.wicket.markup.repeater.Item;
+import com.zh.snmp.snmpcore.message.MessageAppender;
+import com.zh.snmp.snmpcore.snmp.trap.TrapManager;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 
 /**
  *
  * @author Golyo
  */
-public class EnumPropertyColumn<T> extends AbstractColumn<T> {
-
-    public EnumPropertyColumn(IModel<String> resourceModel, String property) {
-        super(resourceModel, property);
+public class TrapMonitorPanel extends MonitorPanel<String> {
+    @SpringBean
+    private TrapManager trapManager;
+    
+    public TrapMonitorPanel(String id) {
+        super(id, Model.of(""));
     }
     
-    @Override
-    public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
-        cellItem.add(new EnumLabel(componentId, new PropertyModel(rowModel.getObject(), getSortProperty())));
+    protected MessageAppender getAppender(IModel<String> model) {
+        return trapManager.getMessageAppender();
     }
     
 }

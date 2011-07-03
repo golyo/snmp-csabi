@@ -127,6 +127,7 @@ public abstract class BasePage extends WebPage {
         art.addComponent(tabContainer);
         changePanel(config[0], model, art);
     }
+    
 /*
     protected void addMainMenuToForm(IModel pmodel) {
         final Class<? extends BasePanel>[] config = main.getMainMenuConfig();
