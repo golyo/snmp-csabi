@@ -14,40 +14,27 @@
  *  ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR
  *  DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
  */
-package com.zh.snmp.snmpcore.message;
-
-import java.io.Serializable;
+package com.zh.snmp.snmpcore.snmp;
 
 /**
  *
  * @author Golyo
  */
-public class ZhMessage<T extends Serializable> implements Serializable {
-    private String resourceKey;
-    private T object;
-
-    public ZhMessage(String resourceKey) {
-        this.resourceKey = resourceKey;
-    }
+public interface SnmpResources {
+    //DeviceTrapInfo
+    public final static String MSG_TRAP_RECEIVED = "snmp.trapReceived";
+    //DeviceTrapInfo
+    public static final String MSG_DEVICE_NOTFOUND = "snmp.deviceByIpNotFound";
+    //DeviceEntity
+    public static final String MSG_CONFIG_NOTFOUND = "snmp.configNotFound";
+    //String
+    public static final String MSG_SNMPERROR = "snmp.error";
     
-    public ZhMessage(String resourceKey, T object) {
-        this.resourceKey = resourceKey;
-        this.object = object;
-    }
+    //SnmpCommandResult
+    public static final String MSG_COMMAND_FAILED = "snmp.commandFailed";
+    //SnmpCommandResult
+    public static final String MSG_COMMAND_SKIPPED = "snmp.commandSkipped";
+    //SnmpCommandResult
+    public static final String MSG_COMMAND_SUCCES = "snmp.commandSucces";
     
-    public T getObject() {
-        return object;
-    }
-
-    public void setObject(T object) {
-        this.object = object;
-    }
-
-    public String getResourceKey() {
-        return resourceKey;
-    }
-
-    public void setResourceKey(String resourceKey) {
-        this.resourceKey = resourceKey;
-    }
 }

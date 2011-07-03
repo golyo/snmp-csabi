@@ -19,6 +19,8 @@ package com.zh.snmp.snmpcore.snmp;
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.entities.DeviceType;
+import com.zh.snmp.snmpcore.exception.ExceptionCodesEnum;
+import com.zh.snmp.snmpcore.exception.SystemException;
 import com.zh.snmp.snmpcore.message.MessageAppender;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import com.zh.snmp.snmpcore.snmp.mib.MibParser;
@@ -38,15 +40,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author Golyo
  */
-public class SnmpManager implements TrapListener {
+public class SnmpManager implements TrapListener, SnmpResources {
     private static final Logger LOGGER = LoggerFactory.getLogger(SnmpManager.class);
-    private static final String MSG_DEVICE_NOTFOUND = "snmp.deviceByIpNotFound";
-    private static final String MSG_CONFIG_NOTFOUND = "snmp.configNotFound";
-    private static final String MSG_SNMPERROR = "snmp.error";
-    private static final String MSG_GETRESULT = "snmp.getResult";
-    private static final String MSG_COMMAND_FAILED = "snmp.commandFailed";
-    private static final String MSG_COMMAND_SKIPPED = "snmp.commandSkipped";
-    private static final String MSG_COMMAND_SUCCES = "snmp.commandSucces";
     
     private Snmp snmp;
     
@@ -77,13 +72,15 @@ public class SnmpManager implements TrapListener {
     }
 
     public List<SnmpCommandResult> processOnDevice(ProcessType processType, DeviceEntity device, DeviceType deviceType, MessageAppender appender) {
+        List<SnmpCommandResult> result = null;
         DeviceConfigEntity config = device.findConfiguration(deviceType);
         if (config == null) {
             appender.addMessage(MSG_CONFIG_NOTFOUND, device);
-            return null;
         } else {
-            return processOnIp(processType, device.getIpAddress(), config, appender);            
+            result = processOnIp(processType, device.getIpAddress(), config, appender); 
         }
+        appender.finish();
+        return result;     
     }
     
     protected void checkAndSet(String ip, DeviceConfigEntity config, MessageAppender appender) {        
@@ -95,27 +92,31 @@ public class SnmpManager implements TrapListener {
     }
     
     private boolean checkResults(List<SnmpCommandResult> results, MessageAppender appender) {
-        boolean hasFailed = false;
-        boolean allSkip = true;
+        Boolean canContinue = true;
         for (SnmpCommandResult r: results) {
-            switch (r.getType()) {
-                case FAILED: {
-                    hasFailed = true;
-                    appender.addMessage(MSG_COMMAND_FAILED, r);
-                    break;
-                }
-                case SKIPED: {
-                    appender.addMessage(MSG_COMMAND_SKIPPED, r);
-                    break;
-                }
-                case SUCCES: {
-                    allSkip = false;                    
-                    appender.addMessage(MSG_COMMAND_SUCCES, r);                    
-                    break;
-                }
+            canContinue = checkResult(r, appender) && canContinue;
+        }        
+        return canContinue;
+    }
+    
+    protected boolean checkResult(SnmpCommandResult result, MessageAppender appender) {
+        switch (result.getType()) {
+            case FAILED: {
+                appender.addMessage(MSG_COMMAND_FAILED, result);
+                return false;
+            }
+            case SKIPED: {
+                appender.addMessage(MSG_COMMAND_SKIPPED, result);
+                return true;
+            }
+            case SUCCES: {
+                appender.addMessage(MSG_COMMAND_SUCCES, result);                    
+                return true;
+            } 
+            default: {
+                throw new SystemException(ExceptionCodesEnum.Unsupported);
             }
         }        
-        return !hasFailed && !allSkip;
     }
     
     protected List<SnmpCommandResult> processOnIp(ProcessType processType, String ip, DeviceConfigEntity config, MessageAppender appender) {
@@ -139,7 +140,7 @@ public class SnmpManager implements TrapListener {
                         throw new IOException("Process type not found " + processType);
                     }
                 }
-                appender.addMessage(MSG_GETRESULT, result);
+                checkResult(result, appender);
                 results.add(result);
             }
             return results;
@@ -150,7 +151,7 @@ public class SnmpManager implements TrapListener {
         }        
     }
     
-    public DeviceEntity parseDevice(DeviceTrapInfo trapInfo, MessageAppender appender) {
+    protected DeviceEntity parseDevice(DeviceTrapInfo trapInfo, MessageAppender appender) {
         DeviceEntity filter = new DeviceEntity();
         filter.setIpAddress(trapInfo.getIpAdress());
         return service.findDeviceByFilter(filter);        

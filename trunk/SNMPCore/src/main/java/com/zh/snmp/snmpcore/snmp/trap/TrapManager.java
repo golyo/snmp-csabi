@@ -18,7 +18,9 @@ package com.zh.snmp.snmpcore.snmp.trap;
 
 import com.zh.snmp.snmpcore.message.MaxMessageAppender;
 import com.zh.snmp.snmpcore.message.MessageAppender;
+import com.zh.snmp.snmpcore.snmp.SnmpResources;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +29,6 @@ import org.snmp4j.CommandResponderEvent;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.MessageDispatcher;
 import org.snmp4j.MessageDispatcherImpl;
-import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.mp.MPv1;
 import org.snmp4j.mp.MPv2c;
@@ -44,33 +45,27 @@ import org.snmp4j.transport.DefaultTcpTransportMapping;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.snmp4j.util.MultiThreadedMessageDispatcher;
 import org.snmp4j.util.ThreadPool;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author Golyo
  */
-public class TrapManager implements CommandResponder {
+public class TrapManager implements CommandResponder, SnmpResources, Serializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TrapManager.class);
-    private final static String MSG_TRAP_RECEIVED = "snmp.trapReceived";
     //private final Object synchObj = new Object();
     //private boolean interrupted;
     
-    private String trapListenerAddress;
+    @Autowired
     private TrapListener trapListener;
+    
+    private String trapListenerAddress;
     private AbstractTransportMapping transport;
     private MessageAppender msgAppender = new MaxMessageAppender(10);
     
 
     
-    public TrapListener getTrapListener() {
-        return trapListener;
-    }
-
-    public void setTrapListener(TrapListener trapListener) {
-        this.trapListener = trapListener;
-    }
-
     public String getTrapListenerAddress() {
         return trapListenerAddress;
     }
@@ -182,7 +177,7 @@ public class TrapManager implements CommandResponder {
     
     private static final String NODEID_OID = "";
     
-    public static class DeviceTrapInfo {
+    public static class DeviceTrapInfo implements Serializable {
         private String nodeId;
         private String ipAddress;
 

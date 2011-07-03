@@ -16,13 +16,13 @@
  */
 package com.zh.snmp.snmpcore.snmp;
 
-import com.zh.snmp.snmpcore.snmp.SnmpCommand;
+import java.io.Serializable;
 
 /**
  *
  * @author Golyo
  */
-public class SnmpCommandResult {
+public class SnmpCommandResult implements Serializable {
     private SnmpCommand result;
     private ResultType type;
     private String errorStr;        

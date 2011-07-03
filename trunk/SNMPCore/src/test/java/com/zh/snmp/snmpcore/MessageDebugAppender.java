@@ -18,6 +18,7 @@ package com.zh.snmp.snmpcore;
 
 import com.zh.snmp.snmpcore.message.MessageAppender;
 import com.zh.snmp.snmpcore.message.ZhMessage;
+import java.io.Serializable;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,14 +29,15 @@ import org.slf4j.LoggerFactory;
  */
 public class MessageDebugAppender implements MessageAppender {
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageDebugAppender.class);
+    private boolean finished = false;
     
     @Override
-    public <T> void addMessage(String key) {
+    public void addMessage(String key) {
         LOGGER.debug("Message added: " + key);
     }
 
     @Override
-    public <T> void addMessage(String key, T object) {
+    public <T extends Serializable> void addMessage(String key, T object) {
         LOGGER.debug("Message added: " + key + ", object: " + object);
     }
 
@@ -44,4 +46,15 @@ public class MessageDebugAppender implements MessageAppender {
         throw new UnsupportedOperationException("Not supported yet.");
     }
     
+    @Override
+    public void finish() {
+        finished = true;
+        LOGGER.debug("Finished");
+    }
+
+    @Override
+    public boolean isFinished() {
+        return finished;
+    }        
+            
 }

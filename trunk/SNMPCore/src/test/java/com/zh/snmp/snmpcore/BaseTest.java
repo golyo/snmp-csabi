@@ -23,7 +23,6 @@ import com.zh.snmp.snmpcore.services.SnmpService;
 import com.zh.snmp.snmpcore.snmp.mib.MibParser;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.sql.SQLException;
 import javax.naming.NamingException;
 import org.apache.commons.io.IOUtils;

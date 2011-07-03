@@ -16,28 +16,30 @@
  */
 package com.zh.snmp.snmpcore.snmp.trap;
 
+import com.zh.snmp.snmpcore.BaseTest;
 import java.io.IOException;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author Golyo
  */
-public class TestTrapManager {
+public class TestTrapManager extends BaseTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestTrapManager.class);
+
+    @Autowired
+    private TrapManager trapManager;
     
     @Test
     public void testManager() throws IOException, InterruptedException {
-        TrapManager tm = new TrapManager();
-        tm.setTrapListener(new TrapLoggerListener());
-        tm.setTrapListenerAddress("192.168.2.101/162");
-        tm.start();
-        for (int i=0; i<20; i++) {
+        trapManager.start();
+        for (int i=0; i<1; i++) {
             LOGGER.debug("Wait " + i);
             Thread.sleep(1000);
         }
-        tm.stop();
+        trapManager.stop();
     }        
 }
