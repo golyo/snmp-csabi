@@ -101,3 +101,23 @@ label {
     clear: left;
     font-weight: bold;
 }
+
+.progressLabel {
+    padding-left: 40px;
+    height: 32px;
+    background: url('img/progress_bar.gif') no-repeat top left;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.processResult {
+    border: 1px solid #888;
+    margin: 5px;
+    padding: 5px;
+    font-family: monospace;
+    height: 400px;
+    overflow: auto;
+}
+
+
+

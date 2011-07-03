@@ -16,7 +16,6 @@
  */
 package com.zh.snmp.snmpweb.pages.snmp;
 
-import com.zh.snmp.snmpcore.entities.BaseEntity;
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.entities.DeviceType;

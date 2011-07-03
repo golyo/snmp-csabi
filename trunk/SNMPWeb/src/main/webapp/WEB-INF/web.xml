@@ -22,6 +22,7 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>
                 classpath*:applicationContext.xml,
+                classpath*:snmp-applicationContext.xml,
                 classpath*:dao-partial-applicationContext.xml,
                 classpath*:aop-applicationContext.xml,
                 classpath*:service-applicationContext.xml,

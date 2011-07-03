@@ -16,20 +16,16 @@
  */
 package com.zh.snmp.snmpweb.pages.snmp;
 
-import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpweb.components.DataTablePanel;
 import com.zh.snmp.snmpweb.components.RowLinkColumn;
 import com.zh.snmp.snmpweb.menu.MenuConfig;
-import com.zh.snmp.snmpweb.model.DetachableDeviceConfigListModel;
 import com.zh.snmp.snmpweb.model.DeviceProvider;
-import java.io.Serializable;
+import com.zh.snmp.snmpweb.monitoring.SnmpGetPanel;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.ChoiceFilteredPropertyColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilteredPropertyColumn;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
@@ -38,7 +34,7 @@ import org.apache.wicket.model.ResourceModel;
  *
  * @author Golyo
  */
-@MenuConfig(context={DeviceDetailsPanel.class, HistoryListPanel.class})
+@MenuConfig(context={DeviceDetailsPanel.class, HistoryListPanel.class, SnmpGetPanel.class})
 public class DeviceListPanel extends DataTablePanel<DeviceEntity> {
     
     public DeviceListPanel(String id) {
