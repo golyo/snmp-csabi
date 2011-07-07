@@ -90,7 +90,7 @@ public class SnmpWebService {
     }
 
     @WebMethod(operationName = "setDinamicConfigValue")
-    public Boolean setDeviceConfig(@WebParam(name = "nodeId") String nodeId, @WebParam(name = "configPath") String configPath, String value) {
+    public Boolean setDinamicConfigValue(@WebParam(name = "nodeId") String nodeId, @WebParam(name = "configPath") String configPath, String value) {
         init();
         return false;
         /*
