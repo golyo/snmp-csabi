@@ -18,7 +18,6 @@ package com.zh.snmp.snmpweb.monitoring;
 
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
-import com.zh.snmp.snmpcore.entities.DeviceType;
 import com.zh.snmp.snmpcore.snmp.SnmpManager;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,11 +38,12 @@ public class SnmpGetPanel extends MonitorPanel<DeviceEntity> {
     @SpringBean
     private SnmpManager snmpManager;
     
-    private IModel<DeviceType> selectedType;
+    //private IModel<DeviceType> selectedType;
     private DropDownChoice typeChoice;
     
-    public SnmpGetPanel(String id, IModel<DeviceEntity> model) {
+    public SnmpGetPanel(String id, IModel<DeviceEntity> model) {        
         super(id, model);
+        /*
         progressLabel.setVisible(false);
         selectedType = Model.of();
         add(typeChoice = new DropDownChoice("typeSelect", selectedType, new PropertyModel(this, "types"), new EnumChoiceRenderer())); 
@@ -58,19 +58,13 @@ public class SnmpGetPanel extends MonitorPanel<DeviceEntity> {
                 target.addComponent(SnmpGetPanel.this);
             }
         });
+         * 
+         */
     }
 
     @Override
     protected void onEndProcess(AjaxRequestTarget target) {
         typeChoice.setEnabled(true);
         target.addComponent(typeChoice);        
-    }
-    
-    public List<DeviceType> getTypes() {
-        List<DeviceType> types = new LinkedList<DeviceType>();
-        for (DeviceConfigEntity conf: getPanelModel().getObject().getConfigurations()) {
-            types.add(conf.getDeviceType());
-        }
-        return types;
-    }
+    }    
 }

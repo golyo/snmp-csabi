@@ -17,17 +17,13 @@
 package com.zh.snmp.snmpweb.pages.snmp;
 
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
-import com.zh.snmp.snmpcore.entities.DeviceType;
-import com.zh.snmp.snmpcore.services.SnmpService;
+import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpweb.components.ModalEditCloseListener;
 import com.zh.snmp.snmpweb.components.ModalEditPanel;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
@@ -43,7 +39,7 @@ import org.apache.wicket.util.io.IOUtils;
  */
 public class DeviceConfigEditPanel extends ModalEditPanel<DeviceConfigEntity> implements ModalEditCloseListener {
     @SpringBean
-    private SnmpService service;
+    private ConfigService service;
     private FileUploadField file;
     
     public DeviceConfigEditPanel(ModalWindow modal, IModel<DeviceConfigEntity> model) {
@@ -53,7 +49,6 @@ public class DeviceConfigEditPanel extends ModalEditPanel<DeviceConfigEntity> im
         form.add(new TextField("code").setRequired(true).setEnabled(!isEdit));
         form.add(new TextField("name").setRequired(true));
         form.add(file = new FileUploadField("uploadFile", new Model<FileUpload>()));
-        form.add(new DropDownChoice("deviceType", Arrays.asList(DeviceType.values()), new EnumChoiceRenderer(this)));
         //form.add(ne)
                 
         file.setRequired(!isEdit).setVisible(!isEdit);        
@@ -63,7 +58,7 @@ public class DeviceConfigEditPanel extends ModalEditPanel<DeviceConfigEntity> im
     protected boolean onModalSave(AjaxRequestTarget target) {
         String errKey = null;
         DeviceConfigEntity saveable = (DeviceConfigEntity)form.getDefaultModelObject();
-        DeviceConfigEntity checkCode = service.findDeviceConfigByCode(saveable.getCode());
+        DeviceConfigEntity checkCode = service.findConfigEntityByCode(saveable.getId());
         if (checkCode != null && !checkCode.getId().equals(saveable.getId())) {
             errKey = "deviceConfigEntity.error.codeExists";
         } else if (saveable.getId() == null) {
@@ -82,7 +77,7 @@ public class DeviceConfigEditPanel extends ModalEditPanel<DeviceConfigEntity> im
             target.addComponent(feedback);
             return false;
         } else {
-            service.saveDeviceConfig(saveable);
+            service.saveEntity(saveable);
             return true;
         }
     }

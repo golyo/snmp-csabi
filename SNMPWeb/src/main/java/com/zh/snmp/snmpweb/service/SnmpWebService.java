@@ -18,7 +18,10 @@ package com.zh.snmp.snmpweb.service;
 
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
+import com.zh.snmp.snmpcore.services.ConfigService;
+import com.zh.snmp.snmpcore.services.DeviceService;
 import com.zh.snmp.snmpcore.services.SnmpService;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Resource;
@@ -42,48 +45,68 @@ public class SnmpWebService {
 
     private SnmpService service;
 
+    private ConfigService configService;
+    
+    private DeviceService deviceService;
+    
     public SnmpWebService() {
         
     }
     
     @WebMethod(operationName = "getConfigurations")
-    public List<String> getConfigurations() {
+    public List<String> getConfigurations() {        
         init();
-        List<DeviceConfigEntity> confs = service.findDeviceConfigByFilter(new DeviceConfigEntity(), null, 0, -1);
-        List<String> ret = new LinkedList<String>();
-        for (DeviceConfigEntity dc: confs) {
-            ret.add(dc.getCode());
-        }
-        return ret;
+        return configService.getConfigCodes();
     }
     
     @WebMethod(operationName = "createDevice")
-    public Boolean createDevice(@WebParam(name = "nodeId") String nodeId, @WebParam(name = "ipAddress") String ipAddress, @WebParam(name = "macAddress") String macAddress) {
+    public Boolean createDevice(@WebParam(name = "configCode") String configCode, @WebParam(name = "nodeId") String nodeId, @WebParam(name = "ipAddress") String ipAddress, @WebParam(name = "macAddress") String macAddress) {
         init();
-        DeviceEntity de = service.findDeviceByNodeId(nodeId);
+        DeviceEntity de = deviceService.findDeviceEntityById(nodeId);
         if (de != null) {
-            return Boolean.FALSE;
+            return false;
+            
         } else {
             de = new DeviceEntity();
-            de.setNodeId(nodeId);
+            de.setConfigCode(configCode);
+            de.setId(nodeId);
             de.setIpAddress(ipAddress);
             de.setMacAddress(macAddress);
-            de = service.saveDevice(de);
-            return Boolean.TRUE;
+            de = deviceService.saveEntity(de);
+            return true;
         }
     }
     
+    private static final String PATH_DELIM = "\\.";
     @WebMethod(operationName = "setDeviceConfig")
-    public Boolean setDeviceConfig(@WebParam(name = "nodeId") String nodeId, @WebParam(name = "configCode") String configCode) {
+    public Boolean setDeviceConfig(@WebParam(name = "nodeId") String nodeId, @WebParam(name = "configPath") String configPath, int mode) {
         init();
+        List<String> path = Arrays.asList(configPath.split(PATH_DELIM));
+        return deviceService.setDeviceConfig(nodeId, path, mode);
+        /*
         return service.setDeviceConfig(nodeId, configCode) != null;
+         * 
+         */
     }
 
+    @WebMethod(operationName = "setDinamicConfigValue")
+    public Boolean setDeviceConfig(@WebParam(name = "nodeId") String nodeId, @WebParam(name = "configPath") String configPath, String value) {
+        init();
+        return false;
+        /*
+        return service.setDeviceConfig(nodeId, configCode) != null;
+         * 
+         */
+    }
+
+    
     public void init() {
         if (service == null) {
             ServletContext servletContext = (ServletContext) context.getMessageContext().get(MessageContext.SERVLET_CONTEXT);
             WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
-            service = (SnmpService)wac.getBean("SnmpService");            
+            service = (SnmpService)wac.getBean("SnmpService");    
+            deviceService = (DeviceService)wac.getBean("DeviceService");
+            configService = (ConfigService)wac.getBean("ConfigService");
         }
     }
 }

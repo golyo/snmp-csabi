@@ -46,7 +46,8 @@ public interface SnmpWebService {
     /**
      * 
      * @param nodeId
-     * @param configCode
+     * @param arg2
+     * @param configPath
      * @return
      *     returns java.lang.Boolean
      */
@@ -57,12 +58,35 @@ public interface SnmpWebService {
     public Boolean setDeviceConfig(
         @WebParam(name = "nodeId", targetNamespace = "")
         String nodeId,
-        @WebParam(name = "configCode", targetNamespace = "")
-        String configCode);
+        @WebParam(name = "configPath", targetNamespace = "")
+        String configPath,
+        @WebParam(name = "arg2", targetNamespace = "")
+        int arg2);
 
     /**
      * 
      * @param nodeId
+     * @param arg2
+     * @param configPath
+     * @return
+     *     returns java.lang.Boolean
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "setDinamicConfigValue", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.SetDeviceConfig")
+    @ResponseWrapper(localName = "setDinamicConfigValueResponse", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.SetDeviceConfigResponse")
+    public Boolean setDinamicConfigValue(
+        @WebParam(name = "nodeId", targetNamespace = "")
+        String nodeId,
+        @WebParam(name = "configPath", targetNamespace = "")
+        String configPath,
+        @WebParam(name = "arg2", targetNamespace = "")
+        int arg2);
+
+    /**
+     * 
+     * @param nodeId
+     * @param configCode
      * @param macAddress
      * @param ipAddress
      * @return
@@ -73,6 +97,8 @@ public interface SnmpWebService {
     @RequestWrapper(localName = "createDevice", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.CreateDevice")
     @ResponseWrapper(localName = "createDeviceResponse", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.CreateDeviceResponse")
     public Boolean createDevice(
+        @WebParam(name = "configCode", targetNamespace = "")
+        String configCode,
         @WebParam(name = "nodeId", targetNamespace = "")
         String nodeId,
         @WebParam(name = "ipAddress", targetNamespace = "")

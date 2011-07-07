@@ -18,7 +18,6 @@ package com.zh.snmp.snmpweb.pages.snmp;
 
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
-import com.zh.snmp.snmpcore.entities.DeviceType;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import com.zh.snmp.snmpweb.components.ModalEditCloseListener;
 import com.zh.snmp.snmpweb.components.ModalEditPanel;
@@ -42,8 +41,9 @@ public class ConfigChangeOnDevicePanel extends ModalEditPanel<DeviceEntity> impl
     private SnmpService service;
     private IModel<DeviceConfigEntity> selected;
     
-    public ConfigChangeOnDevicePanel(ModalWindow modal, IModel<DeviceEntity> model, DeviceType type) {
+    public ConfigChangeOnDevicePanel(ModalWindow modal, IModel<DeviceEntity> model) {
         super(modal, model, false);
+        /*
         form.setDefaultModel(new CompoundPropertyModel<DeviceEntity>(model.getObject()));
         form.add(new Label("nodeId"));
         form.add(new Label("macAddress"));
@@ -60,6 +60,8 @@ public class ConfigChangeOnDevicePanel extends ModalEditPanel<DeviceEntity> impl
         DetachableDeviceConfigListModel configs = new DetachableDeviceConfigListModel(filter);
         
         form.add(new DropDownChoice<DeviceConfigEntity>("newConfig", selected, configs, DetachableDeviceConfigListModel.DEVICE_CONFIG_RENDERER)); 
+         * 
+         */
     }
 
     @Override
@@ -70,10 +72,14 @@ public class ConfigChangeOnDevicePanel extends ModalEditPanel<DeviceEntity> impl
     
     @Override
     protected boolean onModalSave(AjaxRequestTarget target) {
+        return false;
+        /*
         String selectedKod = selected.getObject() != null ? selected.getObject().getCode() : null;
         service.setDeviceConfig(getEntityObject().getNodeId(), selectedKod);
         getBasePage().refreshPanel(target);
         return true;
+         * 
+         */
     }
 
     @Override

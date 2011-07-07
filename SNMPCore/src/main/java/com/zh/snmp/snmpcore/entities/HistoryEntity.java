@@ -33,9 +33,9 @@ import javax.persistence.Transient;
  *
  * @author Golyo
  */
-@Entity
-@Table(name = "HISTORY")
-public class HistoryEntity implements BaseEntity, Serializable {
+//@Entity
+//@Table(name = "HISTORY")
+public class HistoryEntity implements BaseEntity<Long>, Serializable {
     private Long id;
     private DeviceEntity device;
     private DeviceConfigEntity oldConfig;
@@ -43,9 +43,9 @@ public class HistoryEntity implements BaseEntity, Serializable {
     private UserEntity user;
     private Date updateTime;
 
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Override
+//    @Id
+//    @GeneratedValue(strategy=GenerationType.IDENTITY)
+//    @Override
     public Long getId() {
         return id;
     }
@@ -54,8 +54,8 @@ public class HistoryEntity implements BaseEntity, Serializable {
         this.id = id;
     }
 
-    @ManyToOne()
-    @JoinColumn(name="DEVICEID")
+//    @ManyToOne()
+//    @JoinColumn(name="DEVICEID")
     public DeviceEntity getDevice() {
         return device;
     }
@@ -64,8 +64,8 @@ public class HistoryEntity implements BaseEntity, Serializable {
         this.device = device;
     }
 
-    @ManyToOne()
-    @JoinColumn(name="NEWCONFIGID")
+//    @ManyToOne()
+//    @JoinColumn(name="NEWCONFIGID")
     public DeviceConfigEntity getNewConfig() {
         return newConfig;
     }
@@ -74,8 +74,8 @@ public class HistoryEntity implements BaseEntity, Serializable {
         this.newConfig = newConfig;
     }
 
-    @ManyToOne()
-    @JoinColumn(name="OLDCONFIGID")
+//    @ManyToOne()
+//    @JoinColumn(name="OLDCONFIGID")
     public DeviceConfigEntity getOldConfig() {
         return oldConfig;
     }
@@ -84,8 +84,8 @@ public class HistoryEntity implements BaseEntity, Serializable {
         this.oldConfig = oldConfig;
     }
 
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
-    @Basic
+//    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+//    @Basic
     public Date getUpdateTime() {
         return updateTime;
     }
@@ -94,18 +94,13 @@ public class HistoryEntity implements BaseEntity, Serializable {
         this.updateTime = updateTime;
     }
 
-    @ManyToOne()
-    @JoinColumn(name="USERID")
+//    @ManyToOne()
+//    @JoinColumn(name="USERID")
     public UserEntity getUser() {
         return user;
     }
 
     public void setUser(UserEntity user) {
         this.user = user;
-    }
-    
-    @Transient
-    public DeviceType getDeviceType() {
-        return oldConfig != null ? oldConfig.getDeviceType() : newConfig.getDeviceType();
-    }
+    }    
 }

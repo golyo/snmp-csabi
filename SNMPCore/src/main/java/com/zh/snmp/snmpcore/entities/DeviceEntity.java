@@ -17,17 +17,11 @@
 package com.zh.snmp.snmpcore.entities;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 /**
@@ -36,21 +30,21 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "DEVICE")
-public class DeviceEntity implements BaseEntity, Serializable {
-    private Long id;
-    private String nodeId;
+public class DeviceEntity implements BaseEntity<String>, Serializable {
+    private String id;
     private String macAddress;
     private String ipAddress;
-    private Set<DeviceConfigEntity> configurations;
+    private String configCode;
+    private String deviceMap;
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name="NODEID")
     @Override
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -63,17 +57,16 @@ public class DeviceEntity implements BaseEntity, Serializable {
         this.ipAddress = ipAddress;
     }
 
-    @ManyToMany()
-    @JoinTable(name="CONFIGMAP", 
-            joinColumns=@JoinColumn(name="DEVICEID", referencedColumnName="ID"),
-            inverseJoinColumns=@JoinColumn(name="CONFIGID", referencedColumnName="ID"))
-    public Set<DeviceConfigEntity> getConfigurations() {
-        return configurations;
+    @Basic
+    @Column(name="CONFIGID")
+    public String getConfigCode() {
+        return configCode;
     }
 
-    public void setConfigurations(Set<DeviceConfigEntity> configurations) {
-        this.configurations = configurations;
+    public void setConfigCode(String configCode) {
+        this.configCode = configCode;
     }
+
 
     @Basic
     public String getMacAddress() {
@@ -84,47 +77,15 @@ public class DeviceEntity implements BaseEntity, Serializable {
         this.macAddress = macAddress;
     }
 
+    @Lob
     @Basic
-    public String getNodeId() {
-        return nodeId;
+    public String getDeviceMap() {
+        return deviceMap;
     }
 
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
+    public void setDeviceMap(String deviceMap) {
+        this.deviceMap = deviceMap;
     }
-    
-    public DeviceConfigEntity findConfiguration(DeviceType type) {
-        if (configurations != null) {
-            for (DeviceConfigEntity conf: configurations) {
-                if (conf.getDeviceType() == type) {
-                    return conf;
-                }
-            }            
-        }
-        return null;
-    }
-    
-    public DeviceConfigEntity changeConfig(DeviceConfigEntity newConfig) {
-        if (configurations == null) {
-            configurations = new HashSet<DeviceConfigEntity>();
-        }
-        Iterator<DeviceConfigEntity> it = configurations.iterator();
-        DeviceConfigEntity old = null;
-        DeviceConfigEntity act;
-        while (old == null && it.hasNext()) {
-            act = it.next();
-            if (act.getDeviceType() == newConfig.getDeviceType()) {
-                old = act;
-                it.remove();
-            }
-        }
-        configurations.add(newConfig);
-        setConfigurations(configurations);
-        return old;
-    }
-    
-    @Override
-    public String toString() {
-        return "node:" + nodeId + ", ip:" + ipAddress + ", configs: " + getConfigurations(); 
-    }
+
+
 }

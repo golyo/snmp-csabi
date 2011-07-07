@@ -18,15 +18,13 @@ package com.zh.snmp.snmpweb.pages.snmp;
 
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
-import com.zh.snmp.snmpcore.entities.DeviceType;
-import com.zh.snmp.snmpweb.monitoring.SnmpGetPanel;
-import com.zh.snmp.snmpweb.pages.BasePage;
 import com.zh.snmp.snmpweb.pages.BasePanel;
 import java.util.Arrays;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.EnumLabel;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -42,17 +40,12 @@ public class DeviceDetailsPanel extends BasePanel<DeviceEntity> {
 
     public DeviceDetailsPanel(String id, final IModel<DeviceEntity> model) {
         super(id, new CompoundPropertyModel<DeviceEntity>(model));
-        add(new AjaxLink("editLink") {
-
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                DeviceEditPanel panel = new DeviceEditPanel(getJBetPage().getModal(), model);
-                panel.show(target);
-            }
-        });
-        add(new Label("nodeId"));
+        add(new Label("configCode"));
+        add(new Label("id"));
         add(new Label("macAddress"));
         add(new Label("ipAddress"));
+        add(new MultiLineLabel("deviceMap"));
+        /*
         ListView<DeviceType> configList = new ListView<DeviceType>("configurations", Arrays.asList(DeviceType.values())) {
 
             @Override
@@ -72,5 +65,7 @@ public class DeviceDetailsPanel extends BasePanel<DeviceEntity> {
             }
         };
         add(configList);
+         * 
+         */
     }
 }

@@ -24,7 +24,7 @@ import javax.persistence.Query;
  *
  * @author Golyo
  */
-public class UserDao extends BaseJpaDao<UserEntity> {
+public class UserDao extends BaseJpaDao<Long, UserEntity> {
     private static final String Q_LOGIN = "SELECT 1 FROM USERS p WHERE p.name = ?1 AND p.password = ?2";
     private static final String Q_UPDATE_PWD = "UPDATE USERS SET PASSWORD = ?1 WHERE ID = ?2";
     private static final String Q_FIND_BY_NAME = "SELECT object(p) FROM UserEntity p WHERE p.name = ?1";

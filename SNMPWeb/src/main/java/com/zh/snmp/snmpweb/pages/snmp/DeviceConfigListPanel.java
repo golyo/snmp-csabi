@@ -17,7 +17,6 @@
 package com.zh.snmp.snmpweb.pages.snmp;
 
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
-import com.zh.snmp.snmpcore.entities.DeviceType;
 import com.zh.snmp.snmpweb.components.DataTablePanel;
 import com.zh.snmp.snmpweb.components.RowLinkColumn;
 import com.zh.snmp.snmpweb.model.DeviceConfigProvider;
@@ -52,8 +51,7 @@ public class DeviceConfigListPanel extends DataTablePanel<DeviceConfigEntity> {
     protected IColumn<DeviceConfigEntity>[] createTableColumns() {
         return new IColumn[] {
             new TextFilteredPropertyColumn(new ResourceModel("deviceConfig.code"), "code"),
-            new PropertyColumn(new ResourceModel("deviceConfig.name"), "name"),
-            new ChoiceFilteredPropertyColumn(new ResourceModel("deviceConfig.deviceType"), "deviceType", Model.ofList(Arrays.asList(DeviceType.values()))),
+            new PropertyColumn(new ResourceModel("deviceConfig.name"), "name")
             /*
             new ChoiceFilteredPropertyColumn<DeviceEntity, DeviceConfigEntity>(new ResourceModel("device.config"), "config", "config", new DetachableDeviceConfigListModel()) {
                 @Override
@@ -66,19 +64,20 @@ public class DeviceConfigListPanel extends DataTablePanel<DeviceConfigEntity> {
                     Serializable o = (Serializable)DetachableDeviceConfigListModel.DEVICE_CONFIG_RENDERER.getDisplayValue(rowModel.getObject().getConfig());
                     return Model.of(o);
                 }
-            },*/
+            },
             
             new RowLinkColumn<DeviceConfigEntity>(new ResourceModel("title.options"), new ResourceModel("link.edit"), null) {
                 @Override
                 protected void onRowSelect(AjaxRequestTarget target, IModel<DeviceConfigEntity> rowModel) {
                     showEditPanel(target, rowModel);
                }              
-            }
+            }*/
         };
     }
     
     private void showEditPanel(AjaxRequestTarget target, IModel<DeviceConfigEntity> model) {
-        DeviceConfigEditPanel panel = new DeviceConfigEditPanel(getJBetPage().getModal(), model);
+        DeviceConfigImportPanel panel = new DeviceConfigImportPanel(getJBetPage().getModal());
+        //DeviceConfigEditPanel panel = new DeviceConfigEditPanel(getJBetPage().getModal(), model);
         panel.show(target);        
     }
 }

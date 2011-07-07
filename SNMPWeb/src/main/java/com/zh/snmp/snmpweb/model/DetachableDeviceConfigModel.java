@@ -16,7 +16,10 @@
  */
 package com.zh.snmp.snmpweb.model;
 
+import com.zh.snmp.snmpcore.domain.Configuration;
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
+import com.zh.snmp.snmpcore.services.ConfigService;
+import com.zh.snmp.snmpcore.services.DeviceService;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import org.apache.wicket.injection.web.InjectorHolder;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -28,10 +31,10 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
  */
 public class DetachableDeviceConfigModel extends LoadableDetachableModel<DeviceConfigEntity> {
     @SpringBean
-    private SnmpService service;
-    private Long id;
+    private ConfigService service;
+    private String id;
     
-    public DetachableDeviceConfigModel(Long id) {
+    public DetachableDeviceConfigModel(String id) {
         super();
         InjectorHolder.getInjector().inject(this);
         this.id = id;
@@ -45,7 +48,7 @@ public class DetachableDeviceConfigModel extends LoadableDetachableModel<DeviceC
     
     @Override
     protected DeviceConfigEntity load() {
-        return service.findDeviceConfigById(id);
+        return service.findConfigEntityByCode(id);
     }
     
 }

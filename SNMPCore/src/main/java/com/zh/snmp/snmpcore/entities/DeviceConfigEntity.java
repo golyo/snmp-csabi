@@ -20,11 +20,7 @@ import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
@@ -35,24 +31,12 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "DEVICECONFIG")
-public class DeviceConfigEntity implements BaseEntity, Serializable {
-    private Long id;
+public class DeviceConfigEntity implements BaseEntity<String>, Serializable {
     private String code;
     private String name;
     private String snmpDescriptor;
-    private DeviceType deviceType;
     private Boolean active = Boolean.TRUE;
 
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     @Basic
     public Boolean getActive() {
@@ -63,13 +47,14 @@ public class DeviceConfigEntity implements BaseEntity, Serializable {
         this.active = active;
     }
 
-    @Basic
+    @Id
     @Column(name = "CODE")
-    public String getCode() {
+    @Override
+    public String getId() {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setId(String code) {
         this.code = code;
     }
 
@@ -91,17 +76,6 @@ public class DeviceConfigEntity implements BaseEntity, Serializable {
 
     public void setSnmpDescriptor(String snmpDescriptor) {
         this.snmpDescriptor = snmpDescriptor;
-    }
-
-    @Basic(optional = false)
-    @Column(name = "DEVICETYPE", nullable = false, columnDefinition = "varchar2(20)")
-    @Enumerated(EnumType.STRING)
-    public DeviceType getDeviceType() {
-        return deviceType;
-    }
-
-    public void setDeviceType(DeviceType deviceType) {
-        this.deviceType = deviceType;
     }
 
     @Override
@@ -128,6 +102,6 @@ public class DeviceConfigEntity implements BaseEntity, Serializable {
     
     @Override
     public String toString() {
-        return "code: " + code + ", type:" + deviceType;
+        return "code: " + code;
     }
 }

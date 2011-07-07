@@ -17,7 +17,6 @@
 package com.zh.snmp.snmpweb.pages.snmp;
 
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
-import com.zh.snmp.snmpcore.entities.DeviceType;
 import com.zh.snmp.snmpcore.entities.HistoryEntity;
 import com.zh.snmp.snmpweb.components.DataTablePanel;
 import com.zh.snmp.snmpweb.components.DatePropertyColumn;

@@ -1,5 +1,6 @@
 package com.zh.snmp.snmpweb;
 
+import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpcore.snmp.trap.TrapManager;
 import com.zh.snmp.snmpweb.pages.SnmpPage;
 import com.zh.snmp.snmpweb.pages.SignInPage;
@@ -88,8 +89,11 @@ public class BaseApplication extends AuthenticatedWebApplication implements Appl
         try {
             manager.start();            
         } catch (IOException e) {
-            throw new FatalBeanException("Unable to start trap listener", e);
+            LOGGER.error("Unable to start trap listener", e);
+            //throw new FatalBeanException("Unable to start trap listener", e);
         }
+        ConfigService confService = (ConfigService)ctx.getBean("ConfigService");
+        confService.loadConfigurations();
         LOGGER.debug("Application context setted");
     }
 

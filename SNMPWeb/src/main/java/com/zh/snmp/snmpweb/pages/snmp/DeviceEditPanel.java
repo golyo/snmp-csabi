@@ -17,11 +17,14 @@
 package com.zh.snmp.snmpweb.pages.snmp;
 
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
+import com.zh.snmp.snmpcore.services.ConfigService;
+import com.zh.snmp.snmpcore.services.DeviceService;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import com.zh.snmp.snmpweb.components.ModalEditCloseListener;
 import com.zh.snmp.snmpweb.components.ModalEditPanel;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
@@ -33,40 +36,32 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
  */
 public class DeviceEditPanel extends ModalEditPanel<DeviceEntity> implements ModalEditCloseListener {
     @SpringBean
-    private SnmpService service;
+    private DeviceService service;
+    @SpringBean
+    private ConfigService confService;
     
     public DeviceEditPanel(ModalWindow modal, IModel<DeviceEntity> model) {
         super(modal, model, false);
         boolean isEdit = model.getObject().getId() != null;
-        form.setDefaultModel(new CompoundPropertyModel<DeviceEntity>(model.getObject()));
-        form.add(new TextField("nodeId").setRequired(true).setEnabled(!isEdit));
+        DeviceEntity de;
+        form.add(new TextField("id").setRequired(true).setEnabled(!isEdit));
         form.add(new TextField("macAddress").setRequired(true));
         form.add(new TextField("ipAddress").setRequired(true));
-        /*
-        ListView<DeviceType> configList = new ListView<DeviceType>("configurations", Arrays.asList(DeviceType.values())) {
-            @Override
-            protected void populateItem(ListItem<DeviceType> item) {
-                item.add(new EnumLabel("type", item.getModelObject()));
-                item.add(new Label("value", getEntityObject().findConfiguration(item.getModelObject()).getCode()));
-            }
-        };
-        form.add(configList);
-         * 
-         */
+        form.add(new DropDownChoice("configCode", confService.getConfigCodes()));
     }
 
     @Override
     protected boolean onModalSave(AjaxRequestTarget target) {
         String errKey = null;
         DeviceEntity saveable = (DeviceEntity)form.getDefaultModelObject();
-        DeviceEntity checkCode = service.findDeviceByNodeId(saveable.getNodeId());
-        if (checkCode != null && !checkCode.getId().equals(saveable.getId())) {
+        DeviceEntity checkCode = service.findDeviceEntityById(saveable.getId());
+        if (checkCode != null) {
             errKey = "deviceEntity.error.nodeIdExists";
             error(getString(errKey));
             target.addComponent(feedback);
             return false;
         } else {
-            service.saveDevice(saveable);
+            service.saveEntity(saveable);
             return true;
         }
     }

@@ -16,139 +16,26 @@
  */
 package com.zh.snmp.snmpcore.services.impl;
 
-import com.zh.snmp.snmpcore.dao.DeviceDao;
-import com.zh.snmp.snmpcore.dao.HistoryDao;
-import com.zh.snmp.snmpcore.dao.DeviceConfigDao;
-import com.zh.snmp.snmpcore.dao.UserDao;
-import com.zh.snmp.snmpcore.entities.HistoryEntity;
+import com.zh.snmp.snmpcore.dao.TestDao;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
-import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
-import com.zh.snmp.snmpcore.exception.ExceptionCodesEnum;
-import com.zh.snmp.snmpcore.exception.SystemException;
 import com.zh.snmp.snmpcore.services.SnmpService;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Golyo
  */
+@Transactional
 public class SnmpServiceImpl implements SnmpService {
     @Autowired
-    private DeviceConfigDao deviceConfigDao;
-    @Autowired
-    private DeviceDao deviceDao;
-    @Autowired
-    private DeviceDao changeLogDao;
-    @Autowired
-    private UserDao userDao;
-    @Autowired
-    private HistoryDao historyDao;
-    
-    @Override
-    public DeviceConfigEntity findDeviceConfigByCode(String code) {
-        if (code != null) {
-            DeviceConfigEntity entity = new DeviceConfigEntity();
-            entity.setCode(code);
-            return deviceConfigDao.findExampleEntity(entity);                        
-        } else {
-            return null;
-        }
-    }
+    private TestDao testDao;
 
     @Override
-    public DeviceConfigEntity findDeviceConfigById(Long id) {
-        return deviceConfigDao.load(id);
+    public DeviceEntity saveDevice(DeviceEntity device) {
+        return testDao.save(device);
     }
-    
-    @Override
-    public DeviceConfigEntity saveDeviceConfig(DeviceConfigEntity type) {
-        DeviceConfigEntity ret = deviceConfigDao.save(type);
-        deviceConfigDao.flush();
-        return ret;
-    }
-    
-    @Override
-    public List<DeviceConfigEntity> findDeviceConfigByFilter(DeviceConfigEntity filter, String sort, int start, int count) {
-        return deviceConfigDao.find(filter, sort, start, count);
-    }
-    
-    @Override
-    public DeviceEntity findDeviceById(Long id) {
-        return deviceDao.load(id);
-    }
-    
-    @Override
-    public DeviceEntity findDeviceByNodeId(String nodeId) {
-        DeviceEntity device = new DeviceEntity();
-        device.setNodeId(nodeId);
-        return deviceDao.findExampleEntity(device);
-    }
-    
-    @Override
-    public List<DeviceEntity> findDeviceByFilter(DeviceEntity filter, String sort, int start, int count) {
-        return deviceDao.find(filter, sort, start, count);
-    }
-    
-    @Override
-    public DeviceEntity findDeviceByFilter(DeviceEntity filter) {
-        return deviceDao.findExampleEntity(filter);
-    }    
-    
-    @Override
-    public DeviceEntity saveDevice(DeviceEntity device) {      
-        return deviceDao.save(device); 
-        /*
-        DeviceConfigEntity old = device.getId() != null ? deviceDao.load(device.getId()).getConfig() : null;                
-        
-        DeviceEntity newDevice = deviceDao.save(device);
-        if ((newDevice.getConfig() != null && !newDevice.getConfig().equals(old)) || (newDevice.getConfig() == null && old != null)) {
-            clientSnmpTypeChanged(newDevice, old);          
-        }
-        return newDevice;
-         * 
-         */
-    }
-    
-    @Override
-    public int countDevice(DeviceEntity filter) {
-        return deviceDao.count(filter);
-    }
-    
-    @Override
-    public int changeConfigToAllDevice(String oldConfigCode, String newConfigCode) {
-        return -1;
-        /*
-        DeviceConfigEntity oldConfig = findDeviceConfigByCode(oldConfigCode);
-        DeviceConfigEntity newConfig = findDeviceConfigByCode(newConfigCode);
-        if (oldConfig.getDeviceType() != newConfig.getDeviceType()) {
-            throw new SystemException(ExceptionCodesEnum.Unsupported);
-        }
-        if (oldConfig == null || newConfig == null) {
-            return 0;
-        } else {
-            /*
-            DeviceEntity filterClient = new DeviceEntity();
-            Set<DeviceConfigEntity> filterSet = new HashSet<DeviceConfigEntity>();
-            filterClient.setConfig(oldConfig);
-            List<DeviceEntity> clients = deviceDao.find(filterClient, null, 0, -1);
-            for (DeviceEntity client: clients) {
-                client.setConfig(newConfig);
-                clientSnmpTypeChanged(client, oldConfig);
-            }
-            deviceDao.flush();
-            return clients.size();
-             
-        }
-         * 
-         */
-    }
-
+    /*
     @Override
     public DeviceEntity setDeviceConfig(String nodeId, String configCode) {
         DeviceConfigEntity config = findDeviceConfigByCode(configCode);
@@ -214,5 +101,5 @@ public class SnmpServiceImpl implements SnmpService {
     public int countHistory(HistoryEntity filter) {
         return historyDao.count(filter);
     }
-            
+      */      
 }

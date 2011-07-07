@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<wicket:panel>
+    <form wicket:id="form">
+        <div wicket:id="feedback">errors</div>
+        <h1>Konfiguráció feltöltáse</h1>
+        <p>
+            <label for="uploadFile">Állomány</label>
+            <input wicket:id="uploadFile" id="uploadFile" type="file"/>
+        </p>
+        <p>
+            <input wicket:id="upload" wicket:message="value:link.upload" type="submit"/>
+            <input wicket:id="cancel" wicket:message="value:link.cancel" type="submit"/>
+        </p>
+    </form>
+</wicket:panel>

@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @param <T>
  * @author cserepj
  */
-public abstract class BaseJpaDao<T extends BaseEntity> {
+public abstract class BaseJpaDao<Y, T extends BaseEntity<Y>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseJpaDao.class);
     protected Class<T> clazz;
@@ -48,7 +48,7 @@ public abstract class BaseJpaDao<T extends BaseEntity> {
     //    @Autowired
     public BaseJpaDao() {
         ParameterizedType genericSuperclass = (ParameterizedType)getClass().getGenericSuperclass();
-        this.clazz = (Class<T>) genericSuperclass.getActualTypeArguments()[0];
+        this.clazz = (Class<T>) genericSuperclass.getActualTypeArguments()[1];
     }
 
     public T createNewInstance() {
@@ -116,7 +116,7 @@ public abstract class BaseJpaDao<T extends BaseEntity> {
         return null;
     }
 
-    public T load(Long id) {
+    public T load(Y id) {
         return entityManager.find(clazz, id);
     }
 
