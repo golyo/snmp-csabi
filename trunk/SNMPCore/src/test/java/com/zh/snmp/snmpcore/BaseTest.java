@@ -18,7 +18,6 @@
 package com.zh.snmp.snmpcore;
 
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
-import com.zh.snmp.snmpcore.entities.DeviceType;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import com.zh.snmp.snmpcore.snmp.mib.MibParser;
 import java.io.IOException;
@@ -78,6 +77,7 @@ public abstract class BaseTest {
     }
     
     protected DeviceConfigEntity createConfVoip(String code) throws IOException {
+        /*
         DeviceConfigEntity type = new DeviceConfigEntity();
         type.setActive(true);
         type.setName(code);
@@ -88,5 +88,8 @@ public abstract class BaseTest {
         DeviceConfigEntity saved = snmpService.saveDeviceConfig(type);
         Assert.assertNotNull(saved.getId());
         return saved;        
+         * 
+         */
+        return  null;
     }
 }

@@ -17,7 +17,8 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="nodeId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="configCode" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="configPath" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="arg2" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -29,12 +30,14 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "setDeviceConfig", propOrder = {
     "nodeId",
-    "configCode"
+    "configPath",
+    "arg2"
 })
 public class SetDeviceConfig {
 
     protected String nodeId;
-    protected String configCode;
+    protected String configPath;
+    protected int arg2;
 
     /**
      * Gets the value of the nodeId property.
@@ -61,27 +64,43 @@ public class SetDeviceConfig {
     }
 
     /**
-     * Gets the value of the configCode property.
+     * Gets the value of the configPath property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getConfigCode() {
-        return configCode;
+    public String getConfigPath() {
+        return configPath;
     }
 
     /**
-     * Sets the value of the configCode property.
+     * Sets the value of the configPath property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setConfigCode(String value) {
-        this.configCode = value;
+    public void setConfigPath(String value) {
+        this.configPath = value;
+    }
+
+    /**
+     * Gets the value of the arg2 property.
+     * 
+     */
+    public int getArg2() {
+        return arg2;
+    }
+
+    /**
+     * Sets the value of the arg2 property.
+     * 
+     */
+    public void setArg2(int value) {
+        this.arg2 = value;
     }
 
 }

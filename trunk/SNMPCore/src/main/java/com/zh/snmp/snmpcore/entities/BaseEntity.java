@@ -23,6 +23,6 @@ import java.io.Serializable;
  *
  * @author sonrisa
  */
-public interface BaseEntity extends Serializable {
-    public Long getId();
+public interface BaseEntity<T> extends Serializable {
+    public T getId();
 }

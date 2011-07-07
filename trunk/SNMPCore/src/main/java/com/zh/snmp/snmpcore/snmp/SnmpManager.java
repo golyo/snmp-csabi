@@ -16,12 +16,14 @@
  */
 package com.zh.snmp.snmpcore.snmp;
 
+import com.zh.snmp.snmpcore.domain.Configuration;
+import com.zh.snmp.snmpcore.domain.Device;
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
-import com.zh.snmp.snmpcore.entities.DeviceType;
 import com.zh.snmp.snmpcore.exception.ExceptionCodesEnum;
 import com.zh.snmp.snmpcore.exception.SystemException;
 import com.zh.snmp.snmpcore.message.MessageAppender;
+import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import com.zh.snmp.snmpcore.snmp.mib.MibParser;
 import com.zh.snmp.snmpcore.snmp.trap.TrapListener;
@@ -47,6 +49,8 @@ public class SnmpManager implements TrapListener, SnmpResources {
     
     @Autowired   
     private SnmpService service;
+    @Autowired   
+    private ConfigService configService;
     @Autowired 
     private MibParser parser;
 
@@ -60,6 +64,7 @@ public class SnmpManager implements TrapListener, SnmpResources {
         if (entity == null) {
             appender.addMessage(MSG_DEVICE_NOTFOUND, trapInfo);
         } else {
+            /*
             if (entity.getConfigurations() != null && !entity.getConfigurations().isEmpty()) {
                 for (DeviceConfigEntity config: entity.getConfigurations()) {
                     checkAndSet(entity.getIpAddress(), config, appender);                    
@@ -67,19 +72,24 @@ public class SnmpManager implements TrapListener, SnmpResources {
             } else {
                 appender.addMessage(MSG_CONFIG_NOTFOUND, entity);
             }
+             * 
+             */
         }
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public List<SnmpCommandResult> processOnDevice(ProcessType processType, DeviceEntity device, DeviceType deviceType, MessageAppender appender) {
+    public List<SnmpCommandResult> processOnDevice(ProcessType processType, Device device, MessageAppender appender) {
         List<SnmpCommandResult> result = null;
-        DeviceConfigEntity config = device.findConfiguration(deviceType);
+        /*
+        Configuration config = device.getConfig();
         if (config == null) {
             appender.addMessage(MSG_CONFIG_NOTFOUND, device);
         } else {
             result = processOnIp(processType, device.getIpAddress(), config, appender); 
         }
         appender.finish();
+         * 
+         */
         return result;     
     }
     
@@ -152,9 +162,13 @@ public class SnmpManager implements TrapListener, SnmpResources {
     }
     
     protected DeviceEntity parseDevice(DeviceTrapInfo trapInfo, MessageAppender appender) {
+        /*
         DeviceEntity filter = new DeviceEntity();
         filter.setIpAddress(trapInfo.getIpAdress());
         return service.findDeviceByFilter(filter);        
+         * 
+         */
+        return null;
     }
     
     public enum ProcessType {

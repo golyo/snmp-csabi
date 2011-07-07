@@ -22,6 +22,6 @@ import com.zh.snmp.snmpcore.entities.DeviceEntity;
  *
  * @author Golyo
  */
-public class DeviceDao extends BaseJpaDao<DeviceEntity> {
+public class DeviceDao extends BaseJpaDao<String, DeviceEntity> {
     
 }

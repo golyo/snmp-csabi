@@ -17,6 +17,7 @@
 package com.zh.snmp.snmpweb.model;
 
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
+import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import java.util.List;
 import org.apache.wicket.injection.web.InjectorHolder;
@@ -33,17 +34,17 @@ public class DetachableDeviceConfigListModel extends LoadableDetachableModel<Lis
 
         @Override
         public Object getDisplayValue(DeviceConfigEntity object) {
-            return object != null ? object.getCode() + " - " + object.getName() : " - ";
+            return object != null ? object.getId() + " - " + object.getName() : " - ";
         }
 
         @Override
         public String getIdValue(DeviceConfigEntity object, int index) {
-            return object != null ? object.getId().toString() : null;
+            return object != null ? object.getId() : null;
         }
     };
     
     @SpringBean
-    private SnmpService service;
+    private ConfigService service;
     private DeviceConfigEntity filter;
     
     public DetachableDeviceConfigListModel() {

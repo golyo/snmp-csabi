@@ -14,14 +14,27 @@
  *  ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR
  *  DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
  */
-package com.zh.snmp.snmpcore.entities;
+package com.zh.snmp.snmpcore.services;
+
+import com.zh.snmp.snmpcore.domain.Device;
+import com.zh.snmp.snmpcore.entities.DeviceEntity;
+import java.util.List;
 
 /**
  *
  * @author Golyo
  */
-public enum DeviceType {
-    VOIP,
-    WIFI,
-    ACCES
+public interface DeviceService {
+    public Device findDeviceByNodeId(String id);    
+    public DeviceEntity findDeviceEntityById(String id);    
+    public Device findDeviceByIp(String ip);
+    
+    public DeviceEntity saveEntity(DeviceEntity device);
+    public Device save(Device device);
+    public List<DeviceEntity> findDeviceEntityByFilter(DeviceEntity filter, String sort, int start, int count);
+    public int countDevices(DeviceEntity filter);
+    public DeviceEntity findDeviceEntityByFilter(DeviceEntity filter);
+    
+    
+    public boolean setDeviceConfig(String nodeId, List<String> path, int mode);
 }

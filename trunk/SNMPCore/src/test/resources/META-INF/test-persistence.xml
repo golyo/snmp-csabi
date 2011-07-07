@@ -11,7 +11,9 @@
   <persistence-unit name="snmp_test_ds" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>com.zh.snmp.snmpcore.entities.UserEntity</class>
+    <!--
     <class>com.zh.snmp.snmpcore.entities.HistoryEntity</class>
+    -->
     <class>com.zh.snmp.snmpcore.entities.DeviceConfigEntity</class>
     <class>com.zh.snmp.snmpcore.entities.DeviceEntity</class>
     <properties>

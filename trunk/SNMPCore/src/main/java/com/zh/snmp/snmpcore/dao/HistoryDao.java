@@ -22,6 +22,6 @@ import com.zh.snmp.snmpcore.entities.HistoryEntity;
  *
  * @author Golyo
  */
-public class HistoryDao extends BaseJpaDao<HistoryEntity> {
+public class HistoryDao extends BaseJpaDao<Long, HistoryEntity> {
     
 }

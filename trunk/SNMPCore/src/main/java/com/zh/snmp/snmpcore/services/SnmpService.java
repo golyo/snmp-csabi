@@ -26,7 +26,8 @@ import java.util.List;
  * @author Golyo
  */
 public interface SnmpService {
-    public List<DeviceConfigEntity> findDeviceConfigByFilter(DeviceConfigEntity filter, String sort, int start, int count);
+    public DeviceEntity saveDevice(DeviceEntity device);
+    /*
     public DeviceConfigEntity saveDeviceConfig(DeviceConfigEntity type);
     public DeviceConfigEntity findDeviceConfigByCode(String code);
     public DeviceConfigEntity findDeviceConfigById(Long id);
@@ -48,4 +49,7 @@ public interface SnmpService {
     
     public List<DeviceConfigEntity> getDeviceHistory(DeviceConfigEntity filter, String sort, int start, int count);
     public List<HistoryEntity> getDeviceHistory(HistoryEntity filter, String sort, int start, int count);
+     * 
+     * 
+     */
 }

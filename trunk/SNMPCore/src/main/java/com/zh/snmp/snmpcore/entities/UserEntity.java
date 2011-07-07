@@ -16,7 +16,7 @@ import org.eclipse.persistence.annotations.CollectionTable;
 
 @Entity
 @Table(name = "USERS")
-public class UserEntity implements BaseEntity, Serializable {
+public class UserEntity implements BaseEntity<Long>, Serializable {
     private Long id;
     private String name;
     private String email;

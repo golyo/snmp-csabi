@@ -3,10 +3,16 @@
     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <wicket:panel>
+    <!--
     <a wicket:id="editLink">Szerkesztés</a>
+    -->
     <p>
-        <label for="nodeId">Node azonosító</label>
-        <span wicket:id="nodeId"/>
+        <label for="">Konfiguráció</label>
+        <span wicket:id="configCode"/>
+    </p>
+    <p>
+        <label for="id">Node azonosító</label>
+        <span wicket:id="id"/>
     </p>
     <p>
         <label for="macAddress">MAC cím</label>
@@ -17,8 +23,14 @@
         <span wicket:id="ipAddress"/>
     </p>
     <p>
-        <label for="config">Konfigurációk</label>
+        <label for="deviceMap">leíró</label>
+        <span wicket:id="deviceMap"/>
     </p>
+
+    <!--
+    <p>
+        <label for="config">Konfigurációk</label>
+    </p>    
     <table class="dataview">
         <tr>
             <th>Típus</th>
@@ -33,4 +45,5 @@
             <td><a wicket:id="setConfig">Cserél</a></td>
         </tr>
     </table>
+    -->
 </wicket:panel>

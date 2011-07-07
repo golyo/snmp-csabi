@@ -18,6 +18,7 @@ package com.zh.snmp.snmpweb.model;
 
 import com.zh.snmp.snmpcore.entities.HistoryEntity;
 import com.zh.snmp.snmpcore.services.SnmpService;
+import java.util.Collections;
 import java.util.Iterator;
 import org.apache.wicket.injection.web.InjectorHolder;
 import org.apache.wicket.model.IModel;
@@ -39,7 +40,9 @@ public class HistoryProvider extends EntityDataProvider<HistoryEntity> {
     
     @Override
     public Iterator<? extends HistoryEntity> iterator(int first, int count) {
-        return srv.findHistoryByFilter(getFilterState(), getSortParam(), first, count).iterator();
+        
+        return Collections.EMPTY_LIST.iterator();
+        //return srv.findHistoryByFilter(getFilterState(), getSortParam(), first, count).iterator();
     }
 
     @Override
@@ -49,7 +52,8 @@ public class HistoryProvider extends EntityDataProvider<HistoryEntity> {
 
     @Override
     public int size() {
-        return srv.countHistory(getFilterState());
+        return 0;
+        //return srv.countHistory(getFilterState());
     }
     
 }

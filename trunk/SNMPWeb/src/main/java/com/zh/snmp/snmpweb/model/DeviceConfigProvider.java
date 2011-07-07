@@ -17,6 +17,7 @@
 package com.zh.snmp.snmpweb.model;
 
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
+import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import java.util.Iterator;
 import org.apache.wicket.injection.web.InjectorHolder;
@@ -29,7 +30,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
  */
 public class DeviceConfigProvider extends EntityDataProvider<DeviceConfigEntity> {
     @SpringBean
-    private SnmpService srv;
+    private ConfigService srv;
     
     public DeviceConfigProvider() {
         super(new DeviceConfigEntity());
@@ -48,7 +49,7 @@ public class DeviceConfigProvider extends EntityDataProvider<DeviceConfigEntity>
 
     @Override
     public int size() {
-        return srv.countDeviceHistory(getFilterState());
+        return srv.countConfigEntity(getFilterState());
     }
     
 }
