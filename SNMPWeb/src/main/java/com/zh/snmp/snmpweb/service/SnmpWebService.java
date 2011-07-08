@@ -58,7 +58,7 @@ public class SnmpWebService {
     }
     
     @WebMethod(operationName = "createDevice")
-    public Boolean createDevice(@WebParam(name = "configCode") String configCode, @WebParam(name = "deviceId") String deviceId, @WebParam(name = "ipAddress") String ipAddress, @WebParam(name = "macAddress") String macAddress) {
+    public Boolean createDevice(@WebParam(name = "configCode") String configCode, @WebParam(name = "deviceId") String deviceId, @WebParam(name = "nodeId") String nodeId, @WebParam(name = "ipAddress") String ipAddress, @WebParam(name = "macAddress") String macAddress) {
         init();
         DeviceEntity de = deviceService.findDeviceEntityById(deviceId);
         if (de != null) {
