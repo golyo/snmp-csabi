@@ -98,7 +98,7 @@ public class SnmpWebService {
     }
 
     @WebMethod(operationName = "getDeviceState")
-    public DeviceState setDinamicConfigValue(@WebParam(name = "deviceId") String deviceId) {
+    public DeviceState getDeviceState(@WebParam(name = "deviceId") String deviceId) {
         init();
         return DeviceState.NOT_FOUND;
         /*
