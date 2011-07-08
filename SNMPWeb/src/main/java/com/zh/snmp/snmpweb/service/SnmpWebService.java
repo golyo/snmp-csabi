@@ -76,10 +76,10 @@ public class SnmpWebService {
     
     private static final String PATH_DELIM = "\\.";
     @WebMethod(operationName = "setDeviceConfig")
-    public Boolean setDeviceConfig(@WebParam(name = "nodeId") String nodeId, @WebParam(name = "configPath") String configPath, int mode) {
+    public Boolean setDeviceConfig(@WebParam(name = "deviceId") String deviceId, @WebParam(name = "configPath") String configPath, int mode) {
         init();
         List<String> path = Arrays.asList(configPath.split(PATH_DELIM));
-        return deviceService.setDeviceConfig(nodeId, path, mode);
+        return deviceService.setDeviceConfig(deviceId, path, mode);
         /*
         return service.setDeviceConfig(nodeId, configCode) != null;
          * 
@@ -87,7 +87,7 @@ public class SnmpWebService {
     }
 
     @WebMethod(operationName = "setDinamicConfigValue")
-    public Boolean setDinamicConfigValue(@WebParam(name = "nodeId") String nodeId, @WebParam(name = "configPath") String configPath, String value) {
+    public Boolean setDinamicConfigValue(@WebParam(name = "deviceId") String deviceId, @WebParam(name = "configPath") String configPath, String value) {
         init();
         return false;
         /*
