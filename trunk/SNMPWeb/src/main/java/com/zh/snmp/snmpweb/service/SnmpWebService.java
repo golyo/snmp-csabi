@@ -17,6 +17,7 @@
 package com.zh.snmp.snmpweb.service;
 
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
+import com.zh.snmp.snmpcore.entities.DeviceState;
 import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpcore.services.DeviceService;
 import com.zh.snmp.snmpcore.services.SnmpService;
@@ -90,6 +91,16 @@ public class SnmpWebService {
     public Boolean setDinamicConfigValue(@WebParam(name = "deviceId") String deviceId, @WebParam(name = "configPath") String configPath, String value) {
         init();
         return false;
+        /*
+        return service.setDeviceConfig(nodeId, configCode) != null;
+         * 
+         */
+    }
+
+    @WebMethod(operationName = "getDeviceState")
+    public DeviceState setDinamicConfigValue(@WebParam(name = "deviceId") String deviceId) {
+        init();
+        return DeviceState.NOT_FOUND;
         /*
         return service.setDeviceConfig(nodeId, configCode) != null;
          * 
