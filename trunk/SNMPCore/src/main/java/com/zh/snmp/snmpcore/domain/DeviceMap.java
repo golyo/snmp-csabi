@@ -16,6 +16,7 @@
  */
 package com.zh.snmp.snmpcore.domain;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -27,8 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Golyo
  */
 @XmlRootElement(name="device")
-public class DeviceMap {
-    private List<DeviceMap> children;
+public class DeviceMap extends DefaultNode<DeviceMap> implements Serializable {
     private String code;
 
     @XmlElement(name="node")
@@ -40,6 +40,7 @@ public class DeviceMap {
         this.children = children;
     }
 
+    @XmlAttribute
     public String getCode() {
         return code;
     }

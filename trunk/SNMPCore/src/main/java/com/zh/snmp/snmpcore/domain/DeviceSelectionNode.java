@@ -14,28 +14,41 @@
  *  ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR
  *  DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
  */
-package com.zh.snmp.snmpcore.services;
+package com.zh.snmp.snmpcore.domain;
 
-import com.zh.snmp.snmpcore.domain.Device;
-import com.zh.snmp.snmpcore.domain.DeviceSelectionNode;
-import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import java.util.List;
+import javax.swing.tree.TreeNode;
 
 /**
  *
  * @author Golyo
  */
-public interface DeviceService {
-    public Device findDeviceByNodeId(String id);    
-    public DeviceEntity findDeviceEntityById(String id);    
-    public Device findDeviceByIp(String ip);
+public class DeviceSelectionNode extends DefaultNode<DeviceSelectionNode> {
+    private boolean selected;
+    private String code;
     
-    public DeviceEntity saveEntity(DeviceEntity device);
-    public Device save(Device device);
-    public List<DeviceEntity> findDeviceEntityByFilter(DeviceEntity filter, String sort, int start, int count);
-    public int countDevices(DeviceEntity filter);
-    public DeviceEntity findDeviceEntityByFilter(DeviceEntity filter);
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public List<DeviceSelectionNode> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<DeviceSelectionNode> children) {
+        this.children = children;
+    }
     
-    public DeviceSelectionNode createSelectionNode(Device device);
-    public boolean setDeviceConfig(String nodeId, List<String> path, int mode);
 }

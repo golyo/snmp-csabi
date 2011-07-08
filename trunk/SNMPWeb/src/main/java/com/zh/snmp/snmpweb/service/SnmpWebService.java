@@ -16,13 +16,11 @@
  */
 package com.zh.snmp.snmpweb.service;
 
-import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpcore.services.DeviceService;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Resource;
 import javax.jws.WebService;
@@ -60,20 +58,19 @@ public class SnmpWebService {
     }
     
     @WebMethod(operationName = "createDevice")
-    public Boolean createDevice(@WebParam(name = "configCode") String configCode, @WebParam(name = "nodeId") String nodeId, @WebParam(name = "ipAddress") String ipAddress, @WebParam(name = "macAddress") String macAddress) {
+    public Boolean createDevice(@WebParam(name = "configCode") String configCode, @WebParam(name = "deviceId") String deviceId, @WebParam(name = "ipAddress") String ipAddress, @WebParam(name = "macAddress") String macAddress) {
         init();
-        DeviceEntity de = deviceService.findDeviceEntityById(nodeId);
+        DeviceEntity de = deviceService.findDeviceEntityById(deviceId);
         if (de != null) {
-            return false;
-            
+            return false;           
         } else {
             de = new DeviceEntity();
             de.setConfigCode(configCode);
-            de.setId(nodeId);
+            de.setId(deviceId);
             de.setIpAddress(ipAddress);
             de.setMacAddress(macAddress);
             de = deviceService.saveEntity(de);
-            return true;
+            return de != null;
         }
     }
     

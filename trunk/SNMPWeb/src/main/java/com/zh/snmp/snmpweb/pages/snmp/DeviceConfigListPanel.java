@@ -19,6 +19,8 @@ package com.zh.snmp.snmpweb.pages.snmp;
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import com.zh.snmp.snmpweb.components.DataTablePanel;
 import com.zh.snmp.snmpweb.components.RowLinkColumn;
+import com.zh.snmp.snmpweb.config.ConfigDetailsPanel;
+import com.zh.snmp.snmpweb.menu.MenuConfig;
 import com.zh.snmp.snmpweb.model.DeviceConfigProvider;
 import java.util.Arrays;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -35,6 +37,7 @@ import org.apache.wicket.model.ResourceModel;
  *
  * @author Golyo
  */
+@MenuConfig(context={ConfigDetailsPanel.class})
 public class DeviceConfigListPanel extends DataTablePanel<DeviceConfigEntity> {
     
     public DeviceConfigListPanel(String id) {
@@ -51,7 +54,7 @@ public class DeviceConfigListPanel extends DataTablePanel<DeviceConfigEntity> {
     protected IColumn<DeviceConfigEntity>[] createTableColumns() {
         return new IColumn[] {
             new TextFilteredPropertyColumn(new ResourceModel("deviceConfig.code"), "code"),
-            new PropertyColumn(new ResourceModel("deviceConfig.name"), "name")
+            new PropertyColumn(new ResourceModel("deviceConfig.name"), "name"),
             /*
             new ChoiceFilteredPropertyColumn<DeviceEntity, DeviceConfigEntity>(new ResourceModel("device.config"), "config", "config", new DetachableDeviceConfigListModel()) {
                 @Override
@@ -64,14 +67,14 @@ public class DeviceConfigListPanel extends DataTablePanel<DeviceConfigEntity> {
                     Serializable o = (Serializable)DetachableDeviceConfigListModel.DEVICE_CONFIG_RENDERER.getDisplayValue(rowModel.getObject().getConfig());
                     return Model.of(o);
                 }
-            },
+            },*/
             
-            new RowLinkColumn<DeviceConfigEntity>(new ResourceModel("title.options"), new ResourceModel("link.edit"), null) {
+            new RowLinkColumn<DeviceConfigEntity>(new ResourceModel("title.options"), new ResourceModel("link.details"), null) {
                 @Override
                 protected void onRowSelect(AjaxRequestTarget target, IModel<DeviceConfigEntity> rowModel) {
-                    showEditPanel(target, rowModel);
+                    getJBetPage().changePanel(getDetailMenuConfig(), rowModel, DeviceConfigListPanel.this.getClass(), target);
                }              
-            }*/
+            }
         };
     }
     
