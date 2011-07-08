@@ -21,6 +21,7 @@ import com.zh.snmp.snmpcore.domain.SnmpCommand;
 import com.zh.snmp.snmpcore.domain.ConfigNode;
 import com.zh.snmp.snmpcore.domain.OidType;
 import com.zh.snmp.snmpcore.util.JAXBUtil;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,6 +45,8 @@ public class ConfigNodeTest {
         JAXBUtil.marshal(testNode, sw, true);
         LOGGER.debug("XXXXXXXXXXXXXXXXXXX");
         LOGGER.debug(sw.toString());
+        
+        ConfigNode test = JAXBUtil.unmarshalTyped(new StringReader(sw.toString()), ConfigNode.class);
     }
     
     

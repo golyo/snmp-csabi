@@ -18,8 +18,10 @@ package com.zh.snmp.snmpcore.services.impl;
 
 import com.zh.snmp.snmpcore.dao.DeviceDao;
 import com.zh.snmp.snmpcore.domain.ConfigNode;
+import com.zh.snmp.snmpcore.domain.Configuration;
 import com.zh.snmp.snmpcore.domain.Device;
 import com.zh.snmp.snmpcore.domain.DeviceMap;
+import com.zh.snmp.snmpcore.domain.DeviceSelectionNode;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpcore.services.DeviceService;
@@ -79,9 +81,15 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public DeviceEntity saveEntity(DeviceEntity device) {
         if (device.getDeviceMap() == null) {
-            device.setDeviceMap(JAXBUtil.marshal(new DeviceMap(), true));            
+            Configuration config = configService.findConfigByCode(device.getConfigCode());
+            if (config != null) {
+                DeviceMap dm = new DeviceMap();
+                dm.setCode(config.getCode());
+                device.setDeviceMap(JAXBUtil.marshal(dm, true));                            
+                return dao.save(device);
+            }
         }
-        return dao.save(device);
+        return null;
     }
         
     @Override
@@ -108,6 +116,25 @@ public class DeviceServiceImpl implements DeviceService {
         
     }
     
+    public DeviceSelectionNode createSelectionNode(Device device) {
+        DeviceSelectionNode selectionNode = new DeviceSelectionNode();
+        appendSelectionNode(selectionNode, device.getConfigMap(), device.getConfig().getRoot());
+        return selectionNode;
+    }
+    
+    protected void appendSelectionNode(DeviceSelectionNode selection, DeviceMap map, ConfigNode config) {
+        selection.setCode(config.getCode());
+        if (map != null) {
+            selection.setSelected(true);
+        }
+        for (ConfigNode child: config.getChildren()) {
+            DeviceMap mchild = map != null ? map.findChild(child.getCode()) : null;            
+            List<DeviceSelectionNode> selChilds = new LinkedList<DeviceSelectionNode>();
+            DeviceSelectionNode selChild = new DeviceSelectionNode();
+            appendSelectionNode(selChild, mchild, child);
+            selection.setChildren(selChilds);
+        }
+    }
     protected DeviceEntity wrap(Device device) {
         DeviceEntity entity = new DeviceEntity();
         entity.setConfigCode(device.getConfig().getCode());

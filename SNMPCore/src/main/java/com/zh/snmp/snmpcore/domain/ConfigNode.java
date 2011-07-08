@@ -22,10 +22,12 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.tree.TreeNode;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -35,10 +37,9 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 @XmlSeeAlso({
     SnmpCommand.class
 })
-public class ConfigNode implements Serializable {
+public class ConfigNode extends DefaultNode<ConfigNode> implements Serializable {
     private String code;
     private String description;
-    private List<ConfigNode> children;
     private List<SnmpCommand> commands;
 
     @XmlElement(name = "node")
@@ -77,6 +78,11 @@ public class ConfigNode implements Serializable {
         this.description = description;
     }    
     
+    @XmlTransient
+    public boolean isEmpty() {
+        return children == null || children.isEmpty();
+    }
+    
     public ConfigNode findChildByCode(String code) {
         if (children != null) {
             for (ConfigNode node: children) {
@@ -86,6 +92,11 @@ public class ConfigNode implements Serializable {
             }            
         }
         return null;
+    }
+    
+    @Override
+    public String toString() {
+        return code + (description != null ? " - " + description : "");
     }
     
     public ConfigNode findChildByPath(LinkedList<String> path) {
@@ -119,5 +130,7 @@ public class ConfigNode implements Serializable {
                 confChild.appendCommands(appender, child);
             }
         }        
-    }    
+    }   
+    
+    
 }
