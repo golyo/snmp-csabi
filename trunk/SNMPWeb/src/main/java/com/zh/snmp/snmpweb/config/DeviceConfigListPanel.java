@@ -14,20 +14,18 @@
  *  ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR
  *  DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
  */
-package com.zh.snmp.snmpweb.pages.snmp;
+package com.zh.snmp.snmpweb.config;
 
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import com.zh.snmp.snmpweb.components.DataTablePanel;
 import com.zh.snmp.snmpweb.components.RowLinkColumn;
-import com.zh.snmp.snmpweb.config.ConfigDetailsPanel;
 import com.zh.snmp.snmpweb.menu.MenuConfig;
 import com.zh.snmp.snmpweb.model.DeviceConfigProvider;
-import java.util.Arrays;
+import com.zh.snmp.snmpweb.pages.snmp.DeviceConfigImportPanel;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.ChoiceFilteredPropertyColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilteredPropertyColumn;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;

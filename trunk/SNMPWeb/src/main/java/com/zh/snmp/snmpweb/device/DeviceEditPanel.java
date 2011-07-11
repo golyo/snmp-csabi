@@ -14,7 +14,7 @@
  *  ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR
  *  DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
  */
-package com.zh.snmp.snmpweb.pages.snmp;
+package com.zh.snmp.snmpweb.device;
 
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.services.ConfigService;

@@ -31,7 +31,7 @@ import org.apache.wicket.model.IModel;
  *
  * @author sonrisa
  */
-public abstract class ModalEditPanel<T extends BaseEntity> extends Panel {
+public abstract class ModalEditPanel<T> extends Panel {
     private ModalWindow modal;
     protected static final String FORM = "form";
     protected Form form;
@@ -40,9 +40,6 @@ public abstract class ModalEditPanel<T extends BaseEntity> extends Panel {
     protected boolean delete;
     private ModalEditCloseListener listener;
 
-    public ModalEditPanel(final ModalWindow modal, IModel<T> model) {
-        this(modal, model, model.getObject().getId() != null);
-    }
     public ModalEditPanel(final ModalWindow modal, IModel<T> model, boolean deletable) {
         super(modal.getContentId(), model);
         this.modal = modal;

@@ -7,12 +7,12 @@
     <a wicket:id="editLink">Szerkesztés</a>
     -->
     <p>
-        <label for="">Konfiguráció</label>
-        <span wicket:id="configCode"/>
+        <label for="config.code">Konfiguráció</label>
+        <span wicket:id="config.code"/>
     </p>
     <p>
-        <label for="id">Node azonosító</label>
-        <span wicket:id="id"/>
+        <label for="nodeId">Node azonosító</label>
+        <span wicket:id="nodeId"/>
     </p>
     <p>
         <label for="macAddress">MAC cím</label>
@@ -22,10 +22,9 @@
         <label for="ipAddress">IP cím</label>
         <span wicket:id="ipAddress"/>
     </p>
-    <p>
-        <label for="deviceMap">leíró</label>
-        <span wicket:id="deviceMap"/>
-    </p>
+    <input type="submit" wicket:id="finalize"  wicket:message="value:link.finalize"/>
+    <div wicket:id="tree">        
+    </div>
 
     <!--
     <p>

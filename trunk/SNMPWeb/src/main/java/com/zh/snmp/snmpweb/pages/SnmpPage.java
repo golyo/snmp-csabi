@@ -17,12 +17,11 @@
 
 package com.zh.snmp.snmpweb.pages;
 
+import org.apache.wicket.PageParameters;
+import com.zh.snmp.snmpweb.config.DeviceConfigListPanel;
+import com.zh.snmp.snmpweb.device.DeviceListPanel;
 import com.zh.snmp.snmpweb.menu.MenuConfig;
 import com.zh.snmp.snmpweb.monitoring.TrapMonitorPanel;
-import com.zh.snmp.snmpweb.pages.snmp.DeviceConfigListPanel;
-import com.zh.snmp.snmpweb.pages.snmp.DeviceListPanel;
-import org.apache.wicket.PageParameters;
-
 /**
  *
  * @author golyo

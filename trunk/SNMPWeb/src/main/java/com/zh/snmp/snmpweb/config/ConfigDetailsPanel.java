@@ -49,14 +49,17 @@ public class ConfigDetailsPanel extends BasePanel<DeviceConfigEntity> {
         final WebMarkupContainer cont = new WebMarkupContainer("cont");
         cont.setOutputMarkupId(true);
         add(cont);
-        add(new LinkTree("tree", treeModel) {
+        LinkTree tree;
+        add(tree = new LinkTree("tree", treeModel) {
 
             @Override
             protected void onNodeLinkClicked(Object node, BaseTree tree, AjaxRequestTarget target) {
                 cont.replace(new ConfigNodePanel("nodePanel", (ConfigNode)node));
                 target.addComponent(cont);
             }            
-        });        
+        });  
+        tree.getTreeState().expandAll();
         cont.add(new Label("nodePanel"));
+        
     }
 }
