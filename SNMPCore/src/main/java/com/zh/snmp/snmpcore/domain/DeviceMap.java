@@ -28,12 +28,12 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Golyo
  */
 @XmlRootElement(name="device")
-public class DeviceMap extends DefaultNode<DeviceMap> implements Serializable {
+public class DeviceMap extends DefaultNode implements Serializable {
     private String code;
 
     @XmlElement(name="node")
     public List<DeviceMap> getChildren() {
-        return children;
+        return (List<DeviceMap>)children;
     }
 
     public void setChildren(List<DeviceMap> children) {
@@ -58,7 +58,7 @@ public class DeviceMap extends DefaultNode<DeviceMap> implements Serializable {
             if (children == null) {
                 children = new LinkedList<DeviceMap>();                
             }
-            children.add(child);
+            getChildren().add(child);
         }
         if (!path.isEmpty()) {
             child.setByPath(path);
@@ -67,7 +67,7 @@ public class DeviceMap extends DefaultNode<DeviceMap> implements Serializable {
     
     public DeviceMap findChild(String code) {
         if (children != null) {
-            for (DeviceMap child: children) {
+            for (DeviceMap child: getChildren()) {
                 if (code.equals(child.code)) {
                     return child;
                 }
@@ -77,10 +77,14 @@ public class DeviceMap extends DefaultNode<DeviceMap> implements Serializable {
     }
     
     @Override
-    public String toString() {        
+    public String toString() {  
+        return code;
+    }
+    
+    public String toMultilineString() {
         StringBuilder sb = new StringBuilder();
         append("", sb);
-        return sb.toString();
+        return sb.toString();        
     }
     
     private static final String NL = "\n";
@@ -88,7 +92,7 @@ public class DeviceMap extends DefaultNode<DeviceMap> implements Serializable {
         sb.append(prefix).append(code).append(NL);
         if (children != null) {
             prefix = prefix + "\t";
-            for (DeviceMap dm: children) {
+            for (DeviceMap dm: getChildren()) {
                 dm.append(prefix, sb);
             }
         }

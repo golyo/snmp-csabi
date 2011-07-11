@@ -16,14 +16,15 @@
  */
 package com.zh.snmp.snmpcore.domain;
 
+import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
-import javax.swing.tree.TreeNode;
 
 /**
  *
  * @author Golyo
  */
-public class DeviceSelectionNode extends DefaultNode<DeviceSelectionNode> {
+public class DeviceSelectionNode extends DefaultNode implements Serializable {
     private boolean selected;
     private String code;
     
@@ -33,6 +34,15 @@ public class DeviceSelectionNode extends DefaultNode<DeviceSelectionNode> {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+        if (selected) {
+            if (parent != null) {
+                ((DeviceSelectionNode)parent).setSelected(selected);
+            }            
+        } else {
+            for (DefaultNode child: children) {
+                ((DeviceSelectionNode)child).setSelected(selected);
+            }
+        }
     }
 
     public String getCode() {
@@ -44,11 +54,27 @@ public class DeviceSelectionNode extends DefaultNode<DeviceSelectionNode> {
     }
 
     public List<DeviceSelectionNode> getChildren() {
-        return children;
+        return (List<DeviceSelectionNode>)children;
     }
 
     public void setChildren(List<DeviceSelectionNode> children) {
         this.children = children;
     }
+   
+    public DeviceMap createMap() {
+        DeviceMap ret = new DeviceMap();
+        appendMap(ret);
+        return ret;
+    }
     
+    protected void appendMap(DeviceMap map) {
+        map.setCode(code);
+        for (DeviceSelectionNode selChild: getChildren()) {
+            if (selChild.isSelected()) {
+                DeviceMap mapChild = new DeviceMap();
+                selChild.appendMap(mapChild);   
+                map.getChildren().add(mapChild);
+            }
+        }
+    }
 }

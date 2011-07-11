@@ -116,23 +116,26 @@ public class DeviceServiceImpl implements DeviceService {
         
     }
     
+    @Override
     public DeviceSelectionNode createSelectionNode(Device device) {
         DeviceSelectionNode selectionNode = new DeviceSelectionNode();
         appendSelectionNode(selectionNode, device.getConfigMap(), device.getConfig().getRoot());
+        selectionNode.setupParents();
         return selectionNode;
     }
-    
+       
     protected void appendSelectionNode(DeviceSelectionNode selection, DeviceMap map, ConfigNode config) {
         selection.setCode(config.getCode());
         if (map != null) {
             selection.setSelected(true);
         }
+        List<DeviceSelectionNode> selChilds = new LinkedList<DeviceSelectionNode>();
+        selection.setChildren(selChilds);
         for (ConfigNode child: config.getChildren()) {
             DeviceMap mchild = map != null ? map.findChild(child.getCode()) : null;            
-            List<DeviceSelectionNode> selChilds = new LinkedList<DeviceSelectionNode>();
             DeviceSelectionNode selChild = new DeviceSelectionNode();
+            selChilds.add(selChild);
             appendSelectionNode(selChild, mchild, child);
-            selection.setChildren(selChilds);
         }
     }
     protected DeviceEntity wrap(Device device) {
@@ -153,6 +156,7 @@ public class DeviceServiceImpl implements DeviceService {
         device.setIpAddress(entity.getIpAddress());
         device.setMacAddress(entity.getMacAddress());
         device.setNodeId(entity.getId());
+        device.getConfigMap().setupParents();
         return device;
     }
 }
