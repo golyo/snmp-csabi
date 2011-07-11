@@ -10,5 +10,17 @@
 <!--
     <context:property-placeholder location="file:${user.home}/.kgr/k11.properties"/>
 -->
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations"> 
+            <value>file:${user.home}/.snmp/snmp.properties</value>
+        </property>
+        
+        <!-- Ezek a default értékek, abban az esetben, ha a properties fájlban nem található meg a kulcs. -->
+        <property name="properties">
+            <props>
+                <prop key="snmp.trap.ip">255.255.255.255/255</prop>
+            </props>
+        </property>
+    </bean>
 </beans>
 
