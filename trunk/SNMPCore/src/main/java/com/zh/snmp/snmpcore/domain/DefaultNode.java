@@ -26,13 +26,13 @@ import javax.swing.tree.TreeNode;
  *
  * @author Golyo
  */
-public class DefaultNode<T extends TreeNode> implements TreeNode {
+public class DefaultNode implements TreeNode {
 
-    protected DefaultNode<T> parent;
-    protected List<T> children;
+    protected DefaultNode parent;
+    protected List<? extends DefaultNode> children;
     
     public DefaultNode() {
-        children = new ArrayList<T>();
+        children = new ArrayList<DefaultNode>();
     }
     
     @Override
@@ -46,7 +46,7 @@ public class DefaultNode<T extends TreeNode> implements TreeNode {
     }
 
     @Override
-    public T getChildAt(int childIndex) {
+    public DefaultNode getChildAt(int childIndex) {
         return children.get(childIndex);
     }
 
@@ -61,7 +61,7 @@ public class DefaultNode<T extends TreeNode> implements TreeNode {
     }
 
     @Override
-    public DefaultNode<T> getParent() {
+    public DefaultNode getParent() {
         return parent;
     }
 
@@ -71,9 +71,9 @@ public class DefaultNode<T extends TreeNode> implements TreeNode {
     }
     
     public void setupParents() {
-        for (T child: children) {
-            //child.parent = this;
-            //child.setupParents();
+        for (DefaultNode child: children) {
+            child.parent = this;
+            child.setupParents();
         }
     }
 }

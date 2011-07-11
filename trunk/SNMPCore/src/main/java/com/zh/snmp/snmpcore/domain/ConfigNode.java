@@ -37,14 +37,14 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlSeeAlso({
     SnmpCommand.class
 })
-public class ConfigNode extends DefaultNode<ConfigNode> implements Serializable {
+public class ConfigNode extends DefaultNode implements Serializable {
     private String code;
     private String description;
     private List<SnmpCommand> commands;
 
     @XmlElement(name = "node")
     public List<ConfigNode> getChildren() {
-        return children;
+        return (List<ConfigNode>)children;
     }
 
     public void setChildren(List<ConfigNode> children) {
@@ -85,7 +85,7 @@ public class ConfigNode extends DefaultNode<ConfigNode> implements Serializable 
     
     public ConfigNode findChildByCode(String code) {
         if (children != null) {
-            for (ConfigNode node: children) {
+            for (ConfigNode node: getChildren()) {
                 if (code.equals(node.getCode())) {
                     return node;
                 }
@@ -106,7 +106,7 @@ public class ConfigNode extends DefaultNode<ConfigNode> implements Serializable 
                 return this;
             } else {
                 if (children != null) {
-                    for (ConfigNode child: children) {
+                    for (ConfigNode child: getChildren()) {
                         return child.findChildByPath(path);
                     }                    
                 }

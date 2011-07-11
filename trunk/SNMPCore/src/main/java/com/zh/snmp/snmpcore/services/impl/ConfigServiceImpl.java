@@ -140,6 +140,7 @@ public class ConfigServiceImpl implements ConfigService {
         if (entity.getSnmpDescriptor() != null) {
             config.setRoot(JAXBUtil.unmarshal(entity.getSnmpDescriptor(), ConfigNode.class));
         }
+        config.getRoot().setupParents();
         return config;
     }
 }
