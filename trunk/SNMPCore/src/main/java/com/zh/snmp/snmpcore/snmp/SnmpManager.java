@@ -78,6 +78,9 @@ public class SnmpManager implements TrapListener, SnmpResources {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    public void processOnDevice(Device device) {
+        
+    }
     public List<SnmpCommandResult> processOnDevice(ProcessType processType, Device device, MessageAppender appender) {
         List<SnmpCommandResult> result = null;
         /*

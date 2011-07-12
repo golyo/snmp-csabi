@@ -60,4 +60,8 @@ public class SimpleMessageAppender implements MessageAppender {
         messages.add(message);        
     }
     
+    @Override
+    public String toString() {
+        return messages.toString();
+    }
 }

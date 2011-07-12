@@ -16,17 +16,21 @@
         <property name="rootPath" value="com/zh/snmp/snmpcore/snmp/mib/"/>
         <property name="children">
             <list>
-                <value>r2n/PACKETFRONT-DRG600A-MIB.mib</value>                
-                <value>r2n/PACKETFRONT-DRG-MIB.mib</value>                
-                <value>r2n/PACKETFRONT-TC.mib</value>
-                <value>r2n/PACKETFRONT-SMI.mib</value>
-                <!--
+                <value>iana/IANAifType-MIB</value>
                 <value>ietf/IF-MIB</value>
-                -->
                 <value>ietf/SNMPv2-SMI</value>
                 <value>ietf/SNMPv2-TC</value>
                 <value>ietf/SNMPv2-CONF</value>
                 <value>ietf/SNMPv2-MIB</value>
+                
+                <value>r2n/PACKETFRONT-DRG600A-MIB.mib</value>                
+                <value>r2n/PACKETFRONT-DRG600W-MIB.mib</value>
+                <value>r2n/PACKETFRONT-DRG-MIB.mib</value>                
+                <value>r2n/PACKETFRONT-MIB.mib</value>                
+                <value>r2n/PACKETFRONT-VOIP-MIB.mib</value>                
+                <value>r2n/PACKETFRONT-TC.mib</value>
+                <value>r2n/PACKETFRONT-SMI.mib</value>
+                <value>r2n/PACKETFRONT-CATV-MIB.mib</value>
             </list>
         </property>
     </bean>

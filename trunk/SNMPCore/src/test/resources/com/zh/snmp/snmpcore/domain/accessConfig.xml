@@ -14,7 +14,7 @@
     </node>
     <node code="catv" description="Kábel TV">
         <commands priority="1" type="BINDINGS">
-            <variable value="1" type="INT" name="PACKETFRONT-CATV-MIB::catvModuleAdminStatus.0"/>
+            <variable value="1" type="INT" name="PACKETFRONT-CATV-MIB:catvModuleAdminStatus.0"/>
         </commands>
     </node>
     <!-- Az accesh -hez tartozo konfiguraciok, futtatasi sorrendbem -->

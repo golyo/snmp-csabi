@@ -18,7 +18,7 @@ package com.zh.snmp.snmpcore.services;
 
 import com.zh.snmp.snmpcore.domain.Configuration;
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
-import java.io.IOException;
+import com.zh.snmp.snmpcore.message.MessageAppender;
 import java.io.InputStream;
 import java.util.List;
 
@@ -37,5 +37,5 @@ public interface ConfigService {
     public DeviceConfigEntity saveEntity(DeviceConfigEntity entity);
     public void clearCache();
     public List<String> getConfigCodes();
-    public void importConfiguration(InputStream stream) throws IOException;
+    public Configuration importConfiguration(InputStream stream, MessageAppender appender);
 }

@@ -83,7 +83,7 @@ public class MibParser {
         return new VariableBinding(oid, var);
     }
     
-    protected OID parseMib(String mibDescription) throws IOException {
+    public OID parseMib(String mibDescription) throws IOException {
         int p = mibDescription.indexOf(PACKAGE_DELIMITER);
         if (p<0) {
             throw new IOException("Not found package delimiter in line " + mibDescription);
