@@ -18,10 +18,13 @@ package com.zh.snmp.snmpcore.services.impl;
 
 import com.zh.snmp.snmpcore.BaseTest;
 import com.zh.snmp.snmpcore.domain.ConfigNode;
+import com.zh.snmp.snmpcore.domain.ConfigNodeTest;
 import com.zh.snmp.snmpcore.domain.Configuration;
 import com.zh.snmp.snmpcore.domain.Device;
 import com.zh.snmp.snmpcore.domain.DeviceMap;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
+import com.zh.snmp.snmpcore.message.MessageAppender;
+import com.zh.snmp.snmpcore.message.SimpleMessageAppender;
 import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpcore.services.DeviceService;
 import com.zh.snmp.snmpcore.services.SnmpService;
@@ -29,6 +32,8 @@ import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -36,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Golyo
  */
 public class ConfigServiceTest extends BaseTest {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigServiceTest.class);
     private static final String ACCES = "ACCES";
     
     @Autowired
@@ -59,6 +65,13 @@ public class ConfigServiceTest extends BaseTest {
         
     }
     
+    @Test
+    public void testParse() {
+        InputStream stream = ConfigNodeTest.class.getResourceAsStream("accessConfig.xml");
+        MessageAppender appaneder = new SimpleMessageAppender();
+        Configuration conf = configService.importConfiguration(stream, appaneder);
+        LOGGER.debug("+++" + conf.toString());
+    }
     //@Test
     public void testSave() {
         DeviceEntity de = new DeviceEntity();

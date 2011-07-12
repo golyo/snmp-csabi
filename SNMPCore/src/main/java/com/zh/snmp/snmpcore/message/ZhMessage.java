@@ -50,4 +50,9 @@ public class ZhMessage<T extends Serializable> implements Serializable {
     public void setResourceKey(String resourceKey) {
         this.resourceKey = resourceKey;
     }
+    
+    @Override
+    public String toString() {
+        return resourceKey;
+    }
 }

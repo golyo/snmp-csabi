@@ -102,6 +102,8 @@ public class TestMibParser extends BaseTest {
         snmp.close();
     }
     
+    private static final String TEST_CATV = "PACKETFRONT-CATV-MIB::catvModuleAdminStatus.0";
+    
     @Test
     public void testConfig() throws IOException {
         MessageAppender appender = new SimpleMessageAppender();

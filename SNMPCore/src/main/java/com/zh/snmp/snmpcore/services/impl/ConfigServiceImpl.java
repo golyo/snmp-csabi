@@ -19,8 +19,13 @@ package com.zh.snmp.snmpcore.services.impl;
 import com.zh.snmp.snmpcore.dao.DeviceConfigDao;
 import com.zh.snmp.snmpcore.domain.ConfigNode;
 import com.zh.snmp.snmpcore.domain.Configuration;
+import com.zh.snmp.snmpcore.domain.OidCommand;
+import com.zh.snmp.snmpcore.domain.SnmpCommand;
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
+import com.zh.snmp.snmpcore.entities.DeviceEntity;
+import com.zh.snmp.snmpcore.message.MessageAppender;
 import com.zh.snmp.snmpcore.services.ConfigService;
+import com.zh.snmp.snmpcore.snmp.mib.MibParser;
 import com.zh.snmp.snmpcore.util.JAXBUtil;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,6 +35,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.snmp4j.smi.OID;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -37,9 +45,12 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Golyo
  */
 public class ConfigServiceImpl implements ConfigService {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigServiceImpl.class);
+    
     @Autowired
     private DeviceConfigDao dao;
+    @Autowired
+    private MibParser mibParser;
     
     private Map<String, Configuration> cache;
     
@@ -108,15 +119,48 @@ public class ConfigServiceImpl implements ConfigService {
     
     
     @Override
-    public void importConfiguration(InputStream stream) throws IOException {
-        String descriptor = IOUtils.toString(stream, "UTF8");
-        ConfigNode node = JAXBUtil.unmarshalTyped(new StringReader(descriptor), ConfigNode.class);        
-        DeviceConfigEntity conf = new DeviceConfigEntity();
-        conf.setId(node.getCode());
-        conf.setName(node.getDescription());
-        conf.setActive(true);
-        conf.setSnmpDescriptor(descriptor);
-        dao.save(conf);
+    public Configuration importConfiguration(InputStream stream, MessageAppender appender) {        
+        Configuration conf = new Configuration();
+        try {
+            String descriptor = IOUtils.toString(stream, "UTF8");    
+            conf.setRoot(JAXBUtil.unmarshalTyped(new StringReader(descriptor), ConfigNode.class));
+            conf.setCode(conf.getRoot().getCode());
+            conf.setName(conf.getRoot().getDescription());
+            conf.setActive(Boolean.TRUE);
+        } catch (IOException e) {
+            appender.addMessage("error.import.config");
+            LOGGER.error("error while import config", e);
+        }
+        if (conf.getRoot() != null) {
+            validateConfigNode(conf.getRoot(), appender);   
+        } else {
+            return null;
+        }
+        if (appender.getMessages().isEmpty()) {
+            return saveConfig(conf);
+        } else {
+            return null;
+        }
+    }
+    
+    private void validateConfigNode(ConfigNode node, MessageAppender appender) {
+        List<SnmpCommand> commands = node.getCommands();
+        if (commands != null) {
+            for (SnmpCommand command: commands) {
+                for (OidCommand oidc: command.getCommands()) {
+                    try {
+                        OID oid = mibParser.parseMib(oidc.getName());
+                        oidc.setOid(oid.toString());
+                    } catch (IOException e) {
+                        appender.addMessage("error.parse.mib", oidc);
+                        LOGGER.error("Error while parse command " + oidc.getName(), e);
+                    }
+                }
+            }                        
+        }
+        for (ConfigNode child: node.getChildren()) {
+            validateConfigNode(child, appender);
+        }
     }
     
     @Override
