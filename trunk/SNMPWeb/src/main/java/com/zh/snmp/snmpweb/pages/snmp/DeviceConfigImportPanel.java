@@ -16,6 +16,8 @@
  */
 package com.zh.snmp.snmpweb.pages.snmp;
 
+import com.zh.snmp.snmpcore.message.SimpleMessageAppender;
+import com.zh.snmp.snmpcore.message.ZhMessage;
 import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpweb.components.JBetButton;
 import com.zh.snmp.snmpweb.pages.BasePage;
@@ -57,15 +59,23 @@ public class DeviceConfigImportPanel extends Panel {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 FileUpload upload = file.getFileUpload();
+                SimpleMessageAppender appender = new SimpleMessageAppender();
                 try {
-                    service.importConfiguration(upload.getInputStream());   
-                    getBasePage().refreshPanel(target);
-                    modal.close(target);
+                    service.importConfiguration(upload.getInputStream(), appender);                   
                 } catch (Exception e) {
-                    error("Konfiguráció feltötltése nem sikerült");
-                    target.addComponent(feedback);                    
+                    appender.addMessage("error.import.config");
                     LOGGER.error("Hiba konfig upload közben", e);
                 }                
+                if (appender.getMessages().isEmpty()) {
+                    getBasePage().refreshPanel(target);
+                    modal.close(target);                    
+                } else {
+                    for (ZhMessage mess: appender.getMessages()) {
+                        String err = getString(mess.getResourceKey(), Model.of(mess.getObject()));                                
+                        error(err);
+                    }
+                    target.addComponent(feedback);                                        
+                }
             }
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
