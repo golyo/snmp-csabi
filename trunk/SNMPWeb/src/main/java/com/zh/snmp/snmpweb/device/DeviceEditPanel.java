@@ -47,7 +47,8 @@ public class DeviceEditPanel extends ModalEditPanel<DeviceEntity> implements Mod
         form.add(new TextField("id").setRequired(true).setEnabled(!isEdit));
         form.add(new TextField("macAddress").setRequired(true));
         form.add(new TextField("ipAddress").setRequired(true));
-        form.add(new DropDownChoice("configCode", confService.getConfigCodes()));
+        form.add(new TextField("nodeId").setRequired(true));
+        form.add(new DropDownChoice("configCode", confService.getConfigCodes()).setRequired(true));
     }
 
     @Override

@@ -6,8 +6,12 @@
     <form wicket:id="form">
         <div wicket:id="feedback">errors</div>
         <p>
-            <label for="id">Node azonosító</label>
+            <label for="id">Device azonosító</label>
             <input wicket:id="id"/>
+        </p>
+        <p>
+            <label for="id">Node azonosító</label>
+            <input wicket:id="nodeId"/>
         </p>
         <p>
             <label for="macAddress">MAC cím</label>
@@ -21,6 +25,10 @@
             <label for="configCode">IP cím</label>
             <select wicket:id="configCode"/>
         </p>
-        <p><input wicket:id="submit" value="submit" type="submit"/><input wicket:id="delete" value="delete" type="submit"/><input wicket:id="cancel" value="cancel" type="submit"/></p>
+        <p>
+            <input wicket:id="submit" value="submit" type="submit" wicket:message="value:link.submit"/>
+            <input wicket:id="delete" value="delete" type="submit" wicket:message="value:link.delete"/>
+            <input wicket:id="cancel" value="cancel" type="submit" wicket:message="value:link.cancel"/>
+        </p>
     </form>
 </wicket:panel>

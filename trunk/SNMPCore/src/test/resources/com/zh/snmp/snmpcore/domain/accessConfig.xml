@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<config description="Access konfiguráció" code="access">
+    <node code="internet" description="Internet konfiguráció">
+        <!-- Az internethez tartozo konfiguraciok, futtatasi sorrendbem -->
+        <commands priority="1" type="BEFORE">
+            <variable value="2" type="INT" name="PACKETFRONT-DRG-MIB:snmpAtomicSet.0"/>
+        </commands>
+        <commands priority="2" type="BINDINGS">
+            <variable value="100" type="INT" name="PACKETFRONT-DRG600A-MIB:drg600aPortVlanId.3"/>
+        </commands>
+        <commands priority="3" type="AFTER">
+            <variable value="3" type="INT" name="PACKETFRONT-DRG-MIB:snmpAtomicSet.0"/>
+        </commands>
+    </node>
+    <node code="catv" description="Kábel TV">
+        <commands priority="1" type="BINDINGS">
+            <variable value="1" type="INT" name="PACKETFRONT-CATV-MIB::catvModuleAdminStatus.0"/>
+        </commands>
+    </node>
+    <!-- Az accesh -hez tartozo konfiguraciok, futtatasi sorrendbem -->
+    <commands priority="1" type="BINDINGS">
+        <variable value="4" type="INT" name="PACKETFRONT-DRG-MIB:vlanStaticRowStatus.1"/>
+    </commands>
+    <commands priority="2" type="BEFORE">
+        <variable value="2" type="INT" name="PACKETFRONT-DRG-MIB:snmpAtomicSet.0"/>
+    </commands>
+    <commands priority="3" type="BINDINGS">
+        <variable value="1" type="INT" name="PACKETFRONT-DRG-MIB:hostIfVlan.1"/>
+        <variable value="1" type="INT" name="PACKETFRONT-DRG-MIB:hostIfVlanPriority.1"/>
+        <variable value="4" type="INT" name="PACKETFRONT-DRG-MIB:vlanStaticRowStatus.1"/>
+        <variable value="Mgmt" type="STR" name="PACKETFRONT-DRG-MIB:vlanStaticName.1"/>
+        <variable value="1" type="INT" name="PACKETFRONT-DRG-MIB:vlanStaticVlanId.1"/>
+        <variable value="1" type="INT" name="PACKETFRONT-DRG-MIB:vlanStaticPriority.1"/>
+        <variable value="80 80" type="HEX" name="PACKETFRONT-DRG-MIB:vlanStaticEgressPorts.1"/>
+        <variable value="80 80" type="HEX" name="PACKETFRONT-DRG-MIB:vlanStaticUntaggedPorts.1"/>
+        <variable value="00" type="HEX" name="PACKETFRONT-DRG-MIB:vlanStaticUnmodifiedPorts.1"/>
+        <variable value="1" type="INT" name="PACKETFRONT-DRG600A-MIB:drg600aPortVlanMode.1"/>
+        <variable value="4" type="INT" name="PACKETFRONT-DRG600A-MIB:drg600aPortVlanMode.9"/>
+        <variable value="3" type="INT" name="PACKETFRONT-DRG600A-MIB:drg600aPortVlanEgressMode.1"/>
+        <variable value="3" type="INT" name="PACKETFRONT-DRG600A-MIB:drg600aPortVlanEgressMode.9"/>
+        <variable value="1" type="INT" name="PACKETFRONT-DRG600A-MIB:drg600aPortVlanId.9"/>
+        <variable value="1" type="INT" name="PACKETFRONT-DRG600A-MIB:drg600aPortVlanId.1"/>
+
+        <variable value="4" type="INT" name="PACKETFRONT-DRG-MIB:vlanStaticRowStatus.2"/>
+        <variable value="Internet" type="STR" name="PACKETFRONT-DRG-MIB:vlanStaticName.2"/>
+        <variable value="100" type="INT" name="PACKETFRONT-DRG-MIB:vlanStaticVlanId.2"/>
+        <variable value="2" type="INT" name="PACKETFRONT-DRG-MIB:vlanStaticPriority.2"/>
+        <variable value="A0 A0" type="HEX" name="PACKETFRONT-DRG-MIB:vlanStaticEgressPorts.2"/>
+        <variable value="A0 A0" type="HEX" name="PACKETFRONT-DRG-MIB:vlanStaticUntaggedPorts.2"/>
+        <variable value="00" type="HEX" name="PACKETFRONT-DRG-MIB:vlanStaticUnmodifiedPorts.2"/>
+        <variable value="3" type="INT" name="PACKETFRONT-DRG600A-MIB:drg600aPortVlanMode.3"/>
+        <variable value="3" type="INT" name="PACKETFRONT-DRG600A-MIB:drg600aPortVlanEgressMode.3"/>
+        <variable value="101" type="INT" name="PACKETFRONT-DRG600A-MIB:drg600aPortVlanId.3"/>
+    </commands>
+    <commands priority="4" type="AFTER">
+        <variable value="3" type="INT" name="PACKETFRONT-DRG-MIB:snmpAtomicSet.0"/>
+    </commands>
+</config>

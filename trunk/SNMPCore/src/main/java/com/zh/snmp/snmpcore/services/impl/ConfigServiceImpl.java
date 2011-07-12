@@ -24,7 +24,6 @@ import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpcore.util.JAXBUtil;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -110,7 +109,7 @@ public class ConfigServiceImpl implements ConfigService {
     
     @Override
     public void importConfiguration(InputStream stream) throws IOException {
-        String descriptor = IOUtils.toString(stream);
+        String descriptor = IOUtils.toString(stream, "UTF8");
         ConfigNode node = JAXBUtil.unmarshalTyped(new StringReader(descriptor), ConfigNode.class);        
         DeviceConfigEntity conf = new DeviceConfigEntity();
         conf.setId(node.getCode());

@@ -25,6 +25,7 @@ import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpcore.services.DeviceService;
 import com.zh.snmp.snmpcore.services.SnmpService;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import org.junit.Test;
@@ -70,7 +71,7 @@ public class ConfigServiceTest extends BaseTest {
     private Device createTestDevice(Configuration config) {
         Device device = new Device();
         device.setConfig(config);
-        device.setNodeId("nodeid");
+        device.setDeviceId("nodeid");
         device.setIpAddress("ipAddress");
         device.setMacAddress("macAddress");
         DeviceMap map = new DeviceMap();

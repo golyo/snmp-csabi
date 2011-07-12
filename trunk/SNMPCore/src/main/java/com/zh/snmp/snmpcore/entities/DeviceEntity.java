@@ -20,6 +20,8 @@ import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
@@ -31,21 +33,27 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "DEVICE")
 public class DeviceEntity implements BaseEntity<String>, Serializable {
-    private String id;
+    private String deviceId;
+    private String nodeId;
     private String macAddress;
     private String ipAddress;
     private String configCode;
     private String deviceMap;
+    private DeviceState configState;
 
+    public DeviceEntity() {
+        configState = DeviceState.NEW;
+    }
+    
     @Id
-    @Column(name="NODEID")
+    @Column(name="DEVICEID")
     @Override
     public String getId() {
-        return id;
+        return deviceId;
     }
 
     public void setId(String id) {
-        this.id = id;
+        this.deviceId = id;
     }
 
     @Basic
@@ -58,13 +66,21 @@ public class DeviceEntity implements BaseEntity<String>, Serializable {
     }
 
     @Basic
-    @Column(name="CONFIGID")
     public String getConfigCode() {
         return configCode;
     }
 
     public void setConfigCode(String configCode) {
         this.configCode = configCode;
+    }
+
+    @Basic
+    public String getNodeId() {
+        return nodeId;
+    }
+
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
     }
 
 
@@ -85,6 +101,16 @@ public class DeviceEntity implements BaseEntity<String>, Serializable {
 
     public void setDeviceMap(String deviceMap) {
         this.deviceMap = deviceMap;
+    }
+
+    @Basic
+    @Enumerated(EnumType.STRING)
+    public DeviceState getConfigState() {
+        return configState;
+    }
+
+    public void setConfigState(DeviceState configState) {
+        this.configState = configState;
     }
 
 

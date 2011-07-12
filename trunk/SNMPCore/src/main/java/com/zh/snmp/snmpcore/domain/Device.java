@@ -16,6 +16,7 @@
  */
 package com.zh.snmp.snmpcore.domain;
 
+import com.zh.snmp.snmpcore.entities.DeviceState;
 import java.io.Serializable;
 
 /**
@@ -23,9 +24,11 @@ import java.io.Serializable;
  * @author Golyo
  */
 public class Device implements Serializable {
+    private String deviceId;
     private String nodeId;
     private String macAddress;
     private String ipAddress;
+    private DeviceState configState;
     private Configuration config;
     private DeviceMap configMap;
 
@@ -61,6 +64,14 @@ public class Device implements Serializable {
         this.configMap = configMap;
     }
 
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
     public String getNodeId() {
         return nodeId;
     }
@@ -68,5 +79,13 @@ public class Device implements Serializable {
     public void setNodeId(String nodeId) {
         this.nodeId = nodeId;
     }
-        
+
+    public DeviceState getConfigState() {
+        return configState;
+    }
+
+    public void setConfigState(DeviceState configState) {
+        this.configState = configState;
+    }
+
 }
