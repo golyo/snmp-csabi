@@ -14,16 +14,14 @@
  *  ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR
  *  DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
  */
-package com.zh.snmp.snmpcore.entities;
+package com.zh.snmp.snmpcore.domain;
 
 /**
  *
  * @author Golyo
  */
-public enum DeviceState {
-    NOT_FOUND,
-    NEW,
-    RUNNING,
-    CONFIGURED,
-    ERROR
+public enum CommandType {
+    BEFORE,
+    AFTER,
+    BINDINGS    
 }

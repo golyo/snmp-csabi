@@ -56,7 +56,8 @@ public class DeviceListPanel extends DataTablePanel<DeviceEntity> {
     protected IColumn<DeviceEntity>[] createTableColumns() {
         return new IColumn[] {
             
-            new TextFilteredPropertyColumn<DeviceEntity, String>(new ResourceModel("device.nodeId"), "id"),
+            new TextFilteredPropertyColumn<DeviceEntity, String>(new ResourceModel("device.deviceId"), "id"),
+            new TextFilteredPropertyColumn<DeviceEntity, String>(new ResourceModel("device.nodeId"), "nodeId"),
             new TextFilteredPropertyColumn<DeviceEntity, String>(new ResourceModel("device.macAddress"), "macAddress"),
             new TextFilteredPropertyColumn<DeviceEntity, String>(new ResourceModel("device.ipAddress"), "ipAddress"),
             new ChoiceFilteredPropertyColumn<DeviceEntity, String>(new ResourceModel("device.config"), "configCode", "configCode", Model.ofList(configService.getConfigCodes())),

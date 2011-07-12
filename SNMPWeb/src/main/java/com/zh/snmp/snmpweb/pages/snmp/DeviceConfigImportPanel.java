@@ -16,12 +16,8 @@
  */
 package com.zh.snmp.snmpweb.pages.snmp;
 
-import com.zh.snmp.snmpcore.domain.Configuration;
-import com.zh.snmp.snmpcore.entities.BaseEntity;
 import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpweb.components.JBetButton;
-import com.zh.snmp.snmpweb.components.ModalEditCloseListener;
-import com.zh.snmp.snmpweb.components.ModalEditPanel;
 import com.zh.snmp.snmpweb.pages.BasePage;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -30,7 +26,6 @@ import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;

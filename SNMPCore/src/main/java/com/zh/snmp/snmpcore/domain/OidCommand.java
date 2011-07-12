@@ -19,6 +19,7 @@ package com.zh.snmp.snmpcore.domain;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -30,7 +31,7 @@ public class OidCommand implements Serializable, Cloneable {
     private String oid;
     private OidType type;
     private String value;
-    private boolean isDinamic;
+    private String dinamicName;
     
     @XmlAttribute
     public String getName() {
@@ -68,19 +69,25 @@ public class OidCommand implements Serializable, Cloneable {
         this.value = value;
     }
 
+    @XmlTransient
+    public boolean isIsDinamic() {        
+        return dinamicName != null;
+    }
+
     @XmlAttribute
-    public boolean isIsDinamic() {
-        return isDinamic;
+    public String getDinamicName() {
+        return dinamicName;
     }
 
-    public void setIsDinamic(boolean isDinamic) {
-        this.isDinamic = isDinamic;
+    public void setDinamicName(String dinamicName) {
+        this.dinamicName = dinamicName;
     }
 
+    
     @Override
     public OidCommand clone() {
         OidCommand cmd = new OidCommand();
-        cmd.setIsDinamic(isDinamic);
+        cmd.setDinamicName(dinamicName);
         cmd.setName(name);
         cmd.setOid(oid);
         cmd.setType(type);

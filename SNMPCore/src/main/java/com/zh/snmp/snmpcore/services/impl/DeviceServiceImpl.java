@@ -23,6 +23,7 @@ import com.zh.snmp.snmpcore.domain.Device;
 import com.zh.snmp.snmpcore.domain.DeviceMap;
 import com.zh.snmp.snmpcore.domain.DeviceSelectionNode;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
+import com.zh.snmp.snmpcore.entities.DeviceState;
 import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpcore.services.DeviceService;
 import com.zh.snmp.snmpcore.util.JAXBUtil;
@@ -143,9 +144,11 @@ public class DeviceServiceImpl implements DeviceService {
         entity.setConfigCode(device.getConfig().getCode());
         DeviceMap toWrap = device.getConfigMap() != null ? device.getConfigMap() : new DeviceMap();
         entity.setDeviceMap(JAXBUtil.marshal(toWrap, true));            
-        entity.setId(device.getNodeId());
+        entity.setId(device.getDeviceId());
         entity.setIpAddress(device.getIpAddress());
         entity.setMacAddress(device.getMacAddress());
+        entity.setNodeId(device.getNodeId());
+        entity.setConfigState(device.getConfigState());
         return entity;
     }
     
@@ -155,8 +158,10 @@ public class DeviceServiceImpl implements DeviceService {
         device.setConfigMap(JAXBUtil.unmarshal(entity.getDeviceMap(), DeviceMap.class));
         device.setIpAddress(entity.getIpAddress());
         device.setMacAddress(entity.getMacAddress());
-        device.setNodeId(entity.getId());
+        device.setDeviceId(entity.getId());
+        device.setNodeId(entity.getNodeId());
         device.getConfigMap().setupParents();
+        device.setConfigState(entity.getConfigState());
         return device;
     }
 }

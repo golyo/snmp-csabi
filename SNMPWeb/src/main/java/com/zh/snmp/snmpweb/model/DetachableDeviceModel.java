@@ -41,7 +41,7 @@ public class DetachableDeviceModel extends LoadableDetachableModel<Device> {
     public DetachableDeviceModel(Device object) {
         super(object);
         InjectorHolder.getInjector().inject(this);
-        this.id = object.getNodeId();
+        this.id = object.getDeviceId();
     }
     
     @Override

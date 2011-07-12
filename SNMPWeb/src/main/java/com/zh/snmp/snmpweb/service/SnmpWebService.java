@@ -70,6 +70,7 @@ public class SnmpWebService {
             de.setId(deviceId);
             de.setIpAddress(ipAddress);
             de.setMacAddress(macAddress);
+            de.setNodeId(nodeId);
             de = deviceService.saveEntity(de);
             return de != null;
         }

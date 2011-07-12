@@ -35,7 +35,8 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 public class SnmpCommand implements Serializable, Comparable<SnmpCommand> {
     private int priority;
     private List<OidCommand> commands;
-
+    private CommandType type;
+    
     @XmlElement(name="variable")
     public List<OidCommand> getCommands() {
         return commands;
@@ -52,6 +53,15 @@ public class SnmpCommand implements Serializable, Comparable<SnmpCommand> {
 
     public void setPriority(int priority) {
         this.priority = priority;
+    }
+    
+    @XmlAttribute
+    public CommandType getType() {
+        return type;
+    }
+
+    public void setType(CommandType type) {
+        this.type = type;
     }
     
     public SnmpCommand clone(boolean onlyDinamic) {
@@ -74,5 +84,5 @@ public class SnmpCommand implements Serializable, Comparable<SnmpCommand> {
     @Override
     public int compareTo(SnmpCommand command) {
         return priority - command.priority;
-    }
+    }    
 }

@@ -21,13 +21,17 @@ import com.zh.snmp.snmpcore.domain.SnmpCommand;
 import com.zh.snmp.snmpcore.domain.ConfigNode;
 import com.zh.snmp.snmpcore.domain.OidType;
 import com.zh.snmp.snmpcore.util.JAXBUtil;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 import java.util.List;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -49,6 +53,13 @@ public class ConfigNodeTest {
         ConfigNode test = JAXBUtil.unmarshalTyped(new StringReader(sw.toString()), ConfigNode.class);
     }
     
+    @Test
+    public void testParse() throws UnsupportedEncodingException {
+        InputStream stream = ConfigNodeTest.class.getResourceAsStream("accessConfig.xml");
+        assertNotNull(stream);
+        ConfigNode node = JAXBUtil.unmarshalTyped(new InputStreamReader(stream, "UTF8"), ConfigNode.class);
+        LOGGER.debug("+++" + node.toString());
+    }
     
     private ConfigNode createConfigNode(String prefix, int childNo, int depth) {
         ConfigNode node = new ConfigNode();
@@ -85,7 +96,6 @@ public class ConfigNodeTest {
             cmd.setOid("oidkey" + prefix + "_" + i);
             cmd.setType(OidType.STR);
             cmd.setValue("oidVal" + prefix + "_" + i);
-            cmd.setIsDinamic(false);
             oids.add(cmd);
         }
         return oids;
