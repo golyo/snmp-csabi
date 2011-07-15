@@ -147,15 +147,9 @@ public class ConfigServiceImpl implements ConfigService {
         List<SnmpCommand> commands = node.getCommands();
         if (commands != null) {
             for (SnmpCommand command: commands) {
-                for (OidCommand oidc: command.getCommands()) {
-                    try {
-                        OID oid = mibParser.parseMib(oidc.getName());
-                        oidc.setOid(oid.toString());
-                    } catch (IOException e) {
-                        appender.addMessage("error.parse.mib", oidc);
-                        LOGGER.error("Error while parse command " + oidc.getName(), e);
-                    }
-                }
+                validateOids(command.getBefore(), appender);
+                validateOids(command.getCommands(), appender);
+                validateOids(command.getAfter(), appender);
             }                        
         }
         for (ConfigNode child: node.getChildren()) {
@@ -163,6 +157,19 @@ public class ConfigServiceImpl implements ConfigService {
         }
     }
     
+    private void validateOids(List<OidCommand> oids, MessageAppender appender) {
+        if (oids != null) {
+            for (OidCommand oidc: oids) {
+                try {
+                    OID oid = mibParser.parseMib(oidc.getName());
+                    oidc.setOid(oid.toString());
+                } catch (IOException e) {
+                    appender.addMessage("error.parse.mib", oidc);
+                    LOGGER.error("Error while parse command " + oidc.getName(), e);
+                }
+            }                   
+        }
+    }
     @Override
     public void loadConfigurations() {
         List<DeviceConfigEntity> configs = dao.find(new DeviceConfigEntity(), null, 0, -1);

@@ -16,12 +16,7 @@
  */
 package com.zh.snmp.snmpcore.snmp.mib;
 
-import com.zh.snmp.snmpcore.snmp.SnmpCommand;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.util.LinkedList;
-import java.util.List;
 import org.jsmiparser.smi.SmiMib;
 import org.jsmiparser.smi.SmiModule;
 import org.jsmiparser.smi.SmiOidValue;
@@ -46,7 +41,7 @@ public class MibParser {
     private static final char OID_DELIMITER = '.';
     private static final char NEW_COMMANDS_CHAR = '*';
     private static final String COMMAND_SPLITTER = " ";
-    
+    /*
     public List<SnmpCommand> parseCommands(Reader reader) throws IOException {
         String line;
         BufferedReader lineReader = new BufferedReader(reader);
@@ -67,7 +62,7 @@ public class MibParser {
         }
         return commands;
     } 
-    
+    */
     protected boolean isNewCommand(String line) {
         return line.charAt(0) == NEW_COMMANDS_CHAR;
     }

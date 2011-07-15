@@ -100,21 +100,44 @@ public class ConfigNode extends DefaultNode implements Serializable {
     }
     
     public ConfigNode findChildByPath(LinkedList<String> path) {
+        if (path.isEmpty()) {
+            return null;
+        }
         String val = path.pop();
-        if (val.equals(code)) {
+        ConfigNode child = findChildByCode(val);
+        if (child != null) {
             if (path.isEmpty()) {
-                return this;
+                return child;
             } else {
-                if (children != null) {
-                    for (ConfigNode child: getChildren()) {
-                        return child.findChildByPath(path);
-                    }                    
-                }
+                return child.findChildByPath(path);                
             }
-        } 
+        }
         return null;
     }
     
+    
+    public List<SnmpCommand> cloneCommandsByMap(DeviceMap map) {
+        List<SnmpCommand> ret = new LinkedList<SnmpCommand>();
+        for (SnmpCommand cmd: getCommands()) {
+            SnmpCommand clone = cmd.cloneEmpty();
+            updateCommandValueByMap(map, clone);
+            ret.add(clone);
+        }
+        return ret;
+    }
+    
+    private void updateCommandValueByMap(DeviceMap map, SnmpCommand command) {
+        for (SnmpCommand orig: getCommands()) {
+            command.updateCommandValues(orig);           
+        }
+        for (DeviceMap childMap: map.getChildren()) {
+            ConfigNode childConf = findChildByCode(childMap.getCode());
+            if (childConf != null) {
+                childConf.updateCommandValueByMap(childMap, command);
+            }
+        }
+    }
+    /*
     public void appendCommands(CommandAppender appender, DeviceMap map) {
         if (commands != null) {
             //Maybe not here
@@ -131,6 +154,6 @@ public class ConfigNode extends DefaultNode implements Serializable {
             }
         }        
     }   
-    
+    */
     
 }

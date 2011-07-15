@@ -31,6 +31,8 @@ import java.util.List;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.snmp4j.smi.OctetString;
+import org.snmp4j.smi.Variable;
 import static org.junit.Assert.*;
 
 /**
@@ -51,9 +53,12 @@ public class ConfigNodeTest {
         LOGGER.debug(sw.toString());
         
         ConfigNode test = JAXBUtil.unmarshalTyped(new StringReader(sw.toString()), ConfigNode.class);
+        
+        Variable v = OctetString.fromHexString("80 80", ' ');
+        System.out.println("+++++++++++++++++++++++++++++" + v);
     }
     
-    @Test
+    //@Test
     public void testParse() throws UnsupportedEncodingException {
         InputStream stream = ConfigNodeTest.class.getResourceAsStream("accessConfig.xml");
         assertNotNull(stream);
@@ -61,6 +66,7 @@ public class ConfigNodeTest {
         LOGGER.debug("+++" + node.toString());
     }
     
+    /*
     private ConfigNode createConfigNode(String prefix, int childNo, int depth) {
         ConfigNode node = new ConfigNode();
         node.setCode(prefix);
@@ -75,18 +81,21 @@ public class ConfigNodeTest {
         }
         return node;
     }
-    
+    */
+    /*
     private List<SnmpCommand> createSnmpCommand(String prefix, int no) {
         List<SnmpCommand> ret = new LinkedList<SnmpCommand>();
 
         for (int i=0; i<no; i++) {
             SnmpCommand command = new SnmpCommand();
-            command.setCommands(createOids(prefix, no));
+            command.setBefore(createOids(prefix, 1));
+            command.setAfter(createOids(prefix, 1));
             command.setCommands(createOids(prefix, no));
             ret.add(command);
         }
         return ret;
     }
+    */
     
     private List<OidCommand> createOids(String prefix, int no) {
         List<OidCommand> oids = new LinkedList<OidCommand>();
@@ -100,7 +109,6 @@ public class ConfigNodeTest {
         }
         return oids;
     }
-    
     public ConfigNode createAccesNode() {
         ConfigNode acces = new ConfigNode();
         acces.setCode("acces");
@@ -129,14 +137,10 @@ public class ConfigNodeTest {
 
     private SnmpCommand createCommand(OidType type, String descriptor, String value, int priority) {
         SnmpCommand command = new SnmpCommand();
-        OidCommand cmd = new OidCommand();
-        cmd.setType(type);
-        cmd.setName(descriptor);
-        cmd.setValue(value);
-        List<OidCommand> oids = new LinkedList<OidCommand>();
-        oids.add(cmd);
         command.setPriority(priority);
-        command.setCommands(oids);
+        command.setCommands(createOids("tt", 3));
+        command.setBefore(createOids("bt", 1));
+        command.setAfter(createOids("at", 1));
         return command;
     }
     /*

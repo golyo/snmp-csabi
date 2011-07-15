@@ -34,8 +34,14 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 })
 public class SnmpCommand implements Serializable, Comparable<SnmpCommand> {
     private int priority;
+    private String name;
     private List<OidCommand> commands;
-    private CommandType type;
+    private List<OidCommand> before;
+    private List<OidCommand> after;
+    
+    public SnmpCommand() {
+        commands = new LinkedList<OidCommand>();
+    }
     
     @XmlElement(name="variable")
     public List<OidCommand> getCommands() {
@@ -46,6 +52,24 @@ public class SnmpCommand implements Serializable, Comparable<SnmpCommand> {
         this.commands = commands;
     }
 
+    @XmlElement(name="after")
+    public List<OidCommand> getAfter() {
+        return after;
+    }
+
+    public void setAfter(List<OidCommand> after) {
+        this.after = after;
+    }
+
+    @XmlElement(name="before")
+    public List<OidCommand> getBefore() {
+        return before;
+    }
+
+    public void setBefore(List<OidCommand> before) {
+        this.before = before;
+    }
+
     @XmlAttribute
     public int getPriority() {
         return priority;
@@ -54,30 +78,33 @@ public class SnmpCommand implements Serializable, Comparable<SnmpCommand> {
     public void setPriority(int priority) {
         this.priority = priority;
     }
-    
+
     @XmlAttribute
-    public CommandType getType() {
-        return type;
+    public String getName() {
+        return name;
     }
 
-    public void setType(CommandType type) {
-        this.type = type;
+    public void setName(String name) {
+        this.name = name;
     }
     
+    /*
     public SnmpCommand clone(boolean onlyDinamic) {
-        SnmpCommand ret = new SnmpCommand();
-        ret.setPriority(priority);
-        if (commands != null) {
-            List<OidCommand> cloneCmds = new LinkedList<OidCommand>();
-            for (OidCommand cmd: commands) {
-                if (cmd.isIsDinamic()) {
-                    cloneCmds.add(cmd);                    
-                }
-            }  
-            if (!cloneCmds.isEmpty()) {
-                ret.setCommands(cloneCmds);                
+        SnmpCommand ret = cloneEmpty();
+        for (OidCommand cmd: commands) {
+            if (cmd.isIsDinamic()) {
+                ret.commands.add(cmd);                    
             }
-        }
+        }  
+        return ret;
+    }
+    */
+    public SnmpCommand cloneEmpty() {
+        SnmpCommand ret = new SnmpCommand();
+        ret.setBefore(cloneCommands(before));
+        ret.setAfter(cloneCommands(after));
+        ret.setPriority(priority);
+        ret.setName(name);
         return ret;
     }
     
@@ -85,4 +112,43 @@ public class SnmpCommand implements Serializable, Comparable<SnmpCommand> {
     public int compareTo(SnmpCommand command) {
         return priority - command.priority;
     }    
+    
+    public void updateCommandValues(SnmpCommand mergeCmd) {
+        if (mergeCmd.getPriority() == priority) {
+            for(OidCommand mergeOid: mergeCmd.commands) {
+                if (!setNewOidValue(mergeOid)) {
+                    commands.add(mergeOid.clone());
+                }
+            }            
+        }
+    }
+    
+    @Override
+    public String toString() {
+        return priority + ": " + commands.toString();
+    }
+    
+    private List<OidCommand> cloneCommands(List<OidCommand> cloneable) {
+        if (cloneable == null) {
+            return null;
+        } else {
+            List<OidCommand> ret = new LinkedList<OidCommand>();
+            for (OidCommand cmd: cloneable) {
+                ret.add(cmd.clone());
+            }
+            return ret;
+        }
+    }
+    
+    private boolean setNewOidValue(OidCommand cmd) {
+        int idx = 0;
+        for (OidCommand oids: commands) {
+            if (oids.getOid().equals(cmd.getOid())) {
+                oids.setValue(cmd.getValue());
+                return true;
+            }
+            idx++;
+        }
+        return false;
+    }
 }

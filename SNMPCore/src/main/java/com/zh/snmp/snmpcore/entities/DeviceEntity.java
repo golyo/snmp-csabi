@@ -41,10 +41,6 @@ public class DeviceEntity implements BaseEntity<String>, Serializable {
     private String deviceMap;
     private DeviceState configState;
 
-    public DeviceEntity() {
-        configState = DeviceState.NEW;
-    }
-    
     @Id
     @Column(name="DEVICEID")
     @Override

@@ -16,11 +16,15 @@
  */
 package com.zh.snmp.snmpweb.service;
 
+import com.zh.snmp.snmpcore.domain.Device;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.entities.DeviceState;
+import com.zh.snmp.snmpcore.message.BackgroundProcess;
+import com.zh.snmp.snmpcore.message.SimpleMessageAppender;
 import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpcore.services.DeviceService;
 import com.zh.snmp.snmpcore.services.SnmpService;
+import com.zh.snmp.snmpcore.services.impl.SnmpBackgroundProcess;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Resource;
@@ -81,11 +85,13 @@ public class SnmpWebService {
     public Boolean setDeviceConfig(@WebParam(name = "deviceId") String deviceId, @WebParam(name = "configPath") String configPath, int mode) {
         init();
         List<String> path = Arrays.asList(configPath.split(PATH_DELIM));
-        return deviceService.setDeviceConfig(deviceId, path, mode);
-        /*
-        return service.setDeviceConfig(nodeId, configCode) != null;
-         * 
-         */
+        Device device = deviceService.setDeviceConfig(deviceId, path, mode);
+        if (device != null) {
+            SnmpBackgroundProcess process = service.startSnmpBackgroundProcess(device, new SimpleMessageAppender());
+            return process != null;
+        } else {
+            return false;
+        }
     }
 
     @WebMethod(operationName = "setDinamicConfigValue")
@@ -101,11 +107,8 @@ public class SnmpWebService {
     @WebMethod(operationName = "getDeviceState")
     public DeviceState getDeviceState(@WebParam(name = "deviceId") String deviceId) {
         init();
-        return DeviceState.NOT_FOUND;
-        /*
-        return service.setDeviceConfig(nodeId, configCode) != null;
-         * 
-         */
+        DeviceEntity entity = deviceService.findDeviceEntityById(deviceId);
+        return entity != null ? entity.getConfigState() : null;
     }
 
     

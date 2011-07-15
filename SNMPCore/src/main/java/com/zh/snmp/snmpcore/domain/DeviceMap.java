@@ -49,19 +49,26 @@ public class DeviceMap extends DefaultNode implements Serializable {
         this.code = code;
     }
     
-    public void setByPath(LinkedList<String> path) {
+    public void setByPath(LinkedList<String> path, int mode) {
         String act = path.pop();
         DeviceMap child = findChild(act);
         if (child == null) {
-            child = new DeviceMap();
-            child.setCode(act);
-            if (children == null) {
-                children = new LinkedList<DeviceMap>();                
+            if (mode == 1) {
+                child = new DeviceMap();
+                child.setCode(act);
+                if (children == null) {
+                    children = new LinkedList<DeviceMap>();                
+                }
+                getChildren().add(child);                
             }
-            getChildren().add(child);
+        } else {
+            if (mode == 0 && path.isEmpty()) {
+                children.remove(child);
+                child = null;
+            }
         }
-        if (!path.isEmpty()) {
-            child.setByPath(path);
+        if (child != null && !path.isEmpty()) {
+            child.setByPath(path, mode);
         }
     }
     
@@ -94,6 +101,25 @@ public class DeviceMap extends DefaultNode implements Serializable {
             prefix = prefix + "\t";
             for (DeviceMap dm: getChildren()) {
                 dm.append(prefix, sb);
+            }
+        }
+    }
+    
+    public List<SnmpCommand> cloneCommands(ConfigNode node) {
+        List<SnmpCommand> commands = new LinkedList<SnmpCommand>();
+        for (SnmpCommand cmd: node.getCommands()) {
+            commands.add(cmd);
+        }
+        return commands;
+    }
+    
+    public void changeConfigCommands(ConfigNode node, List<SnmpCommand> commands) {
+        for (DeviceMap child: getChildren()) {
+            ConfigNode childConf = node.findChildByCode(child.getCode());
+            if (childConf != null) {
+                for (SnmpCommand cmd: childConf.getCommands()) {
+                    
+                }
             }
         }
     }

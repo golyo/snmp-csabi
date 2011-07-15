@@ -41,9 +41,9 @@ public class SnmpFactory {
     }
 
     private static final String TESTIP = "192.168.2.253/161";
-    public static CommunityTarget createTarget(String ip, SnmpManager.ProcessType type) {
+    public static CommunityTarget createTarget(String ip, String community) {
         CommunityTarget comtarget = new CommunityTarget();
-        comtarget.setCommunity(new OctetString(type.getCommunity()));
+        comtarget.setCommunity(new OctetString(community));
         comtarget.setVersion(SNMP_VERSION);
         comtarget.setAddress(new UdpAddress(ip + "/" + PORT));
         comtarget.setRetries(2);

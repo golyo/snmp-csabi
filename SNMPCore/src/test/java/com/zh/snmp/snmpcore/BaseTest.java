@@ -17,16 +17,21 @@
 
 package com.zh.snmp.snmpcore;
 
+import com.zh.snmp.snmpcore.domain.ConfigNodeTest;
+import com.zh.snmp.snmpcore.domain.Configuration;
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
+import com.zh.snmp.snmpcore.entities.DeviceEntity;
+import com.zh.snmp.snmpcore.entities.DeviceState;
+import com.zh.snmp.snmpcore.message.MessageAppender;
+import com.zh.snmp.snmpcore.services.ConfigService;
+import com.zh.snmp.snmpcore.services.DeviceService;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import com.zh.snmp.snmpcore.snmp.mib.MibParser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import javax.naming.NamingException;
-import org.apache.commons.io.IOUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -53,6 +58,10 @@ public abstract class BaseTest {
     
     @Autowired
     protected SnmpService snmpService;
+    @Autowired
+    protected ConfigService configService;
+    @Autowired
+    protected DeviceService deviceService;
     
     @BeforeClass
     public static void setUpBaseClass() throws NamingException, SQLException {
@@ -74,6 +83,23 @@ public abstract class BaseTest {
     
     protected InputStream gettestMibStream() {
         return MibParser.class.getResourceAsStream(TEST_FILE);
+    }
+    
+    protected Configuration createTestConfig(MessageAppender appender) {
+        InputStream stream = ConfigNodeTest.class.getResourceAsStream("accessConfig.xml");
+        Configuration conf = configService.importConfiguration(stream, appender);
+        return conf;
+    }
+    
+    protected DeviceEntity createTestDevice(String configCode, String ip) {
+        DeviceEntity e = new DeviceEntity();
+        e.setConfigCode(configCode);
+        e.setConfigState(DeviceState.NEW);
+        e.setId("ID" + ip.substring(0,3));
+        e.setMacAddress("MAC" + ip.substring(0,3));
+        e.setIpAddress(ip);
+        e.setNodeId("NODE" + ip.substring(0,3));
+        return deviceService.saveEntity(e);
     }
     
     protected DeviceConfigEntity createConfVoip(String code) throws IOException {
