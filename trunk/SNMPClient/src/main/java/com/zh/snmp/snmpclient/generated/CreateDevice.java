@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="configCode" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="deviceId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="nodeId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="ipAddress" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="macAddress" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
@@ -31,6 +32,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "createDevice", propOrder = {
     "configCode",
+    "deviceId",
     "nodeId",
     "ipAddress",
     "macAddress"
@@ -38,6 +40,7 @@ import javax.xml.bind.annotation.XmlType;
 public class CreateDevice {
 
     protected String configCode;
+    protected String deviceId;
     protected String nodeId;
     protected String ipAddress;
     protected String macAddress;
@@ -64,6 +67,30 @@ public class CreateDevice {
      */
     public void setConfigCode(String value) {
         this.configCode = value;
+    }
+
+    /**
+     * Gets the value of the deviceId property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    /**
+     * Sets the value of the deviceId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDeviceId(String value) {
+        this.deviceId = value;
     }
 
     /**

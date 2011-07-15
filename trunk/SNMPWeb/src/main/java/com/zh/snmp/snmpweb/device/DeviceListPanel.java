@@ -19,6 +19,7 @@ package com.zh.snmp.snmpweb.device;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpweb.components.DataTablePanel;
+import com.zh.snmp.snmpweb.components.EnumPropertyColumn;
 import com.zh.snmp.snmpweb.components.RowLinkColumn;
 import com.zh.snmp.snmpweb.menu.MenuConfig;
 import com.zh.snmp.snmpweb.model.DeviceProvider;
@@ -60,6 +61,7 @@ public class DeviceListPanel extends DataTablePanel<DeviceEntity> {
             new TextFilteredPropertyColumn<DeviceEntity, String>(new ResourceModel("device.nodeId"), "nodeId"),
             new TextFilteredPropertyColumn<DeviceEntity, String>(new ResourceModel("device.macAddress"), "macAddress"),
             new TextFilteredPropertyColumn<DeviceEntity, String>(new ResourceModel("device.ipAddress"), "ipAddress"),
+            new EnumPropertyColumn(new ResourceModel("device.configState"), "configState"),
             new ChoiceFilteredPropertyColumn<DeviceEntity, String>(new ResourceModel("device.config"), "configCode", "configCode", Model.ofList(configService.getConfigCodes())),
             new RowLinkColumn<DeviceEntity>(new ResourceModel("title.options"), new ResourceModel("link.details"), null) {
                 @Override

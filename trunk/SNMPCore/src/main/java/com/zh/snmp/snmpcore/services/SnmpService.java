@@ -16,40 +16,19 @@
  */
 package com.zh.snmp.snmpcore.services;
 
-import com.zh.snmp.snmpcore.entities.DeviceEntity;
-import com.zh.snmp.snmpcore.entities.HistoryEntity;
-import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
-import java.util.List;
+import com.zh.snmp.snmpcore.domain.Device;
+import com.zh.snmp.snmpcore.message.BackgroundProcess;
+import com.zh.snmp.snmpcore.message.MessageAppender;
+import com.zh.snmp.snmpcore.services.impl.SnmpBackgroundProcess;
 
 /**
  *
  * @author Golyo
  */
 public interface SnmpService {
-    public DeviceEntity saveDevice(DeviceEntity device);
-    /*
-    public DeviceConfigEntity saveDeviceConfig(DeviceConfigEntity type);
-    public DeviceConfigEntity findDeviceConfigByCode(String code);
-    public DeviceConfigEntity findDeviceConfigById(Long id);
-    public int countDeviceHistory(DeviceConfigEntity filter);
     
-    public DeviceEntity findDeviceById(Long id);
-    public DeviceEntity findDeviceByNodeId(String nodeId);
-    public DeviceEntity findDeviceByFilter(DeviceEntity filter);
-    public List<DeviceEntity> findDeviceByFilter(DeviceEntity filter, String sort, int start, int count);
-    public DeviceEntity saveDevice(DeviceEntity device);
-    public int countDevice(DeviceEntity filter);
+    public SnmpBackgroundProcess startSnmpBackgroundProcess(String ipAddress, MessageAppender appender);    
+    public SnmpBackgroundProcess startSnmpBackgroundProcess(Device device, MessageAppender appender);
+    public boolean applyConfigOnDevice(final Device device, MessageAppender appender);
     
-    public HistoryEntity findHsitoryById(Long id);
-    public List<HistoryEntity> findHistoryByFilter(HistoryEntity filter, String sort, int start, int count);
-    public int countHistory(HistoryEntity filter);
-        
-    public DeviceEntity setDeviceConfig(String ipAddress, String configCode);
-    public int changeConfigToAllDevice(String oldTypeCode, String newTypeCode);
-    
-    public List<DeviceConfigEntity> getDeviceHistory(DeviceConfigEntity filter, String sort, int start, int count);
-    public List<HistoryEntity> getDeviceHistory(HistoryEntity filter, String sort, int start, int count);
-     * 
-     * 
-     */
 }

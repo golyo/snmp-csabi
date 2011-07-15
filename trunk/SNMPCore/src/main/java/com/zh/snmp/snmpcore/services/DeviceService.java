@@ -37,5 +37,6 @@ public interface DeviceService {
     public DeviceEntity findDeviceEntityByFilter(DeviceEntity filter);
     
     public DeviceSelectionNode createSelectionNode(Device device);
-    public boolean setDeviceConfig(String nodeId, List<String> path, int mode);
+    public Device setDeviceConfig(String nodeId, List<String> path, int mode);
+    
 }

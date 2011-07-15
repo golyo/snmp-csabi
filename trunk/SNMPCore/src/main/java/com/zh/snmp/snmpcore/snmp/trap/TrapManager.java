@@ -18,6 +18,7 @@ package com.zh.snmp.snmpcore.snmp.trap;
 
 import com.zh.snmp.snmpcore.message.MaxMessageAppender;
 import com.zh.snmp.snmpcore.message.MessageAppender;
+import com.zh.snmp.snmpcore.services.SnmpService;
 import com.zh.snmp.snmpcore.snmp.SnmpResources;
 import java.io.IOException;
 import java.io.Serializable;
@@ -58,7 +59,7 @@ public class TrapManager implements CommandResponder, SnmpResources, Serializabl
     //private boolean interrupted;
     
     @Autowired
-    private TrapListener trapListener;
+    private SnmpService snmpService;
     
     private String trapListenerAddress;
     private AbstractTransportMapping transport;
@@ -76,30 +77,10 @@ public class TrapManager implements CommandResponder, SnmpResources, Serializabl
     
     public void start() throws IOException {
         listenTrap(new UdpAddress(trapListenerAddress));
-        /*
-        synchronized (synchObj) {
-            while (!interrupted) {
-                try {
-                    synchObj.wait();                    
-                } catch (InterruptedException e) {
-                    LOGGER.debug("Thread interrupted");
-                }
-            }
-        }
-         * 
-         */
     }
 
     public void stop() throws IOException {
         transport.close();
-        /*
-        synchronized (synchObj) {
-            interrupted = true;
-            synchObj.notifyAll();
-            transport.close();
-        } 
-         * 
-         */
     }
 
     public MessageAppender getMessageAppender() {
@@ -110,27 +91,9 @@ public class TrapManager implements CommandResponder, SnmpResources, Serializabl
     public void processPdu(CommandResponderEvent cmdRespEvent) {        
         try {
             DeviceTrapInfo trapInfo = new DeviceTrapInfo(cmdRespEvent);
-            if (trapListener != null) {
-                msgAppender.addMessage(MSG_TRAP_RECEIVED, trapInfo);
-                trapListener.processTrapResponse(trapInfo, msgAppender);
-            }            
-            /*
-            DeviceEntity device = service.findDeviceByNodeId(trapInfo.nodeId);
-            if (device == null) {
-                LOGGER.error("Unregistered device found to " + trapInfo.nodeId + " at " + trapInfo.ipAddress);
-                return;
-            }
-            String config = deviceChecker.getConfiguration(trapInfo);
-            /*
-            if (config != null) {
-                if (!config.equals(device.getConfig().getCode())) {
-                    deviceChecker.configureDevice(trapInfo, device.getConfig());
-                }
-            } else {
-                //TODO must reset config
-            }
-             * 
-             */
+            LOGGER.debug("Message received from " + trapInfo.getIpAdress());
+            msgAppender.addMessage("message.snmp.trapReceived", trapInfo);
+            snmpService.startSnmpBackgroundProcess(trapInfo.ipAddress, msgAppender);
         } catch (IOException e) {
             LOGGER.error("Error while check device ", e);
         }
@@ -164,15 +127,6 @@ public class TrapManager implements CommandResponder, SnmpResources, Serializabl
 
         transport.listen();
         LOGGER.debug("Listening on " + address);
-/*
-        try {
-            this.stop();
-            this.wait();
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
- * 
- */
     }
     
     private static final String NODEID_OID = "";

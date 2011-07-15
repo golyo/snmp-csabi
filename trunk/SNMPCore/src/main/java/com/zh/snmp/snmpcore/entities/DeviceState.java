@@ -21,9 +21,18 @@ package com.zh.snmp.snmpcore.entities;
  * @author Golyo
  */
 public enum DeviceState {
-    NOT_FOUND,
-    NEW,
-    RUNNING,
-    CONFIGURED,
-    ERROR
+    NOT_FOUND(false),
+    NEW(true),
+    RUNNING(true),
+    CONFIGURED(true),
+    ERROR(false);
+    
+    private boolean canContinue;
+    private DeviceState(boolean canContinue) {
+        this.canContinue = canContinue;
+    }
+    
+    public boolean canContinue() {
+        return canContinue;
+    }
 }

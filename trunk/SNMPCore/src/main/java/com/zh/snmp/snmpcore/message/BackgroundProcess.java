@@ -14,38 +14,28 @@
  *  ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR
  *  DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
  */
-package com.zh.snmp.snmpcore.snmp;
-
-import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
-import org.snmp4j.smi.VariableBinding;
+package com.zh.snmp.snmpcore.message;
 
 /**
  *
  * @author Golyo
  */
-public class SnmpCommand implements Serializable {
-    private List<VariableBinding> bindings;
+public abstract class BackgroundProcess extends Thread {
+    private MessageAppender appender;
     
-    public SnmpCommand() {
-        bindings = new LinkedList<VariableBinding>();
-    }
-
-    public void addBinding(VariableBinding binding) {
-        bindings.add(binding);
+    public BackgroundProcess(MessageAppender appender) {
+        this.appender = appender;
     }
     
-    public List<VariableBinding> getBindings() {
-        return bindings;
-    }
-    
-    void setBindings(List<VariableBinding> bindings) {
-        this.bindings = bindings;
-    }
+    protected abstract void doWork();
     
     @Override
-    public String toString() {
-        return bindings.toString();
+    public void run() {
+        doWork();
+        appender.finish();
+    }
+
+    public MessageAppender getAppender() {
+        return appender;
     }
 }

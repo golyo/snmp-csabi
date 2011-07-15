@@ -40,8 +40,11 @@ public class MonitorPanel<T> extends BasePanel<T> {
     protected Label progressLabel;
     
     public MonitorPanel(String id, IModel<T> model) {
+        this(id, model, null);
+    }
+    public MonitorPanel(String id, IModel<T> model, MessageAppender appender) {
         super(id, model);
-        appender = getAppender(model);
+        this.appender = appender != null ? appender : createMessageAppender(model);
         progressLabel = new Label("progressLabel", new ResourceModel("process.running"));
         add(progressLabel);
 
@@ -62,7 +65,7 @@ public class MonitorPanel<T> extends BasePanel<T> {
             @Override
             public String getObject() {
                 StringBuilder sb = new StringBuilder();
-                for (ZhMessage mess: appender.getMessages()) {
+                for (ZhMessage mess: MonitorPanel.this.appender.getMessages()) {
                     sb.append(getString(mess.getResourceKey(), Model.of(mess.getObject())));
                     sb.append(NL);
                 }
@@ -75,7 +78,7 @@ public class MonitorPanel<T> extends BasePanel<T> {
         
     }
     
-    protected MessageAppender getAppender(IModel<T> model) {
+    protected MessageAppender createMessageAppender(IModel<T> model) {
         return new SimpleMessageAppender();
     }
 }

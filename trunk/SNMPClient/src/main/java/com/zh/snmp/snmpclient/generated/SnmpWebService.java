@@ -45,9 +45,9 @@ public interface SnmpWebService {
 
     /**
      * 
-     * @param nodeId
      * @param arg2
      * @param configPath
+     * @param deviceId
      * @return
      *     returns java.lang.Boolean
      */
@@ -56,28 +56,8 @@ public interface SnmpWebService {
     @RequestWrapper(localName = "setDeviceConfig", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.SetDeviceConfig")
     @ResponseWrapper(localName = "setDeviceConfigResponse", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.SetDeviceConfigResponse")
     public Boolean setDeviceConfig(
-        @WebParam(name = "nodeId", targetNamespace = "")
-        String nodeId,
-        @WebParam(name = "configPath", targetNamespace = "")
-        String configPath,
-        @WebParam(name = "arg2", targetNamespace = "")
-        int arg2);
-
-    /**
-     * 
-     * @param nodeId
-     * @param arg2
-     * @param configPath
-     * @return
-     *     returns java.lang.Boolean
-     */
-    @WebMethod
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "setDinamicConfigValue", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.SetDeviceConfig")
-    @ResponseWrapper(localName = "setDinamicConfigValueResponse", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.SetDeviceConfigResponse")
-    public Boolean setDinamicConfigValue(
-        @WebParam(name = "nodeId", targetNamespace = "")
-        String nodeId,
+        @WebParam(name = "deviceId", targetNamespace = "")
+        String deviceId,
         @WebParam(name = "configPath", targetNamespace = "")
         String configPath,
         @WebParam(name = "arg2", targetNamespace = "")
@@ -88,6 +68,7 @@ public interface SnmpWebService {
      * @param nodeId
      * @param configCode
      * @param macAddress
+     * @param deviceId
      * @param ipAddress
      * @return
      *     returns java.lang.Boolean
@@ -99,11 +80,47 @@ public interface SnmpWebService {
     public Boolean createDevice(
         @WebParam(name = "configCode", targetNamespace = "")
         String configCode,
+        @WebParam(name = "deviceId", targetNamespace = "")
+        String deviceId,
         @WebParam(name = "nodeId", targetNamespace = "")
         String nodeId,
         @WebParam(name = "ipAddress", targetNamespace = "")
         String ipAddress,
         @WebParam(name = "macAddress", targetNamespace = "")
         String macAddress);
+
+    /**
+     * 
+     * @param arg2
+     * @param configPath
+     * @param deviceId
+     * @return
+     *     returns java.lang.Boolean
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "setDinamicConfigValue", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.SetDinamicConfigValue")
+    @ResponseWrapper(localName = "setDinamicConfigValueResponse", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.SetDinamicConfigValueResponse")
+    public Boolean setDinamicConfigValue(
+        @WebParam(name = "deviceId", targetNamespace = "")
+        String deviceId,
+        @WebParam(name = "configPath", targetNamespace = "")
+        String configPath,
+        @WebParam(name = "arg2", targetNamespace = "")
+        String arg2);
+
+    /**
+     * 
+     * @param deviceId
+     * @return
+     *     returns com.zh.snmp.snmpclient.generated.DeviceState
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "getDeviceState", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.GetDeviceState")
+    @ResponseWrapper(localName = "getDeviceStateResponse", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.GetDeviceStateResponse")
+    public DeviceState getDeviceState(
+        @WebParam(name = "deviceId", targetNamespace = "")
+        String deviceId);
 
 }

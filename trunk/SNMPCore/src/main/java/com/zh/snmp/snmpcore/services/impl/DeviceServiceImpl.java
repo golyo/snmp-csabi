@@ -24,6 +24,8 @@ import com.zh.snmp.snmpcore.domain.DeviceMap;
 import com.zh.snmp.snmpcore.domain.DeviceSelectionNode;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.entities.DeviceState;
+import com.zh.snmp.snmpcore.exception.ExceptionCodesEnum;
+import com.zh.snmp.snmpcore.exception.SystemException;
 import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpcore.services.DeviceService;
 import com.zh.snmp.snmpcore.util.JAXBUtil;
@@ -44,13 +46,19 @@ public class DeviceServiceImpl implements DeviceService {
     private DeviceDao dao;
     
     @Override
-    public Device findDeviceByNodeId(String nodeId) {        
+    public Device findDeviceByNodeId(String nodeId) {      
+        if (nodeId == null) {
+            return null;
+        }
         DeviceEntity entity =dao.load(nodeId);
         return entity != null ? unwrap(entity) : null;
     }
 
     @Override
     public Device findDeviceByIp(String ip) {
+        if (ip == null) {
+            return null;
+        }
         DeviceEntity filter = new DeviceEntity();
         filter.setIpAddress(ip);
         DeviceEntity entity = dao.findExampleEntity(filter);
@@ -87,10 +95,16 @@ public class DeviceServiceImpl implements DeviceService {
                 DeviceMap dm = new DeviceMap();
                 dm.setCode(config.getCode());
                 device.setDeviceMap(JAXBUtil.marshal(dm, true));                            
-                return dao.save(device);
+            } else {
+                throw new SystemException(ExceptionCodesEnum.Unsupported, "Config code not found " + device.getConfigCode());
             }
         }
-        return null;
+        if (device.getConfigState() == null) {
+            device.setConfigState(DeviceState.NEW);
+        }
+        DeviceEntity ret = dao.save(device);
+        dao.flush();
+        return ret;
     }
         
     @Override
@@ -99,20 +113,31 @@ public class DeviceServiceImpl implements DeviceService {
     }    
     
     private static final String PATH_DELIM = ".";
+    
     @Override
-    public boolean setDeviceConfig(String nodeId, List<String> path, int mode) {
+    public Device setDeviceConfig(String nodeId, List<String> path, int mode) {
         Device device = findDeviceByNodeId(nodeId);
-        ConfigNode act = device.getConfig().getRoot().findChildByPath(new LinkedList<String>(path));
+        if (device == null) {
+            return null;
+        }
+        LinkedList<String> pathl = new LinkedList<String>(path);
+        ConfigNode act = null;
+        ConfigNode root = device.getConfig().getRoot();
+        if (!pathl.isEmpty()) {
+            String rootc = pathl.pop();
+            if (rootc.equals(root.getCode())) {
+                act = root.findChildByPath(pathl);
+            }            
+        }
         if (act == null) {
-            return false;            
+            return null;            
         } else {
             LinkedList<String> lpath = new LinkedList<String>(path);
             lpath.pop();
             if (!lpath.isEmpty()) {
-                device.getConfigMap().setByPath(lpath);
+                device.getConfigMap().setByPath(lpath, mode);
             }
-            save(device);
-            return true;
+            return save(device);
         }
         
     }

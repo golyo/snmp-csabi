@@ -29,7 +29,7 @@ public class App
         System.out.println("++++++++++++" + configs);
         
         //boolean succes = srv.createDevice("acces", "clientNode0", "clientIp0", "clientMac0");
-        boolean succes = srv.setDeviceConfig("clientNode0", "acces.internet", 1);
+        boolean succes = srv.setDeviceConfig("ddd", "access.catv", 0);
         System.out.println("++++++++++++" + succes);
         
         //boolean succes = srv.createDevice("testCreate1", "testIpAddr1", "testMacAddr1");

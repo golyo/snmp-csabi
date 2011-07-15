@@ -27,7 +27,6 @@ import com.zh.snmp.snmpcore.message.MessageAppender;
 import com.zh.snmp.snmpcore.message.SimpleMessageAppender;
 import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpcore.services.DeviceService;
-import com.zh.snmp.snmpcore.services.SnmpService;
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +34,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import static org.junit.Assert.*;
 /**
  *
  * @author Golyo
@@ -44,11 +43,6 @@ public class ConfigServiceTest extends BaseTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigServiceTest.class);
     private static final String ACCES = "ACCES";
     
-    @Autowired
-    private ConfigService configService;
-    @Autowired
-    private DeviceService deviceService;
-    
     @Test
     public void testConfig() {
         Configuration conf = createTestConfig();
@@ -56,31 +50,27 @@ public class ConfigServiceTest extends BaseTest {
         configService.clearCache();
         Configuration check = configService.findConfigByCode(ACCES);
         
-        Device dev = createTestDevice(conf);
-        dev = deviceService.save(dev);        
-        Device test = deviceService.findDeviceByIp("ipAddress");
+        String ip = "testip";
+        DeviceEntity de = createTestDevice(conf.getCode(), ip);
+        assertNotNull(de);
         
-        int i = 0;
-        int j = i;
+        Device device = deviceService.findDeviceByNodeId(de.getId());
+        assertNotNull(device);
+        
+        List<DeviceEntity> devices = deviceService.findDeviceEntityByFilter(new DeviceEntity(), null, 0, -1);
+        
+        device = deviceService.findDeviceByIp(ip);
+        assertNotNull(device);
         
     }
     
     @Test
     public void testParse() {
-        InputStream stream = ConfigNodeTest.class.getResourceAsStream("accessConfig.xml");
         MessageAppender appaneder = new SimpleMessageAppender();
-        Configuration conf = configService.importConfiguration(stream, appaneder);
+        Configuration conf = createTestConfig(appaneder);
         LOGGER.debug("+++" + conf.toString());
     }
-    //@Test
-    public void testSave() {
-        DeviceEntity de = new DeviceEntity();
-        de.setId("NodeId");
-        DeviceEntity dd = snmpService.saveDevice(de);
 
-        int i = 0;
-        int j = i;
-    }
     private Device createTestDevice(Configuration config) {
         Device device = new Device();
         device.setConfig(config);

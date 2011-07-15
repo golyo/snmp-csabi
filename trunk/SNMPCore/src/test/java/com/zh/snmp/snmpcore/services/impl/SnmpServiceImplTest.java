@@ -17,30 +17,34 @@
 package com.zh.snmp.snmpcore.services.impl;
 
 import com.zh.snmp.snmpcore.BaseTest;
-import com.zh.snmp.snmpcore.dao.TestDao;
+import com.zh.snmp.snmpcore.domain.CommandType;
+import com.zh.snmp.snmpcore.domain.Configuration;
+import com.zh.snmp.snmpcore.domain.Device;
+import com.zh.snmp.snmpcore.domain.OidCommand;
+import com.zh.snmp.snmpcore.domain.SnmpCommand;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
-import com.zh.snmp.snmpcore.entities.HistoryEntity;
-import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
-import com.zh.snmp.snmpcore.services.SnmpService;
-import java.io.IOException;
-import java.util.List;
+import com.zh.snmp.snmpcore.message.MessageAppender;
+import com.zh.snmp.snmpcore.message.SimpleMessageAppender;
+import com.zh.snmp.snmpcore.snmp.DeviceSettings;
+import com.zh.snmp.snmpcore.snmp.SnmpCommandManager;
+import com.zh.snmp.snmpcore.snmp.SnmpFactory;
+import java.util.Arrays;
+import java.util.BitSet;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import static org.junit.Assert.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.snmp4j.CommunityTarget;
+import org.snmp4j.Snmp;
 
 /**
  *
  * @author Golyo
  */
 public class SnmpServiceImplTest extends BaseTest {
-    @Autowired
-    private TestDao testDao;
-    
-    public SnmpServiceImplTest() {
-    }
-    
+    private static final Logger LOGGER = LoggerFactory.getLogger(SnmpServiceImplTest.class);
+    private static final String TESTIP = "192.168.2.253/161";
     @Before
     public void setUp() {
     }
@@ -51,48 +55,52 @@ public class SnmpServiceImplTest extends BaseTest {
 
     @Test
     public void testSnmpService() {
-        DeviceEntity de = new DeviceEntity();
-        DeviceEntity dd = testDao.save(de); 
+        String ip = TESTIP;
+        MessageAppender appender = new SimpleMessageAppender();
+        Configuration conf = createTestConfig(appender);
+        DeviceEntity de = createTestDevice(conf.getCode(), ip);
         
+        //snmpService.startSnmpBackgroundProcess(de.getIpAddress(), appender);
+        LOGGER.debug(appender.toString());
         int i = 1;
         int j = i;
-        /*
-        DeviceConfigEntity type = new DeviceConfigEntity();
-        type.setActive(true);
-        type.setName("testName");
-        type.setCode("testCode");
-        type.setDeviceType(DeviceType.VOIP);
-        type.setSnmpDescriptor("testDescriptor");
-        DeviceConfigEntity saved = snmpService.saveDeviceConfig(type);
-        assertNotNull(saved.getId());
-        
-        DeviceConfigEntity check = snmpService.findDeviceConfigById(saved.getId());
-        assertNotNull(check);
-        
-        List<DeviceConfigEntity> ls = snmpService.findDeviceConfigByFilter(new DeviceConfigEntity(), null, 0, -1);
-        assertEquals(ls.size(), 1);
-        
-        check = snmpService.findDeviceConfigByCode(type.getCode());
-        assertNotNull(check);
-        
-        String nodeId = "ip";
-        DeviceEntity device = snmpService.setDeviceConfig(nodeId, "unknowType");
-        assertNull(device);
-        device = snmpService.setDeviceConfig(nodeId, type.getCode());
-        assertNotNull(device);
-        assertEquals(device.getNodeId(), nodeId);
-        
-        List<HistoryEntity> histories = snmpService.getDeviceHistory(new HistoryEntity(), null, 0, -1);
-        assertEquals(histories.size(), 1);
-        
-        device = snmpService.setDeviceConfig(nodeId, null);
-        assertTrue(device.getConfigurations().isEmpty());
-        //assertNull(device.getConfig());
-
-        histories = snmpService.getDeviceHistory(new HistoryEntity(), null, 0, -1);
-        assertEquals(histories.size(), 2);
-         * 
-         */
     }
     
+    //@Test
+    public void testCommnand() throws Exception {
+        String ip = TESTIP;
+        MessageAppender appender = new SimpleMessageAppender();
+        Configuration conf = createTestConfig(appender);
+        DeviceEntity de = createTestDevice(conf.getCode(), ip);
+        
+        Device d = deviceService.findDeviceByIp(ip);
+        Snmp snmp = SnmpFactory.createSnmp();
+        SnmpCommandManager cm = new SnmpCommandManager(snmp, appender, d);
+        
+        int idx = 0;
+        BitSet set = new BitSet();
+        set.set(1);
+        set.set(2);
+        set.set(3);
+        CommunityTarget target = DeviceSettings.TEST_DEVICE.createTarget(true);
+        for (SnmpCommand cmd: conf.getRoot().getCommands()) {
+            if (set.get(idx)) {
+                for (OidCommand ocmd: cmd.getCommands()) {
+                    SnmpCommand testcmd = new SnmpCommand();
+                    testcmd.setCommands(Arrays.asList(ocmd));
+                    if (!cm.processSetCommand(target, cmd.getCommands())) {
+                        idx = 10;
+                        LOGGER.error("COMMAND FAILED " + testcmd);
+                        break;
+                    }
+                }
+            }
+            idx++;
+        }
+        //snmpService.applyConfigOnDevice(ip, appender);
+        
+        LOGGER.debug(appender.toString());
+        int i = 1;
+        int j = i;
+     }
 }

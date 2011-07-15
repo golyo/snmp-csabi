@@ -57,7 +57,9 @@
           factory-method="parse"/>
           
     <bean id="mibParser" class="com.zh.snmp.snmpcore.snmp.mib.MibParser"/>
+    <!--
     <bean id="snmpManager" class="com.zh.snmp.snmpcore.snmp.SnmpManager"/>
+    -->
     <bean id="trapManager" class="com.zh.snmp.snmpcore.snmp.trap.TrapManager">
         <property name="trapListenerAddress" value="${snmp.trap.ip}"/>
     </bean>

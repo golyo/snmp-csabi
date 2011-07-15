@@ -25,6 +25,7 @@ import javax.xml.namespace.QName;
 public class ObjectFactory {
 
     private final static QName _CreateDevice_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "createDevice");
+    private final static QName _GetDeviceState_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "getDeviceState");
     private final static QName _SetDinamicConfigValueResponse_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "setDinamicConfigValueResponse");
     private final static QName _SetDinamicConfigValue_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "setDinamicConfigValue");
     private final static QName _CreateDeviceResponse_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "createDeviceResponse");
@@ -34,6 +35,7 @@ public class ObjectFactory {
     private final static QName _Init_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "init");
     private final static QName _GetConfigurationsResponse_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "getConfigurationsResponse");
     private final static QName _InitResponse_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "initResponse");
+    private final static QName _GetDeviceStateResponse_QNAME = new QName("http://service.snmpweb.snmp.zh.com/", "getDeviceStateResponse");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: com.zh.snmp.snmpclient.generated
@@ -43,19 +45,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CreateDeviceResponse }
+     * Create an instance of {@link GetConfigurations }
      * 
      */
-    public CreateDeviceResponse createCreateDeviceResponse() {
-        return new CreateDeviceResponse();
+    public GetConfigurations createGetConfigurations() {
+        return new GetConfigurations();
     }
 
     /**
-     * Create an instance of {@link GetConfigurationsResponse }
+     * Create an instance of {@link SetDeviceConfigResponse }
      * 
      */
-    public GetConfigurationsResponse createGetConfigurationsResponse() {
-        return new GetConfigurationsResponse();
+    public SetDeviceConfigResponse createSetDeviceConfigResponse() {
+        return new SetDeviceConfigResponse();
     }
 
     /**
@@ -67,11 +69,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SetDeviceConfigResponse }
+     * Create an instance of {@link GetConfigurationsResponse }
      * 
      */
-    public SetDeviceConfigResponse createSetDeviceConfigResponse() {
-        return new SetDeviceConfigResponse();
+    public GetConfigurationsResponse createGetConfigurationsResponse() {
+        return new GetConfigurationsResponse();
+    }
+
+    /**
+     * Create an instance of {@link CreateDeviceResponse }
+     * 
+     */
+    public CreateDeviceResponse createCreateDeviceResponse() {
+        return new CreateDeviceResponse();
+    }
+
+    /**
+     * Create an instance of {@link SetDinamicConfigValueResponse }
+     * 
+     */
+    public SetDinamicConfigValueResponse createSetDinamicConfigValueResponse() {
+        return new SetDinamicConfigValueResponse();
     }
 
     /**
@@ -91,11 +109,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GetConfigurations }
+     * Create an instance of {@link SetDinamicConfigValue }
      * 
      */
-    public GetConfigurations createGetConfigurations() {
-        return new GetConfigurations();
+    public SetDinamicConfigValue createSetDinamicConfigValue() {
+        return new SetDinamicConfigValue();
+    }
+
+    /**
+     * Create an instance of {@link GetDeviceStateResponse }
+     * 
+     */
+    public GetDeviceStateResponse createGetDeviceStateResponse() {
+        return new GetDeviceStateResponse();
     }
 
     /**
@@ -104,6 +130,14 @@ public class ObjectFactory {
      */
     public CreateDevice createCreateDevice() {
         return new CreateDevice();
+    }
+
+    /**
+     * Create an instance of {@link GetDeviceState }
+     * 
+     */
+    public GetDeviceState createGetDeviceState() {
+        return new GetDeviceState();
     }
 
     /**
@@ -116,21 +150,30 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link SetDeviceConfigResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetDeviceState }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://service.snmpweb.snmp.zh.com/", name = "setDinamicConfigValueResponse")
-    public JAXBElement<SetDeviceConfigResponse> createSetDinamicConfigValueResponse(SetDeviceConfigResponse value) {
-        return new JAXBElement<SetDeviceConfigResponse>(_SetDinamicConfigValueResponse_QNAME, SetDeviceConfigResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://service.snmpweb.snmp.zh.com/", name = "getDeviceState")
+    public JAXBElement<GetDeviceState> createGetDeviceState(GetDeviceState value) {
+        return new JAXBElement<GetDeviceState>(_GetDeviceState_QNAME, GetDeviceState.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link SetDeviceConfig }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link SetDinamicConfigValueResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service.snmpweb.snmp.zh.com/", name = "setDinamicConfigValueResponse")
+    public JAXBElement<SetDinamicConfigValueResponse> createSetDinamicConfigValueResponse(SetDinamicConfigValueResponse value) {
+        return new JAXBElement<SetDinamicConfigValueResponse>(_SetDinamicConfigValueResponse_QNAME, SetDinamicConfigValueResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SetDinamicConfigValue }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://service.snmpweb.snmp.zh.com/", name = "setDinamicConfigValue")
-    public JAXBElement<SetDeviceConfig> createSetDinamicConfigValue(SetDeviceConfig value) {
-        return new JAXBElement<SetDeviceConfig>(_SetDinamicConfigValue_QNAME, SetDeviceConfig.class, null, value);
+    public JAXBElement<SetDinamicConfigValue> createSetDinamicConfigValue(SetDinamicConfigValue value) {
+        return new JAXBElement<SetDinamicConfigValue>(_SetDinamicConfigValue_QNAME, SetDinamicConfigValue.class, null, value);
     }
 
     /**
@@ -194,6 +237,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://service.snmpweb.snmp.zh.com/", name = "initResponse")
     public JAXBElement<InitResponse> createInitResponse(InitResponse value) {
         return new JAXBElement<InitResponse>(_InitResponse_QNAME, InitResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetDeviceStateResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service.snmpweb.snmp.zh.com/", name = "getDeviceStateResponse")
+    public JAXBElement<GetDeviceStateResponse> createGetDeviceStateResponse(GetDeviceStateResponse value) {
+        return new JAXBElement<GetDeviceStateResponse>(_GetDeviceStateResponse_QNAME, GetDeviceStateResponse.class, null, value);
     }
 
 }

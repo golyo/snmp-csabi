@@ -20,8 +20,13 @@ import com.zh.snmp.snmpcore.domain.Device;
 import com.zh.snmp.snmpcore.domain.DeviceMap;
 import com.zh.snmp.snmpcore.domain.DeviceSelectionNode;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
+import com.zh.snmp.snmpcore.message.BackgroundProcess;
+import com.zh.snmp.snmpcore.message.SimpleMessageAppender;
 import com.zh.snmp.snmpcore.services.DeviceService;
+import com.zh.snmp.snmpcore.services.SnmpService;
+import com.zh.snmp.snmpcore.services.impl.SnmpBackgroundProcess;
 import com.zh.snmp.snmpweb.model.DetachableDeviceModel;
+import com.zh.snmp.snmpweb.monitoring.MonitorPopupPanel;
 import com.zh.snmp.snmpweb.pages.BasePanel;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
@@ -46,21 +51,25 @@ public class DeviceDetailsPanel extends BasePanel<Device> {
     @SpringBean
     private DeviceService service;
     
+    @SpringBean
+    private SnmpService snmpService;
+    
     private static final String EMPTY_STR = "-";
     private boolean changed;
+    private IModel<Device> deviceModel;
 
     public DeviceDetailsPanel(String id, final IModel<DeviceEntity> model) {
         super(id, null);
         setOutputMarkupId(true);
-        DetachableDeviceModel devModel = new DetachableDeviceModel(model.getObject().getId());
-        setDefaultModel(new CompoundPropertyModel<Device>(devModel));        
+        deviceModel = new DetachableDeviceModel(model.getObject().getId());
+        setDefaultModel(new CompoundPropertyModel<Device>(deviceModel));        
         add(new Label("config.code"));
         add(new Label("nodeId"));
         add(new Label("macAddress"));
         add(new Label("ipAddress"));
         LinkTree tree;
         
-        final TreeModel treeModel = new DefaultTreeModel(service.createSelectionNode(devModel.getObject()));
+        final TreeModel treeModel = new DefaultTreeModel(service.createSelectionNode(deviceModel.getObject()));
         add(tree = new LinkTree("tree", treeModel) {
             @Override
             protected IModel getNodeTextModel(IModel<Object> model) {
@@ -106,6 +115,20 @@ public class DeviceDetailsPanel extends BasePanel<Device> {
                 return changed;
             }        
         });
+        
+        add(new AjaxButton("doSnmp") {
+
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                SnmpBackgroundProcess startSnmp = snmpService.startSnmpBackgroundProcess(deviceModel.getObject(), new SimpleMessageAppender());
+                MonitorPopupPanel popup = new MonitorPopupPanel(getModal(), null, startSnmp.getAppender(), "snmp.backgroundModalTitle");
+                popup.show(target);
+            }
+            @Override
+            public boolean isVisible() {
+                return !changed;
+            }        
+        });
         //add(new MultiLineLabel("deviceMap"));
         /*
         ListView<DeviceType> configList = new ListView<DeviceType>("configurations", Arrays.asList(DeviceType.values())) {
@@ -131,7 +154,14 @@ public class DeviceDetailsPanel extends BasePanel<Device> {
          */
     }
     
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        deviceModel.detach();
+    }
+    
     public DeviceSelectionNode getNode(Object node) {
         return (DeviceSelectionNode)node;        
     }
+    
 }

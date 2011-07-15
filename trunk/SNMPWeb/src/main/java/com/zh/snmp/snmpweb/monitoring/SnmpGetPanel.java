@@ -16,18 +16,11 @@
  */
 package com.zh.snmp.snmpweb.monitoring;
 
-import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
-import com.zh.snmp.snmpcore.snmp.SnmpManager;
-import java.util.LinkedList;
-import java.util.List;
+import com.zh.snmp.snmpcore.services.SnmpService;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 /**
@@ -36,7 +29,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
  */
 public class SnmpGetPanel extends MonitorPanel<DeviceEntity> {
     @SpringBean
-    private SnmpManager snmpManager;
+    private SnmpService snmpManager;
     
     //private IModel<DeviceType> selectedType;
     private DropDownChoice typeChoice;

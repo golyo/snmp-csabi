@@ -16,90 +16,160 @@
  */
 package com.zh.snmp.snmpcore.services.impl;
 
-import com.zh.snmp.snmpcore.dao.TestDao;
-import com.zh.snmp.snmpcore.entities.DeviceEntity;
+import com.zh.snmp.snmpcore.domain.CommandType;
+import com.zh.snmp.snmpcore.domain.Device;
+import com.zh.snmp.snmpcore.domain.OidCommand;
+import com.zh.snmp.snmpcore.domain.SnmpCommand;
+import com.zh.snmp.snmpcore.entities.DeviceState;
+import com.zh.snmp.snmpcore.message.BackgroundProcess;
+import com.zh.snmp.snmpcore.message.MessageAppender;
+import com.zh.snmp.snmpcore.message.SimpleMessageAppender;
+import com.zh.snmp.snmpcore.services.DeviceService;
 import com.zh.snmp.snmpcore.services.SnmpService;
+import com.zh.snmp.snmpcore.snmp.SnmpCommandManager;
+import com.zh.snmp.snmpcore.snmp.SnmpFactory;
+import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.log4j.Appender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.snmp4j.CommunityTarget;
+import org.snmp4j.Snmp;
+import org.snmp4j.event.ResponseEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Golyo
  */
-@Transactional
 public class SnmpServiceImpl implements SnmpService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SnmpServiceImpl.class);
+    //private static final long MAX_DATE_DIFF = 1000 * 60 * 10; //10 perc
+    private static final long MAX_DATE_DIFF = 1000 * 10; //10 mp
+
+    private Snmp snmp;
+
+    private final Map<String, Date> runningDeviceConfMap;
+
     @Autowired
-    private TestDao testDao;
-
-    @Override
-    public DeviceEntity saveDevice(DeviceEntity device) {
-        return testDao.save(device);
+    private DeviceService service;
+    
+    public SnmpServiceImpl() throws IOException {
+        snmp = SnmpFactory.createSnmp();
+        runningDeviceConfMap = new HashMap<String, Date>();
     }
-    /*
+    
     @Override
-    public DeviceEntity setDeviceConfig(String nodeId, String configCode) {
-        DeviceConfigEntity config = findDeviceConfigByCode(configCode);
-        if (config == null && configCode != null) {
-            return null;
-        } 
-        DeviceEntity filterClient = new DeviceEntity();
-        filterClient.setNodeId(nodeId);
-        //TODO
-        DeviceEntity saveable = deviceDao.findExampleEntity(filterClient);
-        if (saveable == null) {
-            saveable = filterClient;            
-        }
-        if (configCode == null) {
-            for (DeviceConfigEntity conf: saveable.getConfigurations()) {
-                clientSnmpTypeChanged(saveable, conf, null);
-            }
-            saveable.setConfigurations(Collections.EMPTY_SET);
+    public SnmpBackgroundProcess startSnmpBackgroundProcess(final Device device, MessageAppender appender) {
+        SnmpBackgroundProcess ret = new SnmpBackgroundProcess(this, device, appender);
+        ret.start();
+        return ret;
+    }
+    
+    @Override
+    public SnmpBackgroundProcess startSnmpBackgroundProcess(String ipAddress, MessageAppender appender) {
+        Device device = service.findDeviceByIp(ipAddress);
+        if (device != null) {
+            return startSnmpBackgroundProcess(device, appender);            
         } else {
-            DeviceConfigEntity oldConfig = saveable.changeConfig(config);
-            saveable = deviceDao.save(saveable);
-            clientSnmpTypeChanged(saveable, oldConfig, config);
+            appender.addMessage("message.snmp.ipNotConfigured", ipAddress);
+            appender.finish();
+            return null;
         }
-        deviceDao.flush();
-        return saveable;            
     }
     
     @Override
-    public List<HistoryEntity> getDeviceHistory(HistoryEntity filter, String sort, int start, int count) {
-        return historyDao.find(filter, sort, start, count);
+    public boolean applyConfigOnDevice(Device device, MessageAppender appender) {
+        Device toConfig = startProcess(device, appender);
+        if (toConfig == null) {
+            return false;
+        }
+        SnmpCommandManager cmdManager = new SnmpCommandManager(snmp, appender, toConfig);
+        List<SnmpCommand> commands = toConfig.getConfig().getRoot().cloneCommandsByMap(toConfig.getConfigMap());
+        CommunityTarget getTarget = SnmpFactory.createTarget(toConfig.getIpAddress(), "public");
+        CommunityTarget setTarget = SnmpFactory.createTarget(toConfig.getIpAddress(), "private");
+        for (SnmpCommand cmd : commands) {
+            if (clearCommands(cmdManager, toConfig, getTarget, cmd, appender)) {
+                if (toConfig.getConfigState().canContinue()) {
+                    doSetCommand(cmdManager, toConfig, setTarget, cmd.getBefore());
+                }
+                if (toConfig.getConfigState().canContinue()) {
+                    doSetCommand(cmdManager, toConfig, setTarget, cmd.getCommands());
+                }
+                doSetCommand(cmdManager, toConfig, setTarget, cmd.getAfter());
+                if (toConfig.getConfigState().canContinue()) {
+                    appender.addMessage("message.snmp.succesCmd", cmd);                    
+                } else {
+                    appender.addMessage("message.snmp.failedCmd", cmd);                    
+                }
+            }
+            if (!toConfig.getConfigState().canContinue()) {
+                break;
+            }
+        }
+        finishProcess(toConfig, appender);
+        return true;
+    }    
+    
+    private boolean doSetCommand(SnmpCommandManager cmdManager, Device device, CommunityTarget setTarget, List<OidCommand> cmds) {
+        if (cmds != null && !cmds.isEmpty()) {
+            return cmdManager.processSetCommand(setTarget, cmds);            
+        } else {
+            return true;
+        }
     }
     
-    private void clientSnmpTypeChanged(DeviceEntity device, DeviceConfigEntity oldConfig, DeviceConfigEntity newConfig) {
-        HistoryEntity log = new HistoryEntity();
-        log.setDevice(device);
-        log.setNewConfig(newConfig);
-        log.setOldConfig(oldConfig);
-        log.setUpdateTime(new Date());
-        historyDao.save(log);
+    private boolean clearCommands(SnmpCommandManager cmdManager, Device device, CommunityTarget getTarget, SnmpCommand command, MessageAppender appender) {
+        if (command.getCommands() == null || command.getCommands().isEmpty()) {
+            LOGGER.info("Nincs parancssor definiálva: " + command.getName());
+            return false;
+        }
+        ResponseEvent event = cmdManager.processGetCommand(getTarget, command.getCommands());        
+        if (event != null) {
+            if (cmdManager.clearModificationSameCommands(command.getCommands(), event)) {
+                LOGGER.info("Modification found on command");
+                appender.addMessage("message.snmp.changesFound", command);
+                return true;
+            } else {
+                LOGGER.info("No modification found on command");
+                appender.addMessage("message.snmp.noChangesFound", command);
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
     
-    @Override
-    public List<DeviceConfigEntity> getDeviceHistory(DeviceConfigEntity filter, String sort, int start, int count) {
-        return deviceConfigDao.find(filter, sort, start, count);
+    private Device startProcess(Device device, MessageAppender appender) {
+        if (device.getConfigState() == DeviceState.RUNNING) {
+            appender.addMessage("message.snmp.running", device);
+            return null;
+        }
+        synchronized (runningDeviceConfMap) {
+            Date date = runningDeviceConfMap.get(device.getDeviceId());
+            Date now = new Date();
+            if (date == null || (now.getTime()-date.getTime()) > MAX_DATE_DIFF) {
+                runningDeviceConfMap.put(device.getDeviceId(), now);
+                appender.addMessage("message.snmp.start", device);
+            } else {
+                appender.addMessage("message.snmp.wait", device);
+                return null;
+            }            
+        }    
+        device.setConfigState(DeviceState.RUNNING);
+        return service.save(device);
     }
     
-    @Override
-    public int countDeviceHistory(DeviceConfigEntity filter) {
-        return deviceConfigDao.count(filter);
+    private void finishProcess(Device device, MessageAppender appender) {
+        if (device.getConfigState().canContinue()) {
+            device.setConfigState(DeviceState.CONFIGURED);
+        }
+        appender.addMessage("message.snmp.stop", device);
+        appender.finish();
+        service.save(device);
     }
-
-    @Override
-    public HistoryEntity findHsitoryById(Long id) {
-        return historyDao.load(id);
-    }
-    
-    @Override
-    public List<HistoryEntity> findHistoryByFilter(HistoryEntity filter, String sort, int start, int count) {
-        return historyDao.find(filter, sort, start, count);
-    }
-    
-    @Override
-    public int countHistory(HistoryEntity filter) {
-        return historyDao.count(filter);
-    }
-      */      
 }

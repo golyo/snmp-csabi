@@ -14,28 +14,31 @@
  *  ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR
  *  DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
  */
-package com.zh.snmp.snmpcore.domain;
+package com.zh.snmp.snmpcore.services.impl;
 
-import java.util.LinkedList;
-import java.util.List;
+import com.zh.snmp.snmpcore.domain.Device;
+import com.zh.snmp.snmpcore.message.BackgroundProcess;
+import com.zh.snmp.snmpcore.message.MessageAppender;
+import com.zh.snmp.snmpcore.services.SnmpService;
 
 /**
  *
  * @author Golyo
  */
-public class CommandAppender {
-    private List<List<SnmpCommand>> commands;
-    
-    public CommandAppender() {
-        commands = new LinkedList<List<SnmpCommand>>();
-    }
+public class SnmpBackgroundProcess extends BackgroundProcess {
 
-    public void appendCommand(List<SnmpCommand> command) {
-        //Todo make merge
-        commands.add(command);
+    private SnmpService service;
+    private Device device;
+    
+    SnmpBackgroundProcess(SnmpService service, Device device, MessageAppender appender) {
+        super(appender);
+        this.service = service;
+        this.device = device;
     }
     
-    public List<List<SnmpCommand>> getCommands() {
-        return commands;
+    @Override
+    protected void doWork() {
+        service.applyConfigOnDevice(device, getAppender());
     }
+    
 }
