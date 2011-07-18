@@ -7,6 +7,10 @@
     <a wicket:id="editLink">Szerkesztés</a>
     -->
     <p>
+        <label for="deviceId">Device azonosító</label>
+        <span wicket:id="deviceId"/>
+    </p>
+    <p>
         <label for="config.code">Konfiguráció</label>
         <span wicket:id="config.code"/>
     </p>
@@ -22,6 +26,7 @@
         <label for="ipAddress">IP cím</label>
         <span wicket:id="ipAddress"/>
     </p>
+    <input type="submit" wicket:id="delete"  wicket:message="value:link.delete"/>
     <input type="submit" wicket:id="finalize"  wicket:message="value:link.finalize"/>
     <input type="submit" wicket:id="doSnmp"  wicket:message="value:link.doSnmp"/>
     <div wicket:id="tree">        

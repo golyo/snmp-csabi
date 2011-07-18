@@ -29,6 +29,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="device")
 public class DeviceMap extends DefaultNode implements Serializable {
+    
+    private static final String DELIMITER = ".";
+    
     private String code;
 
     @XmlElement(name="node")
@@ -121,6 +124,20 @@ public class DeviceMap extends DefaultNode implements Serializable {
                     
                 }
             }
+        }
+    }
+    
+    public List<String> getChildList() {
+        List<String> ret = new LinkedList<String>();
+        appendChilds(code, ret);
+        return ret;
+    }
+    
+    protected void appendChilds(String prefix, List<String> ret) {        
+        ret.add(prefix);
+        for (DeviceMap child: getChildren()) {
+            String chprefix = prefix + DELIMITER + child.getCode();
+            child.appendChilds(chprefix, ret);
         }
     }
 }

@@ -26,7 +26,7 @@ import java.util.List;
  * @author Golyo
  */
 public interface DeviceService {
-    public Device findDeviceByNodeId(String id);    
+    public Device findDeviceByDeviceId(String id);    
     public DeviceEntity findDeviceEntityById(String id);    
     public Device findDeviceByIp(String ip);
     
@@ -38,5 +38,7 @@ public interface DeviceService {
     
     public DeviceSelectionNode createSelectionNode(Device device);
     public Device setDeviceConfig(String nodeId, List<String> path, int mode);
+    
+    public boolean deleteDevice(String id);
     
 }

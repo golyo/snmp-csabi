@@ -46,7 +46,7 @@ public class DetachableDeviceModel extends LoadableDetachableModel<Device> {
     
     @Override
     protected Device load() {
-        return service.findDeviceByNodeId(id);
+        return service.findDeviceByDeviceId(id);
     }
     
 }
