@@ -82,7 +82,7 @@ public class SnmpWebService {
     
     private static final String PATH_DELIM = "\\.";
     @WebMethod(operationName = "setDeviceConfig")
-    public Boolean setDeviceConfig(@WebParam(name = "deviceId") String deviceId, @WebParam(name = "configPath") String configPath, int mode) {
+    public Boolean setDeviceConfig(@WebParam(name = "deviceId") String deviceId, @WebParam(name = "configPath") String configPath, @WebParam(name = "mode") int mode) {
         init();
         List<String> path = Arrays.asList(configPath.split(PATH_DELIM));
         Device device = deviceService.setDeviceConfig(deviceId, path, mode);
