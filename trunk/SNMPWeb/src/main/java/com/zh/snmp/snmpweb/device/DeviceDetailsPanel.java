@@ -62,8 +62,9 @@ public class DeviceDetailsPanel extends BasePanel<Device> {
         super(id, null);
         setOutputMarkupId(true);
         deviceModel = new DetachableDeviceModel(model.getObject().getId());
-        setDefaultModel(new CompoundPropertyModel<Device>(deviceModel));        
+        setDefaultModel(new CompoundPropertyModel<Device>(deviceModel)); 
         add(new Label("config.code"));
+        add(new Label("deviceId"));
         add(new Label("nodeId"));
         add(new Label("macAddress"));
         add(new Label("ipAddress"));
@@ -98,6 +99,13 @@ public class DeviceDetailsPanel extends BasePanel<Device> {
             }
         });
         tree.getTreeState().expandAll();
+        add(new AjaxButton("delete") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                service.deleteDevice(deviceModel.getObject().getDeviceId());
+                getJBetPage().backToParentPanel(target);
+            }
+        });
         add(new AjaxButton("finalize") {
 
             @Override

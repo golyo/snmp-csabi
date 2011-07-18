@@ -104,6 +104,15 @@ public class SnmpWebService {
          */
     }
 
+    @WebMethod(operationName = "getDeviceConfig")
+    public List<String> getDeviceConfig(@WebParam(name = "deviceId") String deviceId) {
+        Device device = deviceService.findDeviceByDeviceId(deviceId);
+        if (device != null) {
+            return device.getConfigMap().getChildList();
+        } else {
+            return null;            
+        }
+    }
     @WebMethod(operationName = "getDeviceState")
     public DeviceState getDeviceState(@WebParam(name = "deviceId") String deviceId) {
         init();

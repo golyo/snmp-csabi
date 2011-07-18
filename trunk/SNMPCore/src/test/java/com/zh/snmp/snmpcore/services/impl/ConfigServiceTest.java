@@ -54,7 +54,7 @@ public class ConfigServiceTest extends BaseTest {
         DeviceEntity de = createTestDevice(conf.getCode(), ip);
         assertNotNull(de);
         
-        Device device = deviceService.findDeviceByNodeId(de.getId());
+        Device device = deviceService.findDeviceByDeviceId(de.getId());
         assertNotNull(device);
         
         List<DeviceEntity> devices = deviceService.findDeviceEntityByFilter(new DeviceEntity(), null, 0, -1);

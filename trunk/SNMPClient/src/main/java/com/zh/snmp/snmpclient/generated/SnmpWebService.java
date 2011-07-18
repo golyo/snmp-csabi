@@ -113,6 +113,20 @@ public interface SnmpWebService {
      * 
      * @param deviceId
      * @return
+     *     returns java.util.List<java.lang.String>
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "getDeviceConfig", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.GetDeviceConfig")
+    @ResponseWrapper(localName = "getDeviceConfigResponse", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.GetDeviceConfigResponse")
+    public List<String> getDeviceConfig(
+        @WebParam(name = "deviceId", targetNamespace = "")
+        String deviceId);
+
+    /**
+     * 
+     * @param deviceId
+     * @return
      *     returns com.zh.snmp.snmpclient.generated.DeviceState
      */
     @WebMethod

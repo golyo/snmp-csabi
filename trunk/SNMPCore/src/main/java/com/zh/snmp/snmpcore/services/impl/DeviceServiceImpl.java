@@ -46,7 +46,7 @@ public class DeviceServiceImpl implements DeviceService {
     private DeviceDao dao;
     
     @Override
-    public Device findDeviceByNodeId(String nodeId) {      
+    public Device findDeviceByDeviceId(String nodeId) {      
         if (nodeId == null) {
             return null;
         }
@@ -116,7 +116,7 @@ public class DeviceServiceImpl implements DeviceService {
     
     @Override
     public Device setDeviceConfig(String nodeId, List<String> path, int mode) {
-        Device device = findDeviceByNodeId(nodeId);
+        Device device = findDeviceByDeviceId(nodeId);
         if (device == null) {
             return null;
         }
@@ -175,6 +175,17 @@ public class DeviceServiceImpl implements DeviceService {
         entity.setNodeId(device.getNodeId());
         entity.setConfigState(device.getConfigState());
         return entity;
+    }
+    
+    @Override
+    public boolean deleteDevice(String id) {
+        DeviceEntity de = dao.load(id);
+        if (de != null) {
+            dao.delete(dao.load(id));
+            return true;
+        } else {
+            return false;
+        }
     }
     
     protected Device unwrap(DeviceEntity entity) {
