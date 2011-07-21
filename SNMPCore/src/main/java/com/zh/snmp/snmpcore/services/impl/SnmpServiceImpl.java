@@ -70,6 +70,7 @@ public class SnmpServiceImpl implements SnmpService {
         return ret;
     }
     
+    
     @Override
     public SnmpBackgroundProcess startSnmpBackgroundProcess(String ipAddress, MessageAppender appender) {
         Device device = service.findDeviceByIp(ipAddress);
