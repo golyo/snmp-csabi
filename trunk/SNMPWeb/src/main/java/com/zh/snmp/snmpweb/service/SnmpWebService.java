@@ -19,7 +19,6 @@ package com.zh.snmp.snmpweb.service;
 import com.zh.snmp.snmpcore.domain.Device;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.entities.DeviceState;
-import com.zh.snmp.snmpcore.message.BackgroundProcess;
 import com.zh.snmp.snmpcore.message.SimpleMessageAppender;
 import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpcore.services.DeviceService;
@@ -95,7 +94,7 @@ public class SnmpWebService {
     }
 
     @WebMethod(operationName = "setDinamicConfigValue")
-    public Boolean setDinamicConfigValue(@WebParam(name = "deviceId") String deviceId, @WebParam(name = "configPath") String configPath, String value) {
+    public Boolean setDinamicConfigValue(@WebParam(name = "deviceId") String deviceId, @WebParam(name = "configPath") String configPath, @WebParam(name = "dinamicValue") String dinamicValue) {
         init();
         return false;
         /*
@@ -104,6 +103,11 @@ public class SnmpWebService {
          */
     }
 
+    @WebMethod(operationName = "deleteDevice")
+    public boolean deleteDevice(@WebParam(name = "deviceId") String deviceId) {
+        return deviceService.deleteDevice(deviceId);
+    }
+   
     @WebMethod(operationName = "getDeviceConfig")
     public List<String> getDeviceConfig(@WebParam(name = "deviceId") String deviceId) {
         Device device = deviceService.findDeviceByDeviceId(deviceId);

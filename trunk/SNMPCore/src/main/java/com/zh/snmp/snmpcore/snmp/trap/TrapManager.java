@@ -16,8 +16,10 @@
  */
 package com.zh.snmp.snmpcore.snmp.trap;
 
+import com.zh.snmp.snmpcore.domain.Device;
 import com.zh.snmp.snmpcore.message.MaxMessageAppender;
 import com.zh.snmp.snmpcore.message.MessageAppender;
+import com.zh.snmp.snmpcore.services.DeviceService;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import com.zh.snmp.snmpcore.snmp.SnmpResources;
 import java.io.IOException;
@@ -61,11 +63,12 @@ public class TrapManager implements CommandResponder, SnmpResources, Serializabl
     @Autowired
     private SnmpService snmpService;
     
+    @Autowired
+    private DeviceService deviceService;
+    
     private String trapListenerAddress;
     private AbstractTransportMapping transport;
     private MessageAppender msgAppender = new MaxMessageAppender(10);
-    
-
     
     public String getTrapListenerAddress() {
         return trapListenerAddress;
@@ -88,14 +91,31 @@ public class TrapManager implements CommandResponder, SnmpResources, Serializabl
     }
     
     @Override
-    public void processPdu(CommandResponderEvent cmdRespEvent) {        
-        try {
-            DeviceTrapInfo trapInfo = new DeviceTrapInfo(cmdRespEvent);
+    public void processPdu(CommandResponderEvent cmdRespEvent) {   
+        DeviceTrapInfo trapInfo = null;
+        try {           
+            trapInfo = new DeviceTrapInfo(cmdRespEvent);
             LOGGER.debug("Message received from " + trapInfo.getIpAdress());
             msgAppender.addMessage("message.snmp.trapReceived", trapInfo);
-            snmpService.startSnmpBackgroundProcess(trapInfo.ipAddress, msgAppender);
+            Device device = deviceService.findDeviceByIp(trapInfo.ipAddress);
+            if (device == null) {
+                int pos = trapInfo.ipAddress.indexOf('/');
+                if (pos > 0) {
+                    device = deviceService.findDeviceByIp(trapInfo.ipAddress.substring(0, pos));
+                }
+            }
+            if (device != null) {
+                snmpService.startSnmpBackgroundProcess(device, msgAppender);                            
+            } else {
+                msgAppender.addMessage("message.snmp.ipNotConfigured", trapInfo.ipAddress);
+            }
         } catch (IOException e) {
             LOGGER.error("Error while check device ", e);
+            if (trapInfo != null) {
+                msgAppender.addMessage("message.snmp.trapError", trapInfo);                
+            } else {
+                msgAppender.addMessage("message.snmp.trapReadError");                                
+            }
         }
     }
 
