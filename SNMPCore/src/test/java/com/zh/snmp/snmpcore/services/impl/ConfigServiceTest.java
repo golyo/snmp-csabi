@@ -18,22 +18,17 @@ package com.zh.snmp.snmpcore.services.impl;
 
 import com.zh.snmp.snmpcore.BaseTest;
 import com.zh.snmp.snmpcore.domain.ConfigNode;
-import com.zh.snmp.snmpcore.domain.ConfigNodeTest;
 import com.zh.snmp.snmpcore.domain.Configuration;
 import com.zh.snmp.snmpcore.domain.Device;
-import com.zh.snmp.snmpcore.domain.DeviceMap;
+import com.zh.snmp.snmpcore.domain.DeviceSelectionNode;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.message.MessageAppender;
 import com.zh.snmp.snmpcore.message.SimpleMessageAppender;
-import com.zh.snmp.snmpcore.services.ConfigService;
-import com.zh.snmp.snmpcore.services.DeviceService;
-import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import static org.junit.Assert.*;
 /**
  *
@@ -77,13 +72,7 @@ public class ConfigServiceTest extends BaseTest {
         device.setDeviceId("nodeid");
         device.setIpAddress("ipAddress");
         device.setMacAddress("macAddress");
-        DeviceMap map = new DeviceMap();
-        
-        map.setCode(config.getCode());
-        List<DeviceMap> children = new LinkedList<DeviceMap>();
-        DeviceMap internet = new DeviceMap();
-        internet.setCode("internet");
-        children.add(internet);
+        DeviceSelectionNode map = new DeviceSelectionNode(config.getRoot());        
         device.setConfigMap(map);
         
         return device;

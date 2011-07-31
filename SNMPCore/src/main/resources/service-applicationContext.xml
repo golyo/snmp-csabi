@@ -6,7 +6,6 @@
        default-autowire="byName">
 
     <bean id="AuthenticationService" class="com.zh.snmp.snmpcore.services.impl.DBAuthenticationServiceImpl"/>
-    <bean id="SnmpService" class="com.zh.snmp.snmpcore.services.impl.SnmpServiceImpl"/>
     <bean id="ConfigService" class="com.zh.snmp.snmpcore.services.impl.ConfigServiceImpl"/>
     <bean id="DeviceService" class="com.zh.snmp.snmpcore.services.impl.DeviceServiceImpl"/>
     <!--

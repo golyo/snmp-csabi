@@ -21,6 +21,8 @@ import com.zh.snmp.snmpcore.exception.ExceptionCodesEnum;
 import com.zh.snmp.snmpcore.exception.SystemException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -52,5 +54,5 @@ public class CoreUtil {
         } catch (NoSuchAlgorithmException e) {
             throw new SystemException(ExceptionCodesEnum.ConfigurationException, e);
         }
-    }
+    }    
 }

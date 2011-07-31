@@ -17,11 +17,16 @@
 package com.zh.snmp.snmpweb.device;
 
 import com.zh.snmp.snmpcore.domain.DeviceSelectionNode;
+import com.zh.snmp.snmpcore.domain.DinamicValue;
 import com.zh.snmp.snmpweb.components.ModalEditPanel;
+import javax.security.auth.callback.TextInputCallback;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -30,33 +35,41 @@ import org.apache.wicket.model.PropertyModel;
  *
  * @author Golyo
  */
-public abstract class DeviceStateEditPanel extends ModalEditPanel<String> {
-    private boolean originalState;
-    private boolean newState;
+public abstract class DeviceStateEditPanel extends ModalEditPanel<DeviceSelectionNode> {
     
-    public DeviceStateEditPanel(ModalWindow id, String code, boolean state) {
-        super(id, null, false);
-        originalState = state;
-        newState = state;
-        form.add(new Label("code", code));
-        form.add(new CheckBox("selected", new PropertyModel<Boolean>(this, "newState")));
+    public DeviceStateEditPanel(ModalWindow id, IModel<DeviceSelectionNode> node) {
+        super(id, node, false);
+        form.add(new Label("code", new PropertyModel(node, "code")));
+        form.add(new CheckBox("selected", new PropertyModel<Boolean>(node, "selected")));
+        form.add(new ListView<DinamicValue>("dinamics", new PropertyModel(node, "dinamics")) {
+
+            @Override
+            protected void populateItem(ListItem<DinamicValue> item) {
+                item.add(new Label("code", new PropertyModel(item.getModelObject(), "code")));
+                item.add(new TextField("value", new PropertyModel(item.getModelObject(), "value")));
+            }
+        });
     }
 
     @Override
     protected boolean onModalSave(AjaxRequestTarget target) {
-        if (originalState != newState) {
-            onStateChanged(newState, target);
+        DeviceSelectionNode node = (DeviceSelectionNode)getDefaultModelObject();
+        boolean hasErr = false;
+        if (node.isSelected()) {
+            for (DinamicValue val: node.getDinamics()) {
+                if (val.getValue() == null) {
+                    hasErr = true;
+                    error(getString("error.dinamicValue", Model.of(val)));
+                }
+            }
+        }        
+        if (hasErr) {
+            return false;
+        } else {
+            onStateChanged(target);
+            return true;
         }
-        return true;
     }
 
-    public boolean isNewState() {
-        return newState;
-    }
-
-    public void setNewState(boolean newState) {
-        this.newState = newState;
-    }
-
-    protected abstract void onStateChanged(boolean state, AjaxRequestTarget target);
+    protected abstract void onStateChanged(AjaxRequestTarget target);
 }

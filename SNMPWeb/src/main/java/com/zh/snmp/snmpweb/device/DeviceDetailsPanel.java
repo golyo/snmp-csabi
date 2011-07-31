@@ -17,10 +17,8 @@
 package com.zh.snmp.snmpweb.device;
 
 import com.zh.snmp.snmpcore.domain.Device;
-import com.zh.snmp.snmpcore.domain.DeviceMap;
 import com.zh.snmp.snmpcore.domain.DeviceSelectionNode;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
-import com.zh.snmp.snmpcore.message.BackgroundProcess;
 import com.zh.snmp.snmpcore.message.SimpleMessageAppender;
 import com.zh.snmp.snmpcore.services.DeviceService;
 import com.zh.snmp.snmpcore.services.SnmpService;
@@ -40,7 +38,6 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -70,7 +67,7 @@ public class DeviceDetailsPanel extends BasePanel<Device> {
         add(new Label("ipAddress"));
         LinkTree tree;
         
-        final TreeModel treeModel = new DefaultTreeModel(service.createSelectionNode(deviceModel.getObject()));
+        final TreeModel treeModel = new DefaultTreeModel(deviceModel.getObject().getConfigMap());
         add(tree = new LinkTree("tree", treeModel) {
             @Override
             protected IModel getNodeTextModel(IModel<Object> model) {
@@ -81,11 +78,10 @@ public class DeviceDetailsPanel extends BasePanel<Device> {
             protected void onNodeLinkClicked(Object node, BaseTree tree, AjaxRequestTarget target) {
                 final DeviceSelectionNode selnode = getNode(node);
                 if (selnode.getParent() != null) {
-                    DeviceStateEditPanel editPanel = new DeviceStateEditPanel(getModal(), selnode.getCode(), selnode.isSelected()) {
+                    DeviceStateEditPanel editPanel = new DeviceStateEditPanel(getModal(), Model.of(selnode)) {
                         @Override
-                        protected void onStateChanged(boolean state, AjaxRequestTarget target) {
+                        protected void onStateChanged(AjaxRequestTarget target) {
                             changed = true;
-                            selnode.setSelected(state);                        
                             target.addComponent(DeviceDetailsPanel.this);
                         }
                     };
@@ -113,7 +109,7 @@ public class DeviceDetailsPanel extends BasePanel<Device> {
                 Object o = treeModel.getRoot();
                 DeviceSelectionNode root = getNode(treeModel.getRoot());
                 Device device = (Device)DeviceDetailsPanel.this.getDefaultModelObject();
-                device.setConfigMap(root.createMap());
+                device.setConfigMap(root);
                 service.save(device);
                 changed = false;
                 target.addComponent(DeviceDetailsPanel.this);
@@ -137,29 +133,6 @@ public class DeviceDetailsPanel extends BasePanel<Device> {
                 return !changed;
             }        
         });
-        //add(new MultiLineLabel("deviceMap"));
-        /*
-        ListView<DeviceType> configList = new ListView<DeviceType>("configurations", Arrays.asList(DeviceType.values())) {
-
-            @Override
-            protected void populateItem(final ListItem<DeviceType> item) {
-                item.add(new EnumLabel("type", item.getModelObject()));
-                DeviceConfigEntity config = getPanelModel().getObject().findConfiguration(item.getModelObject());
-                item.add(new Label("code", config != null ? config.getCode() : EMPTY_STR));
-                item.add(new Label("name", config != null ? config.getName() : EMPTY_STR));
-                item.add(new AjaxLink("setConfig") {
-
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        ConfigChangeOnDevicePanel panel = new ConfigChangeOnDevicePanel(getJBetPage().getModal(), model, item.getModelObject());
-                        panel.show(target);
-                    }
-                });
-            }
-        };
-        add(configList);
-         * 
-         */
     }
     
     @Override

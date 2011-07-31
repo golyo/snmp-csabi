@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 @XmlSeeAlso({
     OidCommand.class
 })
-public class SnmpCommand implements Serializable, Comparable<SnmpCommand> {
+public class SnmpCommand implements Serializable, Comparable<SnmpCommand>, Cloneable {
     private int priority;
     private String name;
     private List<OidCommand> commands;
@@ -88,21 +88,22 @@ public class SnmpCommand implements Serializable, Comparable<SnmpCommand> {
         this.name = name;
     }
     
-    /*
-    public SnmpCommand clone(boolean onlyDinamic) {
-        SnmpCommand ret = cloneEmpty();
+    public boolean setDinamicValue(String dinamicName, String value) {
         for (OidCommand cmd: commands) {
-            if (cmd.isIsDinamic()) {
-                ret.commands.add(cmd);                    
+            if (dinamicName.equals(cmd.getDinamicName())) {
+                cmd.setValue(value);
+                return true;
             }
-        }  
-        return ret;
+        }
+        return false;
     }
-    */
-    public SnmpCommand cloneEmpty() {
+    
+    @Override
+    public SnmpCommand clone() {
         SnmpCommand ret = new SnmpCommand();
         ret.setBefore(cloneCommands(before));
         ret.setAfter(cloneCommands(after));
+        ret.setCommands(commands);
         ret.setPriority(priority);
         ret.setName(name);
         return ret;
@@ -115,7 +116,7 @@ public class SnmpCommand implements Serializable, Comparable<SnmpCommand> {
     
     public void updateCommandValues(SnmpCommand mergeCmd) {
         if (mergeCmd.getPriority() == priority) {
-            for(OidCommand mergeOid: mergeCmd.commands) {
+            for (OidCommand mergeOid: mergeCmd.commands) {
                 if (!setNewOidValue(mergeOid)) {
                     commands.add(mergeOid.clone());
                 }

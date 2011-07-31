@@ -22,7 +22,6 @@ import com.zh.snmp.snmpcore.domain.Configuration;
 import com.zh.snmp.snmpcore.domain.OidCommand;
 import com.zh.snmp.snmpcore.domain.SnmpCommand;
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
-import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.message.MessageAppender;
 import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpcore.snmp.mib.MibParser;
@@ -132,31 +131,27 @@ public class ConfigServiceImpl implements ConfigService {
             LOGGER.error("error while import config", e);
         }
         if (conf.getRoot() != null) {
-            validateConfigNode(conf.getRoot(), appender);   
-        } else {
-            return null;
+            if (validateConfigNode(conf.getRoot(), appender)) {
+                return saveConfig(conf);                
+            }
         }
-        if (appender.getMessages().isEmpty()) {
-            return saveConfig(conf);
-        } else {
-            return null;
-        }
+        return null;
     }
     
-    private void validateConfigNode(ConfigNode node, MessageAppender appender) {
+    private boolean validateConfigNode(ConfigNode node, MessageAppender appender) {
         List<SnmpCommand> commands = node.getCommands();
+        boolean ret = true;
         if (commands != null) {
             for (SnmpCommand command: commands) {
-                validateOids(command.getBefore(), appender);
-                validateOids(command.getCommands(), appender);
-                validateOids(command.getAfter(), appender);
+                ret = mibParser.parseAndSetSnmpCommand(command, appender) && ret;
             }                        
         }
         for (ConfigNode child: node.getChildren()) {
-            validateConfigNode(child, appender);
+            ret = validateConfigNode(child, appender) && ret;
         }
+        return ret;
     }
-    
+    /*
     private void validateOids(List<OidCommand> oids, MessageAppender appender) {
         if (oids != null) {
             for (OidCommand oidc: oids) {
@@ -170,6 +165,8 @@ public class ConfigServiceImpl implements ConfigService {
             }                   
         }
     }
+     * 
+     */
     @Override
     public void loadConfigurations() {
         List<DeviceConfigEntity> configs = dao.find(new DeviceConfigEntity(), null, 0, -1);

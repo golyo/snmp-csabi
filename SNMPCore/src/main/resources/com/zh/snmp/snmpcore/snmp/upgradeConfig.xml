@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<command>
+    <variable type="STR" name="PACKETFRONT-DRG-MIB:downloadServer.0" dinamicName="downloadServer"/>
+    <variable type="STR" name="PACKETFRONT-DRG-MIB:downloadFile.0" dinamicName="downloadFile"/>
+    <variable value="1" type="INT" name="PACKETFRONT-DRG-MIB:downloadMethod.0"/>
+    <variable value="2" type="INT" name="PACKETFRONT-DRG-MIB:downloadAction.0"/>
+</command>

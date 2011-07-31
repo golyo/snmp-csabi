@@ -16,10 +16,16 @@
  */
 package com.zh.snmp.snmpcore.snmp.mib;
 
+import com.zh.snmp.snmpcore.domain.OidCommand;
+import com.zh.snmp.snmpcore.domain.SnmpCommand;
+import com.zh.snmp.snmpcore.message.MessageAppender;
 import java.io.IOException;
+import java.util.List;
 import org.jsmiparser.smi.SmiMib;
 import org.jsmiparser.smi.SmiModule;
 import org.jsmiparser.smi.SmiOidValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
@@ -32,7 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Golyo
  */
 public class MibParser {
-    //private static final Logger LOGGER = LoggerFactory.getLogger(MibParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MibParser.class);
     
     @Autowired
     private SmiMib mibMap;
@@ -63,11 +69,11 @@ public class MibParser {
         return commands;
     } 
     */
-    protected boolean isNewCommand(String line) {
+    private boolean isNewCommand(String line) {
         return line.charAt(0) == NEW_COMMANDS_CHAR;
     }
     
-    protected VariableBinding parseLine(String line) throws IOException {
+    private VariableBinding parseLine(String line) throws IOException {
         String[] vals = line.split(COMMAND_SPLITTER);
         if (vals.length != 3) {
             throw new IOException("The line must contain mibDescription, type and value segments");
@@ -76,6 +82,38 @@ public class MibParser {
         Variable var = parseVariable(vals[1], vals[2]);
         //LOGGER.debug("Parse line succes to " + line + " :" + oid + ", " + var);
         return new VariableBinding(oid, var);
+    }
+    
+    
+    public boolean parseAndSetSnmpCommand(SnmpCommand command, MessageAppender appender) {
+        boolean ret = true;
+        if (command.getBefore() != null) {
+            ret = parseAndSetOidCommands(command.getBefore(), appender) && ret;
+        }
+        if (command.getCommands() != null) {
+            ret = parseAndSetOidCommands(command.getCommands(), appender) && ret;            
+        }
+        if (command.getAfter() != null) {
+            ret = parseAndSetOidCommands(command.getAfter(), appender) && ret;            
+        }
+        return ret;
+    }
+    
+    private boolean parseAndSetOidCommands(List<OidCommand> oids, MessageAppender appender) {
+        boolean ret = true;
+        if (oids != null) {
+            for (OidCommand oidc: oids) {
+                try {
+                    OID oid = parseMib(oidc.getName());
+                    oidc.setOid(oid.toString());
+                } catch (IOException e) {
+                    appender.addMessage("error.parse.mib", oidc);
+                    LOGGER.error("Error while parse command " + oidc.getName(), e);
+                    ret = false;
+                }
+            }                   
+        }
+        return ret;        
     }
     
     public OID parseMib(String mibDescription) throws IOException {

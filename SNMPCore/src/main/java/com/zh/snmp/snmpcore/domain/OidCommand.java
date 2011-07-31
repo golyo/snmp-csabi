@@ -73,7 +73,7 @@ public class OidCommand implements Serializable, Cloneable {
     }
 
     @XmlTransient
-    public boolean isIsDinamic() {        
+    public boolean isDinamic() {        
         return dinamicName != null;
     }
 

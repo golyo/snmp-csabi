@@ -14,17 +14,13 @@
  *  ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR
  *  DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
  */
-package com.zh.snmp.snmpcore.services;
-
-import com.zh.snmp.snmpcore.domain.Device;
-import com.zh.snmp.snmpcore.message.MessageAppender;
-import com.zh.snmp.snmpcore.services.impl.SnmpBackgroundProcess;
+package com.zh.snmp.snmpcore.domain;
 
 /**
  *
  * @author Golyo
  */
-public interface SnmpService {    
-    public SnmpBackgroundProcess startSnmpBackgroundProcess(Device device, MessageAppender appender);
-    public boolean applyConfigOnDevice(Device device, MessageAppender appender);
+public enum SnmpCommandType {
+    ATOMIC,
+    SAVE_RESTART
 }
