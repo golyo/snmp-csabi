@@ -16,13 +16,9 @@
  */
 package com.zh.snmp.snmpcore.domain;
 
-import com.zh.snmp.snmpcore.exception.ExceptionCodesEnum;
-import com.zh.snmp.snmpcore.exception.SystemException;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import javax.swing.tree.TreeNode;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -41,6 +37,7 @@ public class ConfigNode extends DefaultNode implements Serializable {
     private String code;
     private String description;
     private List<SnmpCommand> commands;
+    private Boolean restartDevice;
 
     @XmlElement(name = "node")
     public List<ConfigNode> getChildren() {
@@ -115,28 +112,39 @@ public class ConfigNode extends DefaultNode implements Serializable {
         return null;
     }
     
-    
-    public List<SnmpCommand> cloneCommandsByMap(DeviceMap map) {
-        List<SnmpCommand> ret = new LinkedList<SnmpCommand>();
-        for (SnmpCommand cmd: getCommands()) {
-            SnmpCommand clone = cmd.cloneEmpty();
-            updateCommandValueByMap(map, clone);
-            ret.add(clone);
+    @XmlTransient
+    public List<DinamicValue> getDinamics() {
+        List<DinamicValue> ret = new LinkedList<DinamicValue>();
+        if (commands != null) {
+            for (SnmpCommand cmd: commands) {
+                for (OidCommand oidc: cmd.getCommands()) {
+                    if (oidc.isDinamic()) {
+                        ret.add(new DinamicValue(oidc.getDinamicName(), oidc.getValue()));
+                    }
+                }
+            }            
         }
         return ret;
     }
     
-    private void updateCommandValueByMap(DeviceMap map, SnmpCommand command) {
-        for (SnmpCommand orig: getCommands()) {
-            command.updateCommandValues(orig);           
-        }
-        for (DeviceMap childMap: map.getChildren()) {
-            ConfigNode childConf = findChildByCode(childMap.getCode());
-            if (childConf != null) {
-                childConf.updateCommandValueByMap(childMap, command);
+    @XmlAttribute
+    public Boolean isRestartDevice() {
+        return restartDevice;
+    }
+
+    public void setRestartDevice(Boolean restartDevice) {
+        this.restartDevice = restartDevice;
+    }
+    
+    public SnmpCommand findCommand(int priority) {
+        for (SnmpCommand cmd: commands) {
+            if (cmd.getPriority() == priority) {
+                return cmd;
             }
         }
+        return null;
     }
+    
     /*
     public void appendCommands(CommandAppender appender, DeviceMap map) {
         if (commands != null) {
@@ -155,5 +163,5 @@ public class ConfigNode extends DefaultNode implements Serializable {
         }        
     }   
     */
-    
+
 }

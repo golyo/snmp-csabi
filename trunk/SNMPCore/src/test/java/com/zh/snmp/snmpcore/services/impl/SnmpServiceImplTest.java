@@ -30,6 +30,7 @@ import com.zh.snmp.snmpcore.snmp.SnmpCommandManager;
 import com.zh.snmp.snmpcore.snmp.SnmpFactory;
 import java.util.Arrays;
 import java.util.BitSet;
+import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,9 +60,21 @@ public class SnmpServiceImplTest extends BaseTest {
         MessageAppender appender = new SimpleMessageAppender();
         Configuration conf = createTestConfig(appender);
         DeviceEntity de = createTestDevice(conf.getCode(), ip);
+        Device device = deviceService.findDeviceByDeviceId(de.getId());
+        Assert.assertNotNull(device);
+        //device.getConfigMap().findChild("internet").setSelected(true);
+        //device.getConfigMap().findChild("catv").setSelected(true);
+        device = deviceService.save(device);
         
+        
+        //snmpService.applyConfigOnDevice(device, appender);
         //snmpService.startSnmpBackgroundProcess(de.getIpAddress(), appender);
         LOGGER.debug(appender.toString());
+        LOGGER.debug(device.getConfigMap().getSelectedChildList().toString());
+        device.getConfigMap().findChild("internet").setSelected(true);
+        LOGGER.debug(device.getConfigMap().getSelectedChildList().toString());
+        device.getConfigMap().findChild("catv").setSelected(true);
+        LOGGER.debug(device.getConfigMap().getSelectedChildList().toString());
         int i = 1;
         int j = i;
     }

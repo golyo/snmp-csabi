@@ -17,10 +17,8 @@
 package com.zh.snmp.snmpcore.services.impl;
 
 import com.zh.snmp.snmpcore.dao.DeviceDao;
-import com.zh.snmp.snmpcore.domain.ConfigNode;
 import com.zh.snmp.snmpcore.domain.Configuration;
 import com.zh.snmp.snmpcore.domain.Device;
-import com.zh.snmp.snmpcore.domain.DeviceMap;
 import com.zh.snmp.snmpcore.domain.DeviceSelectionNode;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.entities.DeviceState;
@@ -92,8 +90,8 @@ public class DeviceServiceImpl implements DeviceService {
         if (device.getDeviceMap() == null) {
             Configuration config = configService.findConfigByCode(device.getConfigCode());
             if (config != null) {
-                DeviceMap dm = new DeviceMap();
-                dm.setCode(config.getCode());
+                DeviceSelectionNode dm = new DeviceSelectionNode(config.getRoot());
+                dm.setSelected(true);
                 device.setDeviceMap(JAXBUtil.marshal(dm, true));                            
             } else {
                 throw new SystemException(ExceptionCodesEnum.Unsupported, "Config code not found " + device.getConfigCode());
@@ -121,35 +119,24 @@ public class DeviceServiceImpl implements DeviceService {
             return null;
         }
         LinkedList<String> pathl = new LinkedList<String>(path);
-        ConfigNode act = null;
-        ConfigNode root = device.getConfig().getRoot();
+        DeviceSelectionNode dconfig = device.getConfigMap();
         if (!pathl.isEmpty()) {
-            String rootc = pathl.pop();
-            if (rootc.equals(root.getCode())) {
-                act = root.findChildByPath(pathl);
-            }            
-        }
-        if (act == null) {
-            return null;            
-        } else {
-            LinkedList<String> lpath = new LinkedList<String>(path);
-            lpath.pop();
-            if (!lpath.isEmpty()) {
-                device.getConfigMap().setByPath(lpath, mode);
+            String rootc = pathl.pop();               
+            if (!dconfig.getCode().equals(rootc) || pathl.isEmpty()) {
+                return null;
             }
-            return save(device);
         }
-        
+        DeviceSelectionNode node = dconfig.findChainChild(pathl);
+        if (node != null) {
+            node.setSelected(mode == 1);
+            device.setConfigMap(dconfig);
+            return save(device);
+        } else {
+            return null;
+        }
     }
     
-    @Override
-    public DeviceSelectionNode createSelectionNode(Device device) {
-        DeviceSelectionNode selectionNode = new DeviceSelectionNode();
-        appendSelectionNode(selectionNode, device.getConfigMap(), device.getConfig().getRoot());
-        selectionNode.setupParents();
-        return selectionNode;
-    }
-       
+    /*
     protected void appendSelectionNode(DeviceSelectionNode selection, DeviceMap map, ConfigNode config) {
         selection.setCode(config.getCode());
         if (map != null) {
@@ -164,10 +151,12 @@ public class DeviceServiceImpl implements DeviceService {
             appendSelectionNode(selChild, mchild, child);
         }
     }
+     * 
+     */
     protected DeviceEntity wrap(Device device) {
         DeviceEntity entity = new DeviceEntity();
         entity.setConfigCode(device.getConfig().getCode());
-        DeviceMap toWrap = device.getConfigMap() != null ? device.getConfigMap() : new DeviceMap();
+        DeviceSelectionNode toWrap = device.getConfigMap() != null ? device.getConfigMap() : new DeviceSelectionNode(device.getConfig().getRoot());
         entity.setDeviceMap(JAXBUtil.marshal(toWrap, true));            
         entity.setId(device.getDeviceId());
         entity.setIpAddress(device.getIpAddress());
@@ -191,7 +180,7 @@ public class DeviceServiceImpl implements DeviceService {
     protected Device unwrap(DeviceEntity entity) {
         Device device = new Device();
         device.setConfig(configService.findConfigByCode(entity.getConfigCode()));
-        device.setConfigMap(JAXBUtil.unmarshal(entity.getDeviceMap(), DeviceMap.class));
+        device.setConfigMap(JAXBUtil.unmarshal(entity.getDeviceMap(), DeviceSelectionNode.class));
         device.setIpAddress(entity.getIpAddress());
         device.setMacAddress(entity.getMacAddress());
         device.setDeviceId(entity.getId());

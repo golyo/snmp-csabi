@@ -56,6 +56,8 @@ public abstract class ModalEditPanel<T> extends Panel {
                 if (onModalSave(target)) {
                     modal.close(target);
                     save = true;
+                } else {
+                    target.addComponent(feedback);
                 }
             }
             @Override

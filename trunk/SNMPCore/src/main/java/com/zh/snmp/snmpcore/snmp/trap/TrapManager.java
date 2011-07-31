@@ -107,7 +107,7 @@ public class TrapManager implements CommandResponder, SnmpResources, Serializabl
             if (device != null) {
                 snmpService.startSnmpBackgroundProcess(device, msgAppender);                            
             } else {
-                msgAppender.addMessage("message.snmp.ipNotConfigured", trapInfo.ipAddress);
+                msgAppender.addMessage("message.snmp.ipNotConfigured", trapInfo);
             }
         } catch (IOException e) {
             LOGGER.error("Error while check device ", e);

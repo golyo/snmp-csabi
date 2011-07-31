@@ -143,34 +143,4 @@ public class ConfigNodeTest {
         command.setAfter(createOids("at", 1));
         return command;
     }
-    /*
-snmpset -v 2c -c private 192.168.3.101 PACKETFRONT-DRG-MIB:snmpAtomicSet.0 i 2
-snmpset -v 2c -c private 192.168.3.101 PACKETFRONT-DRG-MIB:vlanStaticRowStatus.1 i 4
-snmpset -v 2c -c private 192.168.3.101 PACKETFRONT-DRG-MIB:vlanStaticName.1 s INTERNET
-snmpset -v 2c -c private 192.168.3.101 PACKETFRONT-DRG-MIB:vlanStaticVlanId.1 i 100
-snmpset -v 2c -c private 192.168.3.101 PACKETFRONT-DRG-MIB:vlanStaticPriority.1 i 2
-snmpset -v 2c -c private 192.168.3.101 PACKETFRONT-DRG-MIB:vlanStaticEgressPorts.1 x "A0"
-snmpset -v 2c -c private 192.168.3.101 PACKETFRONT-DRG-MIB:vlanStaticUntaggedPorts.1 x "A0"
-snmpset -v 2c -c private 192.168.3.101 PACKETFRONT-DRG-MIB:vlanStaticUnmodifiedPorts.1 x "00"
-snmpset -v 2c -c private 192.168.3.101 PACKETFRONT-DRG600A-MIB:drg600aPortVlanMode.1 i 1
-snmpset -v 2c -c private 192.168.3.101 PACKETFRONT-DRG600A-MIB:drg600aPortVlanMode.3 i 4
-snmpset -v 2c -c private 192.168.3.101 PACKETFRONT-DRG600A-MIB:drg600aPortVlanMode.9 i 4
-snmpset -v 2c -c private 192.168.3.101 PACKETFRONT-DRG600A-MIB:drg600aPortVlanEgressMode.1 i 3
-snmpset -v 2c -c private 192.168.3.101 PACKETFRONT-DRG600A-MIB:drg600aPortVlanEgressMode.3 i 3
-snmpset -v 2c -c private 192.168.3.101 PACKETFRONT-DRG600A-MIB:drg600aPortVlanEgressMode.9 i 3
-snmpset -v 2c -c private 192.168.3.101 PACKETFRONT-DRG600A-MIB:drg600aPortVlanId.3 i 100
-snmpset -v 2c -c private 192.168.3.101 PACKETFRONT-DRG-MIB:snmpAtomicSet.0 i 3
-     * private List<DinamicOid> createDinamics(String prefix, int no) {
-        List<DinamicOid> oids = new LinkedList<DinamicOid>();
-        for (int i=0; i<no; i++) {
-            DinamicOid cmd = new DinamicOid();
-            cmd.setName("dinamicName" + prefix + "_" + i);
-            cmd.setOid("dinamicval" + prefix + "_" + i);
-            cmd.setType('x');
-            oids.add(cmd);
-        }
-        return oids;
-    }
-     * 
-     */
 }

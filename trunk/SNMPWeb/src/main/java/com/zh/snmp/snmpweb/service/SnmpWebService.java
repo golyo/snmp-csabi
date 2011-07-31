@@ -112,7 +112,7 @@ public class SnmpWebService {
     public List<String> getDeviceConfig(@WebParam(name = "deviceId") String deviceId) {
         Device device = deviceService.findDeviceByDeviceId(deviceId);
         if (device != null) {
-            return device.getConfigMap().getChildList();
+            return device.getConfigMap().getSelectedChildList();
         } else {
             return null;            
         }
