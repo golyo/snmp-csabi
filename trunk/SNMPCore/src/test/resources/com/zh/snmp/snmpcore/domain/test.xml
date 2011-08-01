@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<config description="Teszt konfiguráció" code="test" restartDevice="true">
+    <node code="line1" description="Line1 konfiguráció">
+        <!-- A line1hez tartozo konfiguraciok, futtatasi sorrendbem -->
+        <commands priority="1">
+            <variable value="(xx.#|xx.T)" type="STR" name="PACKETFRONT-VOIP-MIB:voipDialPlan.0"/>
+        </commands>
+        <node code="line1_1" description="Line1_1 konfiguráció">
+            <!-- A line1hez tartozo konfiguraciok, futtatasi sorrendbem -->
+            <commands priority="1">
+                <variable value="(xx.#|xx.T)" type="STR" name="PACKETFRONT-VOIP-MIB:voipDialPlan.0"/>
+            </commands>
+        </node>
+        <node code="line1_2" description="Line1_2 konfiguráció">
+            <!-- A line1hez tartozo konfiguraciok, futtatasi sorrendbem -->
+            <commands priority="1">
+                <variable value="(xx.#|xx.T)" type="STR" name="PACKETFRONT-VOIP-MIB:voipDialPlan.0"/>
+            </commands>
+            <node code="line2_1" description="Line2_1 konfiguráció">
+                <!-- A line1hez tartozo konfiguraciok, futtatasi sorrendbem -->
+                <commands priority="1">
+                    <variable value="(xx.#|xx.T)" type="STR" name="PACKETFRONT-VOIP-MIB:voipDialPlan.0"/>
+                </commands>
+            </node>
+        </node>
+    </node>
+    <!-- Az VOIP-hez tartozo konfiguraciok, futtatasi sorrendbem -->
+    <commands priority="1" name="Voip default beállítás">
+        <variable value="(xx.#|xx.T)" type="STR" name="PACKETFRONT-VOIP-MIB:voipDialPlan.0"/>
+    </commands>
+</config>

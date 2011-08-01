@@ -17,7 +17,7 @@
 package com.zh.snmp.snmpcore.services;
 
 import com.zh.snmp.snmpcore.domain.Device;
-import com.zh.snmp.snmpcore.domain.DeviceSelectionNode;
+import com.zh.snmp.snmpcore.domain.DeviceNode;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import java.util.List;
 

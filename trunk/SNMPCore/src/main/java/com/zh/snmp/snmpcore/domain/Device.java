@@ -30,7 +30,7 @@ public class Device implements Serializable {
     private String ipAddress;
     private DeviceState configState;
     private Configuration config;
-    private DeviceSelectionNode configMap;
+    private DeviceNode configMap;
 
     public Configuration getConfig() {
         return config;
@@ -56,11 +56,11 @@ public class Device implements Serializable {
         this.macAddress = macAddress;
     }
 
-    public DeviceSelectionNode getConfigMap() {
+    public DeviceNode getConfigMap() {
         return configMap;
     }
 
-    public void setConfigMap(DeviceSelectionNode configMap) {
+    public void setConfigMap(DeviceNode configMap) {
         this.configMap = configMap;
     }
 
