@@ -16,7 +16,7 @@
  */
 package com.zh.snmp.snmpweb.device;
 
-import com.zh.snmp.snmpcore.domain.DeviceSelectionNode;
+import com.zh.snmp.snmpcore.domain.DeviceNode;
 import com.zh.snmp.snmpcore.domain.DinamicValue;
 import com.zh.snmp.snmpweb.components.ModalEditPanel;
 import javax.security.auth.callback.TextInputCallback;
@@ -35,9 +35,9 @@ import org.apache.wicket.model.PropertyModel;
  *
  * @author Golyo
  */
-public abstract class DeviceStateEditPanel extends ModalEditPanel<DeviceSelectionNode> {
+public abstract class DeviceStateEditPanel extends ModalEditPanel<DeviceNode> {
     
-    public DeviceStateEditPanel(ModalWindow id, IModel<DeviceSelectionNode> node) {
+    public DeviceStateEditPanel(ModalWindow id, IModel<DeviceNode> node) {
         super(id, node, false);
         form.add(new Label("code", new PropertyModel(node, "code")));
         form.add(new CheckBox("selected", new PropertyModel<Boolean>(node, "selected")));
@@ -53,7 +53,7 @@ public abstract class DeviceStateEditPanel extends ModalEditPanel<DeviceSelectio
 
     @Override
     protected boolean onModalSave(AjaxRequestTarget target) {
-        DeviceSelectionNode node = (DeviceSelectionNode)getDefaultModelObject();
+        DeviceNode node = (DeviceNode)getDefaultModelObject();
         boolean hasErr = false;
         if (node.isSelected()) {
             for (DinamicValue val: node.getDinamics()) {

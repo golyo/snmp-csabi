@@ -32,22 +32,22 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Golyo
  */
 @XmlRootElement(name="deviceConfig")
-public class DeviceSelectionNode extends DefaultNode implements Serializable {
+public class DeviceNode extends DefaultNode implements Serializable {
     private boolean selected;
     private String code;
     private List<DinamicValue> dinamics;
     
-    public DeviceSelectionNode() {
+    public DeviceNode() {
         super();
         dinamics = new LinkedList<DinamicValue>();
     }
     
-    public DeviceSelectionNode(ConfigNode node) {
+    public DeviceNode(ConfigNode node) {
         this();
         code = node.getCode();
         dinamics = node.getDinamics();
         for (ConfigNode child: node.getChildren()) {
-            getChildren().add(new DeviceSelectionNode(child));
+            getChildren().add(new DeviceNode(child));
         }
     }
         
@@ -60,11 +60,11 @@ public class DeviceSelectionNode extends DefaultNode implements Serializable {
         this.selected = selected;
         if (selected) {
             if (parent != null) {
-                ((DeviceSelectionNode)parent).setSelected(selected);
+                ((DeviceNode)parent).setSelected(selected);
             }            
         } else {
             for (DefaultNode child: children) {
-                ((DeviceSelectionNode)child).setSelected(selected);
+                ((DeviceNode)child).setSelected(selected);
             }
         }
     }
@@ -79,11 +79,11 @@ public class DeviceSelectionNode extends DefaultNode implements Serializable {
     }
 
     @XmlElement(name="deviceNode")
-    public List<DeviceSelectionNode> getChildren() {
-        return (List<DeviceSelectionNode>)children;
+    public List<DeviceNode> getChildren() {
+        return (List<DeviceNode>)children;
     }
 
-    public void setChildren(List<DeviceSelectionNode> children) {
+    public void setChildren(List<DeviceNode> children) {
         this.children = children;
     }
    
@@ -96,8 +96,8 @@ public class DeviceSelectionNode extends DefaultNode implements Serializable {
         this.dinamics = dinamics;
     }
     
-    public DeviceSelectionNode findChild(String code) {
-        for (DeviceSelectionNode child: getChildren()) {
+    public DeviceNode findChild(String code) {
+        for (DeviceNode child: getChildren()) {
             if (child.getCode().equals(code)) {
                 return child;
             }
@@ -105,9 +105,9 @@ public class DeviceSelectionNode extends DefaultNode implements Serializable {
         return null;
     }
     
-    public DeviceSelectionNode findChainChild(Deque<String> codes) {
+    public DeviceNode findChainChild(Deque<String> codes) {
         String find = codes.pop();
-        DeviceSelectionNode node = findChild(find);
+        DeviceNode node = findChild(find);
         if (codes.isEmpty()) {
             return node;
         } else if (node != null) {
@@ -133,7 +133,7 @@ public class DeviceSelectionNode extends DefaultNode implements Serializable {
     
     private void appendSelectedChildList(List<String> childList) {
         boolean found = false;
-        for (DeviceSelectionNode child: getChildren()) {
+        for (DeviceNode child: getChildren()) {
             if (child.selected) {
                 found = true;
                 child.appendSelectedChildList(childList);
@@ -155,14 +155,14 @@ public class DeviceSelectionNode extends DefaultNode implements Serializable {
         sb.insert(0, code);
         if (parent != null) {
             sb.insert(0, '.');
-            ((DeviceSelectionNode)parent).appendPath(sb);
+            ((DeviceNode)parent).appendPath(sb);
         }
     }
     private void appendDinamicValues(Map<String, String> values) {
         for (DinamicValue dv: dinamics) {
             values.put(dv.getCode(), dv.getValue());
         }
-        for (DeviceSelectionNode child: getChildren()) {
+        for (DeviceNode child: getChildren()) {
             if (child.isSelected()) {
                 child.appendDinamicValues(values);
             }

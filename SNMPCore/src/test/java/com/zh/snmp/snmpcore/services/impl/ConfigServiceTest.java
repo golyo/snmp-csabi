@@ -20,7 +20,7 @@ import com.zh.snmp.snmpcore.BaseTest;
 import com.zh.snmp.snmpcore.domain.ConfigNode;
 import com.zh.snmp.snmpcore.domain.Configuration;
 import com.zh.snmp.snmpcore.domain.Device;
-import com.zh.snmp.snmpcore.domain.DeviceSelectionNode;
+import com.zh.snmp.snmpcore.domain.DeviceNode;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.message.MessageAppender;
 import com.zh.snmp.snmpcore.message.SimpleMessageAppender;
@@ -72,7 +72,7 @@ public class ConfigServiceTest extends BaseTest {
         device.setDeviceId("nodeid");
         device.setIpAddress("ipAddress");
         device.setMacAddress("macAddress");
-        DeviceSelectionNode map = new DeviceSelectionNode(config.getRoot());        
+        DeviceNode map = new DeviceNode(config.getRoot());        
         device.setConfigMap(map);
         
         return device;

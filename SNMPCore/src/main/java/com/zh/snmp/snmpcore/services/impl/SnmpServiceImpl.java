@@ -18,7 +18,7 @@ package com.zh.snmp.snmpcore.services.impl;
 
 import com.zh.snmp.snmpcore.domain.ConfigNode;
 import com.zh.snmp.snmpcore.domain.Device;
-import com.zh.snmp.snmpcore.domain.DeviceSelectionNode;
+import com.zh.snmp.snmpcore.domain.DeviceNode;
 import com.zh.snmp.snmpcore.domain.OidCommand;
 import com.zh.snmp.snmpcore.domain.SnmpCommand;
 import com.zh.snmp.snmpcore.entities.DeviceState;
@@ -103,7 +103,7 @@ public class SnmpServiceImpl implements SnmpService {
         return true;
     }    
 
-    private List<SnmpCommand> initDeviceCommands(ConfigNode config, DeviceSelectionNode deviceNode, MessageAppender appender) {
+    private List<SnmpCommand> initDeviceCommands(ConfigNode config, DeviceNode deviceNode, MessageAppender appender) {
         List<SnmpCommand> ret = initSnmpCommands(config);
         Map<String, String> dinamics = deviceNode.getDinamicValues();
         boolean canContinue = true;
@@ -131,8 +131,8 @@ public class SnmpServiceImpl implements SnmpService {
         return ret;
     }
     
-    private void changeCommandValues(SnmpCommand command, DeviceSelectionNode deviceNode, ConfigNode configNode) {
-        for (DeviceSelectionNode dChild: deviceNode.getChildren()) {
+    private void changeCommandValues(SnmpCommand command, DeviceNode deviceNode, ConfigNode configNode) {
+        for (DeviceNode dChild: deviceNode.getChildren()) {
             if (dChild.isSelected()) {
                 ConfigNode cChild = configNode.findChildByCode(dChild.getCode());
                 for (SnmpCommand cmd: cChild.getCommands()) {

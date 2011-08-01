@@ -17,7 +17,7 @@
 package com.zh.snmp.snmpweb.device;
 
 import com.zh.snmp.snmpcore.domain.Device;
-import com.zh.snmp.snmpcore.domain.DeviceSelectionNode;
+import com.zh.snmp.snmpcore.domain.DeviceNode;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.message.SimpleMessageAppender;
 import com.zh.snmp.snmpcore.services.DeviceService;
@@ -71,12 +71,12 @@ public class DeviceDetailsPanel extends BasePanel<Device> {
         add(tree = new LinkTree("tree", treeModel) {
             @Override
             protected IModel getNodeTextModel(IModel<Object> model) {
-                return Model.of(((DeviceSelectionNode) model.getObject()).getCode());
+                return Model.of(((DeviceNode) model.getObject()).getCode());
             }
 
             @Override
             protected void onNodeLinkClicked(Object node, BaseTree tree, AjaxRequestTarget target) {
-                final DeviceSelectionNode selnode = getNode(node);
+                final DeviceNode selnode = getNode(node);
                 if (selnode.getParent() != null) {
                     DeviceStateEditPanel editPanel = new DeviceStateEditPanel(getModal(), Model.of(selnode)) {
                         @Override
@@ -107,7 +107,7 @@ public class DeviceDetailsPanel extends BasePanel<Device> {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 Object o = treeModel.getRoot();
-                DeviceSelectionNode root = getNode(treeModel.getRoot());
+                DeviceNode root = getNode(treeModel.getRoot());
                 Device device = (Device)DeviceDetailsPanel.this.getDefaultModelObject();
                 device.setConfigMap(root);
                 service.save(device);
@@ -141,8 +141,8 @@ public class DeviceDetailsPanel extends BasePanel<Device> {
         deviceModel.detach();
     }
     
-    public DeviceSelectionNode getNode(Object node) {
-        return (DeviceSelectionNode)node;        
+    public DeviceNode getNode(Object node) {
+        return (DeviceNode)node;        
     }
     
 }

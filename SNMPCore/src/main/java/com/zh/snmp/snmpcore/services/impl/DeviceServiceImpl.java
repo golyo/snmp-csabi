@@ -19,7 +19,7 @@ package com.zh.snmp.snmpcore.services.impl;
 import com.zh.snmp.snmpcore.dao.DeviceDao;
 import com.zh.snmp.snmpcore.domain.Configuration;
 import com.zh.snmp.snmpcore.domain.Device;
-import com.zh.snmp.snmpcore.domain.DeviceSelectionNode;
+import com.zh.snmp.snmpcore.domain.DeviceNode;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.entities.DeviceState;
 import com.zh.snmp.snmpcore.exception.ExceptionCodesEnum;
@@ -90,7 +90,7 @@ public class DeviceServiceImpl implements DeviceService {
         if (device.getDeviceMap() == null) {
             Configuration config = configService.findConfigByCode(device.getConfigCode());
             if (config != null) {
-                DeviceSelectionNode dm = new DeviceSelectionNode(config.getRoot());
+                DeviceNode dm = new DeviceNode(config.getRoot());
                 dm.setSelected(true);
                 device.setDeviceMap(JAXBUtil.marshal(dm, true));                            
             } else {
@@ -119,14 +119,14 @@ public class DeviceServiceImpl implements DeviceService {
             return null;
         }
         LinkedList<String> pathl = new LinkedList<String>(path);
-        DeviceSelectionNode dconfig = device.getConfigMap();
+        DeviceNode dconfig = device.getConfigMap();
         if (!pathl.isEmpty()) {
             String rootc = pathl.pop();               
             if (!dconfig.getCode().equals(rootc) || pathl.isEmpty()) {
                 return null;
             }
         }
-        DeviceSelectionNode node = dconfig.findChainChild(pathl);
+        DeviceNode node = dconfig.findChainChild(pathl);
         if (node != null) {
             node.setSelected(mode == 1);
             device.setConfigMap(dconfig);
@@ -156,7 +156,7 @@ public class DeviceServiceImpl implements DeviceService {
     protected DeviceEntity wrap(Device device) {
         DeviceEntity entity = new DeviceEntity();
         entity.setConfigCode(device.getConfig().getCode());
-        DeviceSelectionNode toWrap = device.getConfigMap() != null ? device.getConfigMap() : new DeviceSelectionNode(device.getConfig().getRoot());
+        DeviceNode toWrap = device.getConfigMap() != null ? device.getConfigMap() : new DeviceNode(device.getConfig().getRoot());
         entity.setDeviceMap(JAXBUtil.marshal(toWrap, true));            
         entity.setId(device.getDeviceId());
         entity.setIpAddress(device.getIpAddress());
@@ -180,7 +180,7 @@ public class DeviceServiceImpl implements DeviceService {
     protected Device unwrap(DeviceEntity entity) {
         Device device = new Device();
         device.setConfig(configService.findConfigByCode(entity.getConfigCode()));
-        device.setConfigMap(JAXBUtil.unmarshal(entity.getDeviceMap(), DeviceSelectionNode.class));
+        device.setConfigMap(JAXBUtil.unmarshal(entity.getDeviceMap(), DeviceNode.class));
         device.setIpAddress(entity.getIpAddress());
         device.setMacAddress(entity.getMacAddress());
         device.setDeviceId(entity.getId());
