@@ -16,6 +16,7 @@
  */
 package com.zh.snmp.snmpcore.snmp.mib;
 
+import com.zh.snmp.snmpcore.domain.ConfigNode;
 import com.zh.snmp.snmpcore.domain.OidCommand;
 import com.zh.snmp.snmpcore.domain.SnmpCommand;
 import com.zh.snmp.snmpcore.message.MessageAppender;
@@ -85,7 +86,7 @@ public class MibParser {
     }
     
     
-    public boolean parseAndSetSnmpCommand(SnmpCommand command, MessageAppender appender) {
+    public boolean parseAndSetMibValues(SnmpCommand command, MessageAppender appender) {
         boolean ret = true;
         if (command.getBefore() != null) {
             ret = parseAndSetOidCommands(command.getBefore(), appender) && ret;
@@ -99,6 +100,20 @@ public class MibParser {
         return ret;
     }
     
+    public boolean parseAndSetMibValues(ConfigNode node, MessageAppender appender) {
+        List<SnmpCommand> commands = node.getCommands();
+        boolean ret = true;
+        if (commands != null) {
+            for (SnmpCommand command: commands) {
+                ret = parseAndSetMibValues(command, appender) && ret;
+            }                        
+        }
+        for (ConfigNode child: node.getChildren()) {
+            ret = parseAndSetMibValues(child, appender) && ret;
+        }
+        return ret;
+    }
+
     private boolean parseAndSetOidCommands(List<OidCommand> oids, MessageAppender appender) {
         boolean ret = true;
         if (oids != null) {

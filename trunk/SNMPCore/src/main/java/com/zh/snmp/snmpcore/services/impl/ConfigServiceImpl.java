@@ -143,7 +143,7 @@ public class ConfigServiceImpl implements ConfigService {
         boolean ret = true;
         if (commands != null) {
             for (SnmpCommand command: commands) {
-                ret = mibParser.parseAndSetSnmpCommand(command, appender) && ret;
+                ret = mibParser.parseAndSetMibValues(command, appender) && ret;
             }                        
         }
         for (ConfigNode child: node.getChildren()) {
@@ -151,22 +151,7 @@ public class ConfigServiceImpl implements ConfigService {
         }
         return ret;
     }
-    /*
-    private void validateOids(List<OidCommand> oids, MessageAppender appender) {
-        if (oids != null) {
-            for (OidCommand oidc: oids) {
-                try {
-                    OID oid = mibParser.parseMib(oidc.getName());
-                    oidc.setOid(oid.toString());
-                } catch (IOException e) {
-                    appender.addMessage("error.parse.mib", oidc);
-                    LOGGER.error("Error while parse command " + oidc.getName(), e);
-                }
-            }                   
-        }
-    }
-     * 
-     */
+
     @Override
     public void loadConfigurations() {
         List<DeviceConfigEntity> configs = dao.find(new DeviceConfigEntity(), null, 0, -1);
