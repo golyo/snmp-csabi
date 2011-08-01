@@ -59,11 +59,12 @@
     <bean id="mibParser" class="com.zh.snmp.snmpcore.snmp.mib.MibParser"/>
 
     <bean id="upgradeConfig" class="com.zh.snmp.snmpcore.snmp.UpgradeConfig">
-        <property name="downloadServer" value="${snmp.upgrade.downloadServer}"/>
-        <property name="downloadFile" value="${snmp.upgrade.downloadFile}"/>
     </bean>
     
-    <bean id="SnmpService" class="com.zh.snmp.snmpcore.services.impl.SnmpServiceImpl">
+    <bean id="saveAndRestartCommand" class="com.zh.snmp.snmpcore.snmp.SaveAndRestartCommand">
+    </bean>
+    
+    <bean id="snmpService" class="com.zh.snmp.snmpcore.services.impl.SnmpServiceImpl">
     </bean>
 
     <bean id="trapManager" class="com.zh.snmp.snmpcore.snmp.trap.TrapManager">

@@ -88,16 +88,6 @@ public class SnmpCommand implements Serializable, Comparable<SnmpCommand>, Clone
         this.name = name;
     }
     
-    public boolean setDinamicValue(String dinamicName, String value) {
-        for (OidCommand cmd: commands) {
-            if (dinamicName.equals(cmd.getDinamicName())) {
-                cmd.setValue(value);
-                return true;
-            }
-        }
-        return false;
-    }
-    
     @Override
     public SnmpCommand clone() {
         SnmpCommand ret = new SnmpCommand();

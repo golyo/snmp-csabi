@@ -96,7 +96,25 @@ public class SnmpCommandManager {
         }
         return !commands.isEmpty();
     }
-            
+    
+    public boolean checkIfSameResult(List<OidCommand> commands, ResponseEvent response) {
+        List<VariableBinding> variables = response.getResponse().getVariableBindings();
+        Iterator<VariableBinding> responseIt = variables.iterator();
+        Iterator<OidCommand> commandIt = commands.iterator();
+        while (commandIt.hasNext()) {
+            OidCommand cmd = commandIt.next();
+            if (responseIt.hasNext()) { 
+                if (!cmd.equalsVariable(responseIt.next())) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        return true;
+        
+    }
+    
     protected ResponseEvent checkResponse(ResponseEvent response, boolean get) {
         if (response != null) {
             PDU responsePDU = response.getResponse();

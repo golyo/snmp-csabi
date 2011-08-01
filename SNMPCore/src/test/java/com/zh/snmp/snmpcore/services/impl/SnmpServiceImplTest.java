@@ -67,14 +67,18 @@ public class SnmpServiceImplTest extends BaseTest {
         device = deviceService.save(device);
         
         
-        //snmpService.applyConfigOnDevice(device, appender);
+        snmpService.applyConfigOnDevice(device, appender);
         //snmpService.startSnmpBackgroundProcess(de.getIpAddress(), appender);
+        
         LOGGER.debug(appender.toString());
+/*
         LOGGER.debug(device.getConfigMap().getSelectedChildList().toString());
         device.getConfigMap().findChild("internet").setSelected(true);
         LOGGER.debug(device.getConfigMap().getSelectedChildList().toString());
         device.getConfigMap().findChild("catv").setSelected(true);
         LOGGER.debug(device.getConfigMap().getSelectedChildList().toString());
+ * 
+ */
         int i = 1;
         int j = i;
     }

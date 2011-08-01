@@ -25,9 +25,11 @@ import com.zh.snmp.snmpcore.entities.DeviceState;
 import com.zh.snmp.snmpcore.message.MessageAppender;
 import com.zh.snmp.snmpcore.services.DeviceService;
 import com.zh.snmp.snmpcore.services.SnmpService;
+import com.zh.snmp.snmpcore.snmp.SaveAndRestartCommand;
 import com.zh.snmp.snmpcore.snmp.SnmpCommandManager;
 import com.zh.snmp.snmpcore.snmp.SnmpFactory;
 import com.zh.snmp.snmpcore.snmp.UpgradeConfig;
+import com.zh.snmp.snmpcore.snmp.mib.MibParser;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -63,6 +65,9 @@ public class SnmpServiceImpl implements SnmpService {
     @Autowired
     private UpgradeConfig upgradeConfig;
     
+    @Autowired
+    private SaveAndRestartCommand saveAndRestartCommand;
+    
     public SnmpServiceImpl() throws IOException {
         snmp = SnmpFactory.createSnmp();
         runningDeviceConfMap = new HashMap<String, Date>();
@@ -81,18 +86,25 @@ public class SnmpServiceImpl implements SnmpService {
         if (toConfig == null) {
             return false;
         }
+        ConfigNode config = device.getConfig().getRoot();
         try {
             SnmpCommandManager cmdManager = new SnmpCommandManager(snmp, appender, toConfig);
-            List<SnmpCommand> commands = initDeviceCommands(device.getConfig().getRoot(), device.getConfigMap(), appender);
+            List<SnmpCommand> commands = initDeviceCommands(config, device.getConfigMap(), appender);
             CommunityTarget getTarget = SnmpFactory.createTarget(toConfig.getIpAddress(), "public");
             CommunityTarget setTarget = SnmpFactory.createTarget(toConfig.getIpAddress(), "private");
+            boolean hasAnyChangesOnDevice = false;
     //        if (processCommand(getTarget, setTarget, cmdManager, upgradeConfig.getUpgradeCommand(), appender, toConfig)) {
                 for (SnmpCommand cmd : commands) {
-                    if (!processCommand(getTarget, setTarget, cmdManager, cmd, appender, toConfig)) {
+                    if (!processCommand(getTarget, setTarget, cmdManager, cmd, appender, toConfig)) {                        
                         break;
+                    } else {
+                        hasAnyChangesOnDevice = hasAnyChangesOnDevice || !cmd.getCommands().isEmpty();
                     }
                 }            
     //        }
+            if (config.isRestartDevice() && device.getConfigState().canContinue() && hasAnyChangesOnDevice) {
+                saveAndRestartDevice(toConfig, getTarget, setTarget, cmdManager, appender);
+            }
             
         } catch (Exception e) {
             LOGGER.error("Ismeretlen hiba történt", e);
@@ -217,5 +229,20 @@ public class SnmpServiceImpl implements SnmpService {
         appender.addMessage("message.snmp.stop", device);
         appender.finish();
         service.save(device);
+    }    
+    
+    private boolean saveAndRestartDevice(Device toConfig, CommunityTarget getTarget, CommunityTarget setTarget, SnmpCommandManager manager, MessageAppender appender) {
+        if (doSetCommand(manager, toConfig, setTarget, saveAndRestartCommand.getSaveCommand().getCommands())) {
+            ResponseEvent checkSaved = manager.processGetCommand(getTarget, saveAndRestartCommand.getCheckSaveCommand().getCommands());
+            if (manager.checkIfSameResult(saveAndRestartCommand.getCheckSaveCommand().getCommands(), checkSaved)) {
+                if (doSetCommand(manager, toConfig, setTarget, saveAndRestartCommand.getRestartCommand().getCommands())) {
+                    appender.addMessage("message.snmp.restartSucces", toConfig);
+                    return true;
+                }
+            }
+        }
+        appender.addMessage("message.snmp.restartFailed", toConfig);
+        toConfig.setConfigState(DeviceState.ERROR);        
+        return false;
     }
 }
