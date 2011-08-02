@@ -96,11 +96,9 @@ public class SnmpWebService {
     @WebMethod(operationName = "setDinamicConfigValue")
     public Boolean setDinamicConfigValue(@WebParam(name = "deviceId") String deviceId, @WebParam(name = "configPath") String configPath, @WebParam(name = "dinamicValue") String dinamicValue) {
         init();
-        return false;
-        /*
-        return service.setDeviceConfig(nodeId, configCode) != null;
-         * 
-         */
+        List<String> path = Arrays.asList(configPath.split(PATH_DELIM));
+        Device device = deviceService.setDinamicConfigValue(deviceId, path, dinamicValue);
+        return device != null;
     }
 
     @WebMethod(operationName = "deleteDevice")
