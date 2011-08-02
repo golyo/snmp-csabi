@@ -136,6 +136,37 @@ public class DeviceServiceImpl implements DeviceService {
         }
     }
     
+    @Override
+    public Device setDinamicConfigValue(String nodeId, List<String> path, String value) {
+        Device device = findDeviceByDeviceId(nodeId);
+        if (device == null) {
+            return null;
+        }
+        LinkedList<String> pathl = new LinkedList<String>(path);
+        
+        DeviceNode dconfig = device.getConfigMap();
+        if (!pathl.isEmpty()) {
+            String rootc = pathl.pop();               
+            if (!dconfig.getCode().equals(rootc) || pathl.isEmpty()) {
+                return null;
+            }
+        }
+        String dinamicKey = null;
+        if (!pathl.isEmpty()) {
+            dinamicKey = pathl.pollLast();
+            if (pathl.isEmpty()) {
+                return null;
+            }
+        }
+        DeviceNode node = dconfig.findChainChild(pathl);
+        if (node != null && dinamicKey != null) {
+            if (node.setDinamicValue(dinamicKey, value)) {
+                device.setConfigMap(dconfig);
+                return save(device);                
+            }
+        } 
+        return null;
+   }
     /*
     protected void appendSelectionNode(DeviceSelectionNode selection, DeviceMap map, ConfigNode config) {
         selection.setCode(config.getCode());

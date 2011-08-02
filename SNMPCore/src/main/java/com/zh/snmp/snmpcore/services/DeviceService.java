@@ -37,6 +37,7 @@ public interface DeviceService {
     public DeviceEntity findDeviceEntityByFilter(DeviceEntity filter);
     
     public Device setDeviceConfig(String nodeId, List<String> path, int mode);
+    public Device setDinamicConfigValue(String nodeId, List<String> path, String value); 
     
     public boolean deleteDevice(String id);
     

@@ -131,6 +131,27 @@ public class DeviceNode extends DefaultNode implements Serializable {
         return ret;
     }
     
+    public boolean setDinamicValue(String code, String value) {
+        DinamicValue val = findDinamic(code);
+        if (val != null) {
+            val.setValue(value);
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public DinamicValue findDinamic(String code) {
+        if (dinamics != null && !dinamics.isEmpty()) {
+            for (DinamicValue val: dinamics) {
+                if (val.getCode().equals(code)) {
+                    return val;
+                }
+            }
+        }        
+        return null;
+    }
+    
     private void appendSelectedChildList(List<String> childList) {
         boolean found = false;
         for (DeviceNode child: getChildren()) {
