@@ -82,17 +82,13 @@ public class SnmpServiceImpl implements SnmpService {
     
     @Override
     public boolean checkDevice(Device device, MessageAppender appender) {
-        Device toConfig = startProcess(device, appender);
-        if (toConfig == null) {
-            return false;
-        }
         ConfigNode config = device.getConfig().getRoot();
         try {
-            SnmpCommandManager cmdManager = new SnmpCommandManager(snmp, appender, toConfig);
+            SnmpCommandManager cmdManager = new SnmpCommandManager(snmp, appender, device);
             List<SnmpCommand> commands = initDeviceCommands(config, device.getConfigMap(), appender);
-            CommunityTarget getTarget = SnmpFactory.createTarget(toConfig.getIpAddress(), "public");
+            CommunityTarget getTarget = SnmpFactory.createTarget(device.getIpAddress(), "public");
             for (SnmpCommand cmd : commands) {
-                if (!clearCommands(cmdManager, getTarget, cmd, appender)) {
+                if (clearCommands(cmdManager, getTarget, cmd, appender)) {
                     return false;
                 }
             }            
