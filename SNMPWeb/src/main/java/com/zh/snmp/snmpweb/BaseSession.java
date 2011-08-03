@@ -43,7 +43,7 @@ public class BaseSession extends AuthenticatedWebSession {
         USER
     }
     
-    @SpringBean(name = "AuthenticationService")
+    @SpringBean
     private AuthenticationService authService;
 
     private UserEntity user;

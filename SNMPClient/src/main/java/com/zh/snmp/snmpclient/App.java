@@ -1,8 +1,10 @@
 package com.zh.snmp.snmpclient;
 
+import com.zh.snmp.snmpclient.generated.DinamicValue;
 import com.zh.snmp.snmpclient.generated.SnmpWebService;
 import com.zh.snmp.snmpclient.generated.SnmpWebService_Service;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 //import com.zh.snmp.snmpclient.generated.TryWs_Service;
@@ -28,18 +30,39 @@ public class App
         List<String> configs = srv.getConfigurations();
         System.out.println("++++++++++++" + configs);
         
+        //testAcces("dddd", srv);
+        
+        testVoip("Voip Teszt", srv);
+    }
+
+    private static void testAcces(String deviceId, SnmpWebService srv) {
         //boolean succes = srv.createDevice("acces", "clientNode0", "clientIp0", "clientMac0");
-        boolean succes = srv.setDeviceConfig("ddd", "access.catv", null, 1);
+        boolean succes = srv.setDeviceConfig(deviceId, "access.internet", null, 1);
         System.out.println("++++++++++++" + succes);
         
-        List<String> confs = srv.getDeviceConfig("ddd");
+        List<String> confs = srv.getDeviceConfig(deviceId);
         System.out.println("++++++++++++" + confs);
         
-        //boolean succes = srv.createDevice("testCreate1", "testIpAddr1", "testMacAddr1");
-        //List<String> confd = srv.getConfigurations(); 
-        //System.out.println("++++++++++++" + confd);
-        
-        
-        //boolean succes = srv.setDeviceConfig("nodeidTest", "aa"); 
     }
+    private static void testVoip(String deviceId, SnmpWebService srv) {
+        boolean succes = srv.setDeviceConfig(deviceId, "voip.line1", createDinamics(), 0);
+        System.out.println("++++++++++++" + succes);
+        
+        List<String> confs = srv.getDeviceConfig(deviceId);
+        System.out.println("++++++++++++" + confs);        
+    }
+    
+    private static List<DinamicValue> createDinamics() {
+        List<DinamicValue> dinamics = new LinkedList<DinamicValue>();
+        dinamics.add(createDinamic("voipIfAuthUser", "testwebserviceUser"));
+        dinamics.add(createDinamic("voipIfAuthPasswd", "testwebservicePwd"));
+        return dinamics;
+    }
+    
+    private static DinamicValue createDinamic(String code, String value) {
+        DinamicValue dv = new DinamicValue();
+        dv.setCode(code);
+        dv.setValue(value);
+        return dv;
+    } 
 }
