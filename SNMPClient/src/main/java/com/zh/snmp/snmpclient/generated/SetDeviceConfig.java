@@ -1,6 +1,8 @@
 
 package com.zh.snmp.snmpclient.generated;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
@@ -18,7 +20,8 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="deviceId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="configPath" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="arg2" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         &lt;element name="dinamicValues" type="{http://service.snmpweb.snmp.zh.com/}dinamicValue" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="mode" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -31,13 +34,15 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "setDeviceConfig", propOrder = {
     "deviceId",
     "configPath",
-    "arg2"
+    "dinamicValues",
+    "mode"
 })
 public class SetDeviceConfig {
 
     protected String deviceId;
     protected String configPath;
-    protected int arg2;
+    protected List<DinamicValue> dinamicValues;
+    protected int mode;
 
     /**
      * Gets the value of the deviceId property.
@@ -88,19 +93,48 @@ public class SetDeviceConfig {
     }
 
     /**
-     * Gets the value of the arg2 property.
+     * Gets the value of the dinamicValues property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the dinamicValues property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getDinamicValues().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link DinamicValue }
+     * 
      * 
      */
-    public int getArg2() {
-        return arg2;
+    public List<DinamicValue> getDinamicValues() {
+        if (dinamicValues == null) {
+            dinamicValues = new ArrayList<DinamicValue>();
+        }
+        return this.dinamicValues;
     }
 
     /**
-     * Sets the value of the arg2 property.
+     * Gets the value of the mode property.
      * 
      */
-    public void setArg2(int value) {
-        this.arg2 = value;
+    public int getMode() {
+        return mode;
+    }
+
+    /**
+     * Sets the value of the mode property.
+     * 
+     */
+    public void setMode(int value) {
+        this.mode = value;
     }
 
 }

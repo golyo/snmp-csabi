@@ -45,9 +45,41 @@ public interface SnmpWebService {
 
     /**
      * 
-     * @param arg2
+     * @param deviceId
+     * @return
+     *     returns boolean
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "checkDevice", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.CheckDevice")
+    @ResponseWrapper(localName = "checkDeviceResponse", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.CheckDeviceResponse")
+    public boolean checkDevice(
+        @WebParam(name = "deviceId", targetNamespace = "")
+        String deviceId);
+
+    /**
+     * 
      * @param configPath
      * @param deviceId
+     * @return
+     *     returns java.util.List<com.zh.snmp.snmpclient.generated.DinamicValue>
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "getDinamicValues", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.GetDinamicValues")
+    @ResponseWrapper(localName = "getDinamicValuesResponse", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.GetDinamicValuesResponse")
+    public List<DinamicValue> getDinamicValues(
+        @WebParam(name = "deviceId", targetNamespace = "")
+        String deviceId,
+        @WebParam(name = "configPath", targetNamespace = "")
+        String configPath);
+
+    /**
+     * 
+     * @param dinamicValues
+     * @param configPath
+     * @param deviceId
+     * @param mode
      * @return
      *     returns java.lang.Boolean
      */
@@ -60,8 +92,24 @@ public interface SnmpWebService {
         String deviceId,
         @WebParam(name = "configPath", targetNamespace = "")
         String configPath,
-        @WebParam(name = "arg2", targetNamespace = "")
-        int arg2);
+        @WebParam(name = "dinamicValues", targetNamespace = "")
+        List<DinamicValue> dinamicValues,
+        @WebParam(name = "mode", targetNamespace = "")
+        int mode);
+
+    /**
+     * 
+     * @param deviceId
+     * @return
+     *     returns boolean
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "deleteDevice", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.DeleteDevice")
+    @ResponseWrapper(localName = "deleteDeviceResponse", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.DeleteDeviceResponse")
+    public boolean deleteDevice(
+        @WebParam(name = "deviceId", targetNamespace = "")
+        String deviceId);
 
     /**
      * 
@@ -88,26 +136,6 @@ public interface SnmpWebService {
         String ipAddress,
         @WebParam(name = "macAddress", targetNamespace = "")
         String macAddress);
-
-    /**
-     * 
-     * @param arg2
-     * @param configPath
-     * @param deviceId
-     * @return
-     *     returns java.lang.Boolean
-     */
-    @WebMethod
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "setDinamicConfigValue", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.SetDinamicConfigValue")
-    @ResponseWrapper(localName = "setDinamicConfigValueResponse", targetNamespace = "http://service.snmpweb.snmp.zh.com/", className = "com.zh.snmp.snmpclient.generated.SetDinamicConfigValueResponse")
-    public Boolean setDinamicConfigValue(
-        @WebParam(name = "deviceId", targetNamespace = "")
-        String deviceId,
-        @WebParam(name = "configPath", targetNamespace = "")
-        String configPath,
-        @WebParam(name = "arg2", targetNamespace = "")
-        String arg2);
 
     /**
      * 
