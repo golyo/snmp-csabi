@@ -27,4 +27,5 @@ import com.zh.snmp.snmpcore.services.impl.SnmpBackgroundProcess;
 public interface SnmpService {    
     public SnmpBackgroundProcess startSnmpBackgroundProcess(Device device, MessageAppender appender);
     public boolean applyConfigOnDevice(Device device, MessageAppender appender);
+    public boolean checkDevice(Device device, MessageAppender appender);
 }

@@ -81,6 +81,31 @@ public class SnmpServiceImpl implements SnmpService {
     }
     
     @Override
+    public boolean checkDevice(Device device, MessageAppender appender) {
+        Device toConfig = startProcess(device, appender);
+        if (toConfig == null) {
+            return false;
+        }
+        ConfigNode config = device.getConfig().getRoot();
+        try {
+            SnmpCommandManager cmdManager = new SnmpCommandManager(snmp, appender, toConfig);
+            List<SnmpCommand> commands = initDeviceCommands(config, device.getConfigMap(), appender);
+            CommunityTarget getTarget = SnmpFactory.createTarget(toConfig.getIpAddress(), "public");
+            for (SnmpCommand cmd : commands) {
+                if (!clearCommands(cmdManager, getTarget, cmd, appender)) {
+                    return false;
+                }
+            }            
+            
+        } catch (Exception e) {
+            LOGGER.error("Ismeretlen hiba történt", e);
+            appender.addMessage("message.snmp.unknownError", device);
+            return false;
+        }
+        return true;
+    }
+    
+    @Override
     public boolean applyConfigOnDevice(Device device, MessageAppender appender) {
         Device toConfig = startProcess(device, appender);
         if (toConfig == null) {
@@ -102,7 +127,7 @@ public class SnmpServiceImpl implements SnmpService {
                     }
                 }            
     //        }
-            if (config.isRestartDevice() && device.getConfigState().canContinue() && hasAnyChangesOnDevice) {
+            if ((config.isRestartDevice() == Boolean.TRUE) && device.getConfigState().canContinue() && hasAnyChangesOnDevice) {
                 saveAndRestartDevice(toConfig, getTarget, setTarget, cmdManager, appender);
             }
             
@@ -112,7 +137,7 @@ public class SnmpServiceImpl implements SnmpService {
             appender.addMessage("message.snmp.unknownError", device);
         }
         finishProcess(toConfig, appender);
-        return true;
+        return device.getConfigState() == DeviceState.CONFIGURED;
     }    
 
     private List<SnmpCommand> initDeviceCommands(ConfigNode config, DeviceNode deviceNode, MessageAppender appender) {

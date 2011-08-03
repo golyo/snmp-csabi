@@ -20,6 +20,7 @@ import com.zh.snmp.snmpcore.dao.DeviceDao;
 import com.zh.snmp.snmpcore.domain.Configuration;
 import com.zh.snmp.snmpcore.domain.Device;
 import com.zh.snmp.snmpcore.domain.DeviceNode;
+import com.zh.snmp.snmpcore.domain.DinamicValue;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.entities.DeviceState;
 import com.zh.snmp.snmpcore.exception.ExceptionCodesEnum;
@@ -113,7 +114,7 @@ public class DeviceServiceImpl implements DeviceService {
     private static final String PATH_DELIM = ".";
     
     @Override
-    public Device setDeviceConfig(String nodeId, List<String> path, int mode) {
+    public Device setDeviceConfig(String nodeId, List<String> path, List<DinamicValue> dinamicValues, int mode) {
         Device device = findDeviceByDeviceId(nodeId);
         if (device == null) {
             return null;
@@ -129,6 +130,11 @@ public class DeviceServiceImpl implements DeviceService {
         DeviceNode node = dconfig.findChainChild(pathl);
         if (node != null) {
             node.setSelected(mode == 1);
+            if (dinamicValues != null) {
+                for (DinamicValue dv: dinamicValues) {
+                    node.setDinamicValue(dv.getCode(), dv.getValue());
+                }
+            }
             device.setConfigMap(dconfig);
             return save(device);
         } else {
@@ -136,54 +142,6 @@ public class DeviceServiceImpl implements DeviceService {
         }
     }
     
-    @Override
-    public Device setDinamicConfigValue(String nodeId, List<String> path, String value) {
-        Device device = findDeviceByDeviceId(nodeId);
-        if (device == null) {
-            return null;
-        }
-        LinkedList<String> pathl = new LinkedList<String>(path);
-        
-        DeviceNode dconfig = device.getConfigMap();
-        if (!pathl.isEmpty()) {
-            String rootc = pathl.pop();               
-            if (!dconfig.getCode().equals(rootc) || pathl.isEmpty()) {
-                return null;
-            }
-        }
-        String dinamicKey = null;
-        if (!pathl.isEmpty()) {
-            dinamicKey = pathl.pollLast();
-            if (pathl.isEmpty()) {
-                return null;
-            }
-        }
-        DeviceNode node = dconfig.findChainChild(pathl);
-        if (node != null && dinamicKey != null) {
-            if (node.setDinamicValue(dinamicKey, value)) {
-                device.setConfigMap(dconfig);
-                return save(device);                
-            }
-        } 
-        return null;
-   }
-    /*
-    protected void appendSelectionNode(DeviceSelectionNode selection, DeviceMap map, ConfigNode config) {
-        selection.setCode(config.getCode());
-        if (map != null) {
-            selection.setSelected(true);
-        }
-        List<DeviceSelectionNode> selChilds = new LinkedList<DeviceSelectionNode>();
-        selection.setChildren(selChilds);
-        for (ConfigNode child: config.getChildren()) {
-            DeviceMap mchild = map != null ? map.findChild(child.getCode()) : null;            
-            DeviceSelectionNode selChild = new DeviceSelectionNode();
-            selChilds.add(selChild);
-            appendSelectionNode(selChild, mchild, child);
-        }
-    }
-     * 
-     */
     protected DeviceEntity wrap(Device device) {
         DeviceEntity entity = new DeviceEntity();
         entity.setConfigCode(device.getConfig().getCode());
