@@ -18,6 +18,7 @@ package com.zh.snmp.snmpcore.services;
 
 import com.zh.snmp.snmpcore.domain.Device;
 import com.zh.snmp.snmpcore.domain.DeviceNode;
+import com.zh.snmp.snmpcore.domain.DinamicValue;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import java.util.List;
 
@@ -36,8 +37,7 @@ public interface DeviceService {
     public int countDevices(DeviceEntity filter);
     public DeviceEntity findDeviceEntityByFilter(DeviceEntity filter);
     
-    public Device setDeviceConfig(String nodeId, List<String> path, int mode);
-    public Device setDinamicConfigValue(String nodeId, List<String> path, String value); 
+    public Device setDeviceConfig(String nodeId, List<String> path, List<DinamicValue> dinamicValues, int mode);
     
     public boolean deleteDevice(String id);
     
