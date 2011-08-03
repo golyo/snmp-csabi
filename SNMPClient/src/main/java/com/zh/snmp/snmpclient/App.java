@@ -43,13 +43,28 @@ public class App
         List<String> confs = srv.getDeviceConfig(deviceId);
         System.out.println("++++++++++++" + confs);
         
+        List<DinamicValue> values = srv.getDinamicValues(deviceId, "access.internet");
+        printDinamicValues(values);
+        
+        boolean same = srv.checkDevice(deviceId);
+        System.out.println("++++++++++++SAME:" + same);
+        
     }
+    
+    
     private static void testVoip(String deviceId, SnmpWebService srv) {
-        boolean succes = srv.setDeviceConfig(deviceId, "voip.line1", createDinamics(), 0);
+        boolean succes = srv.setDeviceConfig(deviceId, "voip.line1", createDinamics(), 1);
         System.out.println("++++++++++++" + succes);
         
         List<String> confs = srv.getDeviceConfig(deviceId);
         System.out.println("++++++++++++" + confs);        
+
+        List<DinamicValue> values = srv.getDinamicValues(deviceId, "voip.line1");
+        printDinamicValues(values);
+
+        boolean same = srv.checkDevice(deviceId);
+        System.out.println("++++++++++++SAME:" + same);
+    
     }
     
     private static List<DinamicValue> createDinamics() {
@@ -65,4 +80,15 @@ public class App
         dv.setValue(value);
         return dv;
     } 
+    
+    private static void printDinamicValues(List<DinamicValue> values) {
+        if (values != null) {
+            System.out.println("+++++++++++DinamicSize:" + values.size());
+            for (DinamicValue val: values) {
+                System.out.println("+++++++++++" + val.getCode() + ":" + val.getValue());
+            }
+        } else {
+            System.out.println("++++++++++++++Dinamic values null");
+        }
+    }
 }
