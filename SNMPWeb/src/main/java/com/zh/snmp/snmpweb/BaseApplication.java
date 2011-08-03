@@ -92,7 +92,7 @@ public class BaseApplication extends AuthenticatedWebApplication implements Appl
             LOGGER.error("Unable to start trap listener on ip " + manager.getTrapListenerAddress(), e);
             //throw new FatalBeanException("Unable to start trap listener", e);
         }
-        ConfigService confService = (ConfigService)ctx.getBean("ConfigService");
+        ConfigService confService = (ConfigService)ctx.getBean("configService");
         confService.loadConfigurations();
         LOGGER.debug("Application context setted");
     }

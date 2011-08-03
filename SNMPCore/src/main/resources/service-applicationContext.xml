@@ -5,9 +5,9 @@
        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
        default-autowire="byName">
 
-    <bean id="AuthenticationService" class="com.zh.snmp.snmpcore.services.impl.DBAuthenticationServiceImpl"/>
-    <bean id="ConfigService" class="com.zh.snmp.snmpcore.services.impl.ConfigServiceImpl"/>
-    <bean id="DeviceService" class="com.zh.snmp.snmpcore.services.impl.DeviceServiceImpl"/>
+    <bean id="authenticationService" class="com.zh.snmp.snmpcore.services.impl.DBAuthenticationServiceImpl"/>
+    <bean id="configService" class="com.zh.snmp.snmpcore.services.impl.ConfigServiceImpl"/>
+    <bean id="deviceService" class="com.zh.snmp.snmpcore.services.impl.DeviceServiceImpl"/>
     <!--
     <bean id="GameContextService" class="com.zh.jbet.core.service.impl.GameContextService">
         <property name="entityDao" ref="GameContextDao"/>

@@ -148,9 +148,9 @@ public class SnmpWebService {
         if (service == null) {
             ServletContext servletContext = (ServletContext) context.getMessageContext().get(MessageContext.SERVLET_CONTEXT);
             WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
-            service = (SnmpService)wac.getBean("SnmpService");    
-            deviceService = (DeviceService)wac.getBean("DeviceService");
-            configService = (ConfigService)wac.getBean("ConfigService");
+            service = (SnmpService)wac.getBean("snmpService");    
+            deviceService = (DeviceService)wac.getBean("deviceService");
+            configService = (ConfigService)wac.getBean("configService");
         }
     }
 }
