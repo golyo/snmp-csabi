@@ -21,9 +21,13 @@ import com.zh.snmp.snmpcore.domain.ConfigNode;
 import com.zh.snmp.snmpcore.domain.Configuration;
 import com.zh.snmp.snmpcore.domain.Device;
 import com.zh.snmp.snmpcore.domain.DeviceNode;
+import com.zh.snmp.snmpcore.domain.OidCommand;
+import com.zh.snmp.snmpcore.domain.ValueConverter;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.message.MessageAppender;
 import com.zh.snmp.snmpcore.message.SimpleMessageAppender;
+import com.zh.snmp.snmpcore.util.JAXBUtil;
+import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
 import org.junit.Test;
@@ -62,8 +66,13 @@ public class ConfigServiceTest extends BaseTest {
     @Test
     public void testParse() {
         MessageAppender appaneder = new SimpleMessageAppender();
-        Configuration conf = createTestConfig(appaneder);
+        Configuration conf = createTestConfig(appaneder, "voipConfig.xml");
+        ConfigNode node = conf.getRoot();
+        
+        //OidCommand pwdcmd = line1.getCommands().get(0).getCommands().get(3);
+        //pwdcmd.setValueConverter(ValueConverter.SHA1);
         LOGGER.debug("+++" + conf.toString());
+        LOGGER.debug(JAXBUtil.marshal(node, true));
     }
 
     private Device createTestDevice(Configuration config) {

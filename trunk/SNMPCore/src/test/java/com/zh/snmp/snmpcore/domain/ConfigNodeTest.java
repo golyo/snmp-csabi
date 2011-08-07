@@ -26,6 +26,7 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import org.junit.Test;
@@ -66,6 +67,26 @@ public class ConfigNodeTest {
         LOGGER.debug("+++" + node.toString());
     }
     
+    @Test
+    public void testOidMarshaller() {
+        SnmpCommand scmd = new SnmpCommand();
+        OidCommand cmd = new OidCommand();
+        cmd.setName("testName");
+        cmd.setType(OidType.INT);
+        cmd.setValueConverter(ValueConverter.SHA1);
+        cmd.setValue("00");
+        
+        scmd.setName("test");
+        scmd.setCommands(Arrays.asList(cmd));
+        
+        String snmpxml = JAXBUtil.marshal(scmd, true);
+
+        LOGGER.debug("+++" + snmpxml.toString());
+        
+        SnmpCommand parsed = JAXBUtil.unmarshalTyped(new StringReader(snmpxml), SnmpCommand.class);
+        int i = 0;
+        int j = i;
+    }
     /*
     private ConfigNode createConfigNode(String prefix, int childNo, int depth) {
         ConfigNode node = new ConfigNode();

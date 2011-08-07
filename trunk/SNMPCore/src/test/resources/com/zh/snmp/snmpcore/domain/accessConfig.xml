@@ -26,8 +26,8 @@
         <variable value="Mgmt" type="STR" name="PACKETFRONT-DRG-MIB:vlanStaticName.1"/>
         <variable value="1" type="INT" name="PACKETFRONT-DRG-MIB:vlanStaticVlanId.1"/>
         <variable value="1" type="INT" name="PACKETFRONT-DRG-MIB:vlanStaticPriority.1"/>
-        <variable value="80 80" expectedValue="80:80" type="HEX" name="PACKETFRONT-DRG-MIB:vlanStaticEgressPorts.1"/>
-        <variable value="80 80" expectedValue="80:80" type="HEX" name="PACKETFRONT-DRG-MIB:vlanStaticUntaggedPorts.1"/>
+        <variable value="80:80" type="HEX" name="PACKETFRONT-DRG-MIB:vlanStaticEgressPorts.1"/>
+        <variable value="80:80" type="HEX" name="PACKETFRONT-DRG-MIB:vlanStaticUntaggedPorts.1"/>
         <variable value="00" expectedValue="" type="HEX" name="PACKETFRONT-DRG-MIB:vlanStaticUnmodifiedPorts.1"/>
         <variable value="1" type="INT" name="PACKETFRONT-DRG600A-MIB:drg600aPortVlanMode.1"/>
         <variable value="4" type="INT" name="PACKETFRONT-DRG600A-MIB:drg600aPortVlanMode.9"/>
@@ -40,8 +40,8 @@
         <variable value="Internet" type="STR" name="PACKETFRONT-DRG-MIB:vlanStaticName.2"/>
         <variable value="100" type="INT" name="PACKETFRONT-DRG-MIB:vlanStaticVlanId.2"/>
         <variable value="2" type="INT" name="PACKETFRONT-DRG-MIB:vlanStaticPriority.2"/>
-        <variable value="A0 A0" expectedValue="a0:80" type="HEX" name="PACKETFRONT-DRG-MIB:vlanStaticEgressPorts.2"/>
-        <variable value="A0 A0" expectedValue="a0:80" type="HEX" name="PACKETFRONT-DRG-MIB:vlanStaticUntaggedPorts.2"/>
+        <variable value="a0:a0" expectedValue="a0:80" type="HEX" name="PACKETFRONT-DRG-MIB:vlanStaticEgressPorts.2"/>
+        <variable value="a0:a0" expectedValue="a0:80" type="HEX" name="PACKETFRONT-DRG-MIB:vlanStaticUntaggedPorts.2"/>
         <variable value="00" expectedValue="" type="HEX" name="PACKETFRONT-DRG-MIB:vlanStaticUnmodifiedPorts.2"/>
         <variable value="3" type="INT" name="PACKETFRONT-DRG600A-MIB:drg600aPortVlanMode.3"/>
         <variable value="3" type="INT" name="PACKETFRONT-DRG600A-MIB:drg600aPortVlanEgressMode.3"/>

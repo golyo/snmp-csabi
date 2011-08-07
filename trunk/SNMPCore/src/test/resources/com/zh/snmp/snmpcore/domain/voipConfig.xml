@@ -6,7 +6,7 @@
             <variable dinamicName="voipIfDomain" value="comunique.hu" type="STR" name="PACKETFRONT-VOIP-MIB:voipIfDomain.1"/>
             <variable dinamicName="voipIfPrimaryServerAddress" value="85.159.48.131" type="STR" name="PACKETFRONT-VOIP-MIB:voipIfPrimaryServerAddress.1"/>
             <variable dinamicName="voipIfAuthUser" type="STR" name="PACKETFRONT-VOIP-MIB:voipIfAuthUser.1"/>
-            <variable dinamicName="voipIfAuthPasswd" type="STR" name="PACKETFRONT-VOIP-MIB:voipIfAuthPasswd.1"/>
+            <variable valueConverter="SHA1" dinamicName="voipIfAuthPasswd" type="STR" name="PACKETFRONT-VOIP-MIB:voipIfAuthPasswd.1"/>
             <variable dinamicName="voipIfLineNumber" type="STR" name="PACKETFRONT-VOIP-MIB:voipIfLineNumber.1"/>
             <variable value="1" type="INT" name="PACKETFRONT-VOIP-MIB:voipIfAdmin.1"/>
         </commands>
@@ -17,7 +17,7 @@
             <variable dinamicName="voipIfDomain" value="comunique.hu" type="STR" name="PACKETFRONT-VOIP-MIB:voipIfDomain.2"/>
             <variable dinamicName="voipIfPrimaryServerAddress" value="85.159.48.131" type="STR" name="PACKETFRONT-VOIP-MIB:voipIfPrimaryServerAddress.2"/>
             <variable dinamicName="voipIfAuthUser" type="STR" name="PACKETFRONT-VOIP-MIB:voipIfAuthUser.2"/>
-            <variable dinamicName="voipIfAuthPasswd" type="STR" name="PACKETFRONT-VOIP-MIB:voipIfAuthPasswd.2"/>
+            <variable valueConverter="SHA1" dinamicName="voipIfAuthPasswd" type="STR" name="PACKETFRONT-VOIP-MIB:voipIfAuthPasswd.2"/>
             <variable dinamicName="voipIfLineNumber" type="STR" name="PACKETFRONT-VOIP-MIB:voipIfLineNumber.2"/>
             <variable value="1" type="INT" name="PACKETFRONT-VOIP-MIB:voipIfAdmin.2"/>
         </commands>

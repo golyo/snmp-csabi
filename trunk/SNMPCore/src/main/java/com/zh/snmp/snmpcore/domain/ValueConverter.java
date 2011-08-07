@@ -18,35 +18,38 @@ package com.zh.snmp.snmpcore.domain;
 
 import com.zh.snmp.snmpcore.exception.ExceptionCodesEnum;
 import com.zh.snmp.snmpcore.exception.SystemException;
-import org.snmp4j.smi.Integer32;
+import com.zh.snmp.snmpcore.util.CoreUtil;
 import org.snmp4j.smi.OctetString;
-import org.snmp4j.smi.Variable;
 
 /**
  *
  * @author Golyo
  */
-public enum OidType {
-    INT,
-    STR,
-    HEX;
-    public Variable createVariable(String value) {
-        return createVariable(this, value);
+public enum ValueConverter {
+    SHA1(new Sha1Converter());
+
+    private IValueConverter converter;
+    private ValueConverter(IValueConverter converter) {
+        this.converter = converter;
     }
     
-    private static final char HEX_DELIM = ':';
-    
-    private static Variable createVariable(OidType type, String value) {
-        switch (type) {
-            case HEX: 
-                return OctetString.fromHexString(value, HEX_DELIM);
-            case STR: 
-                return new OctetString(value);
-            case INT: 
-                return new Integer32(Integer.parseInt(value));
-            default:
-                throw new SystemException(ExceptionCodesEnum.Unsupported);
-        }
-    }    
-}
+    public String convert(String value) {
+        return converter.convert(value);
+    }   
 
+    public static interface IValueConverter {
+        public String convert(String value);
+    }
+    
+    private static class Sha1Converter implements IValueConverter{
+        @Override
+        public String convert(String value) {
+            try {
+                String ret =  CoreUtil.sha1(value);
+                return OctetString.fromString(ret, 16).toHexString();
+            } catch (Exception e) {
+                throw new SystemException(ExceptionCodesEnum.ConfigurationException, e);
+            }            
+        }
+    }
+}

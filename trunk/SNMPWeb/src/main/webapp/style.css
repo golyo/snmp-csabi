@@ -133,3 +133,7 @@ div.command {
 table.unselected table.icon-panel a {
     color: #BBBBBB !important;
 }
+
+a.logout {
+    float: right;
+}

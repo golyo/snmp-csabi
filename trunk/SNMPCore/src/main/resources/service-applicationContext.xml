@@ -5,7 +5,11 @@
        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
        default-autowire="byName">
 
-    <bean id="authenticationService" class="com.zh.snmp.snmpcore.services.impl.DBAuthenticationServiceImpl"/>
+    <bean id="authenticationService" class="com.zh.snmp.snmpcore.services.impl.DBAuthenticationServiceImpl">
+        <property name="defaultUser" value="${snmp.defaultUser}"/>
+        <property name="defaultPwd" value="${snmp.defaultPwd}"/>
+        
+    </bean>
     <bean id="configService" class="com.zh.snmp.snmpcore.services.impl.ConfigServiceImpl"/>
     <bean id="deviceService" class="com.zh.snmp.snmpcore.services.impl.DeviceServiceImpl"/>
     <!--
