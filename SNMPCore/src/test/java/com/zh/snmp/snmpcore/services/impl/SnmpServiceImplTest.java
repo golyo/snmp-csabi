@@ -58,7 +58,7 @@ public class SnmpServiceImplTest extends BaseTest {
     public void testSnmpService() {
         String ip = TESTIP;
         MessageAppender appender = new SimpleMessageAppender();
-        Configuration conf = createTestConfig(appender);
+        Configuration conf = createTestConfig(appender, "accessConfig.xml");
         DeviceEntity de = createTestDevice(conf.getCode(), ip);
         Device device = deviceService.findDeviceByDeviceId(de.getId());
         Assert.assertNotNull(device);
@@ -87,7 +87,7 @@ public class SnmpServiceImplTest extends BaseTest {
     public void testCommnand() throws Exception {
         String ip = TESTIP;
         MessageAppender appender = new SimpleMessageAppender();
-        Configuration conf = createTestConfig(appender);
+        Configuration conf = createTestConfig(appender, "accessConfig.xml");
         DeviceEntity de = createTestDevice(conf.getCode(), ip);
         
         Device d = deviceService.findDeviceByIp(ip);

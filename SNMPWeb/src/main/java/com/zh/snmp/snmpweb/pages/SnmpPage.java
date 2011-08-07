@@ -17,16 +17,19 @@
 
 package com.zh.snmp.snmpweb.pages;
 
+import com.zh.snmp.snmpweb.BaseSession;
 import org.apache.wicket.PageParameters;
 import com.zh.snmp.snmpweb.config.DeviceConfigListPanel;
 import com.zh.snmp.snmpweb.device.DeviceListPanel;
 import com.zh.snmp.snmpweb.menu.MenuConfig;
 import com.zh.snmp.snmpweb.monitoring.TrapMonitorPanel;
+import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 /**
  *
  * @author golyo
  */
 @MenuConfig(context={DeviceConfigListPanel.class, DeviceListPanel.class, TrapMonitorPanel.class})
+@AuthorizeInstantiation({BaseSession.ROLE_ADMIN})
 public class SnmpPage extends BasePage {
     private static final long serialVersionUID = 1L;
 

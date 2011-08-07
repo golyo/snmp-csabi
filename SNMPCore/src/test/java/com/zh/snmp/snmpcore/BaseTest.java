@@ -85,8 +85,8 @@ public abstract class BaseTest {
         return MibParser.class.getResourceAsStream(TEST_FILE);
     }
     
-    protected Configuration createTestConfig(MessageAppender appender) {
-        InputStream stream = ConfigNodeTest.class.getResourceAsStream("accessConfig.xml");
+    protected Configuration createTestConfig(MessageAppender appender, String resource) {
+        InputStream stream = ConfigNodeTest.class.getResourceAsStream(resource);
         Configuration conf = configService.importConfiguration(stream, appender);
         return conf;
     }

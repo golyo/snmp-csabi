@@ -35,6 +35,7 @@ public class OidCommand implements Serializable, Cloneable {
     private String value;
     private String expectedValue;
     private String dinamicName;
+    private ValueConverter valueConverter;
     
     @XmlAttribute
     public String getName() {
@@ -95,6 +96,15 @@ public class OidCommand implements Serializable, Cloneable {
         this.expectedValue = expectedValue;
     }
 
+    @XmlAttribute
+    public ValueConverter getValueConverter() {
+        return valueConverter;
+    }
+
+    public void setValueConverter(ValueConverter valueConverter) {
+        this.valueConverter = valueConverter;
+    }
+
     public VariableBinding createVariable() {
         return new VariableBinding(new OID(oid), type.createVariable(value));
     }
@@ -102,6 +112,9 @@ public class OidCommand implements Serializable, Cloneable {
     public boolean equalsVariable(VariableBinding variable) {
         if (oid.equals(variable.getOid().toString())) {
             String expected = expectedValue != null ? expectedValue : value;
+            if (valueConverter != null) {
+                expected = valueConverter.convert(value);
+            }
             return expected.equals(variable.toValueString());           
             //Extras
         } else {
@@ -123,6 +136,7 @@ public class OidCommand implements Serializable, Cloneable {
         cmd.setType(type);
         cmd.setValue(value);
         cmd.setExpectedValue(expectedValue);
+        cmd.setValueConverter(valueConverter);
         return cmd;
     }    
 }

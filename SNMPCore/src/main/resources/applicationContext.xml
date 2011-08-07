@@ -19,6 +19,8 @@
         <property name="properties">
             <props>
                 <prop key="snmp.trap.ip">255.255.255.255/255</prop>
+                <prop key="snmp.defaultUser">admin</prop>
+                <prop key="snmp.defaultPwd">admin</prop>
             </props>
         </property>
     </bean>
