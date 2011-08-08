@@ -37,8 +37,8 @@ public class SimpleMessageAppender implements MessageAppender {
     }
     
     @Override
-    public <T extends Serializable> void addMessage(String key, T object) {
-        addOwnMessage(new ZhMessage(key, object));
+    public void addMessage(String key, Object[] params) {
+        addOwnMessage(new ZhMessage(key, params));
     }
     
     @Override

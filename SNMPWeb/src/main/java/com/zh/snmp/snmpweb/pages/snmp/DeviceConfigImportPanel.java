@@ -29,6 +29,7 @@ import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,8 +72,7 @@ public class DeviceConfigImportPanel extends Panel {
                     modal.close(target);                    
                 } else {
                     for (ZhMessage mess: appender.getMessages()) {
-                        String err = getString(mess.getResourceKey(), Model.of(mess.getObject()));                                
-                        error(err);
+                        error(new StringResourceModel(mess.getResourceKey(), this, null, mess.getParams()).getString());
                     }
                     target.addComponent(feedback);                                        
                 }

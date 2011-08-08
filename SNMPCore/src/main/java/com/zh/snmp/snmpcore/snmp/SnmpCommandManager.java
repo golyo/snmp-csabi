@@ -85,13 +85,13 @@ public class SnmpCommandManager {
                 vb = responseIt.next();
                 if (!cmd.equalsVariable(vb)) {
                     LOGGER.debug("Command variable not match on device " + device.getDeviceId() + " " + cmd + ";" + vb.toValueString() + ";");
-                    appender.addMessage("error.snmp.variableEquals", cmd);
+                    appender.addMessage("error.snmp.variableEquals", cmd.getName(), cmd.getValue());
                 } else {
                     commandIt.remove();
                 }
             } else {
                 LOGGER.debug("Command variable not match device " + device.getDeviceId() + " " + cmd);
-                appender.addMessage("error.snmp.variableEquals", cmd);
+                appender.addMessage("error.snmp.variableEquals", cmd.getName(), cmd.getValue());
             }
         }
         return !commands.isEmpty();
@@ -123,7 +123,7 @@ public class SnmpCommandManager {
                 if (errorStatus != PDU.noError) {
                     LOGGER.error("Device response failed on device: " + device.getDeviceId() + ", ip: " + device.getIpAddress() + "; Error Statusz: " + responsePDU.getErrorStatus() + ": " + responsePDU.getErrorStatusText());
                     device.setConfigState(DeviceState.ERROR);
-                    appender.addMessage("error.snmp.responseStatus", responsePDU);
+                    appender.addMessage("error.snmp.responseStatus", responsePDU.getErrorStatus(), responsePDU.getErrorStatusText());
                     return null;
                 } else {
                     String prefix = get ? "GET " : "SET ";

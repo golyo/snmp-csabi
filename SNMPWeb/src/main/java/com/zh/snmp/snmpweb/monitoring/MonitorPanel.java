@@ -27,6 +27,7 @@ import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.time.Duration;
 
 /**
@@ -46,10 +47,21 @@ public class MonitorPanel<T> extends BasePanel<T> {
         super(id, model);
         this.appender = appender != null ? appender : createMessageAppender(model);
         progressLabel = new Label("progressLabel", new ResourceModel("process.running"));
+        progressLabel.setVisible(!this.appender.isFinished());
         add(progressLabel);
-
+        if (!this.appender.isFinished()) {
+            startSelfUpdatingProcess();           
+        }
+        add(new MultiLineLabel("processResult", new Model<String>() {
+            @Override
+            public String getObject() {
+                return getMultiLineString();
+            }
+        }));
+    }
+    
+    private void startSelfUpdatingProcess() {
         add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(5)) {
-
             @Override
             protected void onPostProcessTarget(AjaxRequestTarget target) {
                 super.onPostProcessTarget(target);
@@ -60,18 +72,14 @@ public class MonitorPanel<T> extends BasePanel<T> {
                 }
             }
         });
-        add(new MultiLineLabel("processResult", new Model<String>() {
-
-            @Override
-            public String getObject() {
-                StringBuilder sb = new StringBuilder();
-                for (ZhMessage mess: MonitorPanel.this.appender.getMessages()) {
-                    sb.append(getString(mess.getResourceKey(), Model.of(mess.getObject())));
-                    sb.append(NL);
-                }
-                return sb.toString(); 
-            }
-        }));
+    }
+    protected String getMultiLineString() {
+        StringBuilder sb = new StringBuilder();
+        for (ZhMessage mess: MonitorPanel.this.appender.getMessages()) {
+            sb.append(new StringResourceModel(mess.getResourceKey(), this, null, mess.getParams()).getString());
+            sb.append(NL);
+        }
+        return sb.toString();         
     }
     
     protected void onEndProcess(AjaxRequestTarget target) {

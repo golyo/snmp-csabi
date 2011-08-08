@@ -17,42 +17,35 @@
 package com.zh.snmp.snmpcore.message;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  *
  * @author Golyo
  */
-public class ZhMessage<T extends Serializable> implements Serializable {
+public class ZhMessage implements Serializable {
     private String resourceKey;
-    private T object;
+    private Object[] params;
 
     public ZhMessage(String resourceKey) {
         this.resourceKey = resourceKey;
     }
     
-    public ZhMessage(String resourceKey, T object) {
+    public ZhMessage(String resourceKey, Object... params) {
         this.resourceKey = resourceKey;
-        this.object = object;
+        this.params = params;
     }
     
-    public T getObject() {
-        return object;
-    }
-
-    public void setObject(T object) {
-        this.object = object;
+    public Object[] getParams() {
+        return params;
     }
 
     public String getResourceKey() {
         return resourceKey;
     }
 
-    public void setResourceKey(String resourceKey) {
-        this.resourceKey = resourceKey;
-    }
-    
     @Override
     public String toString() {
-        return resourceKey;
+        return resourceKey + ((params != null) ? Arrays.toString(params) : "");
     }
 }

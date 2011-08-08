@@ -95,7 +95,7 @@ public class SnmpServiceImpl implements SnmpService {
             
         } catch (Exception e) {
             LOGGER.error("Ismeretlen hiba történt", e);
-            appender.addMessage("message.snmp.unknownError", device);
+            appender.addMessage("message.snmp.unknownError", device.getIpAddress());
             return false;
         }
         return true;
@@ -107,6 +107,7 @@ public class SnmpServiceImpl implements SnmpService {
         if (toConfig == null) {
             return false;
         }
+        long start = System.currentTimeMillis();
         ConfigNode config = device.getConfig().getRoot();
         try {
             SnmpCommandManager cmdManager = new SnmpCommandManager(snmp, appender, toConfig);
@@ -130,9 +131,9 @@ public class SnmpServiceImpl implements SnmpService {
         } catch (Exception e) {
             LOGGER.error("Ismeretlen hiba történt", e);
             device.setConfigState(DeviceState.ERROR);
-            appender.addMessage("message.snmp.unknownError", device);
+            appender.addMessage("message.snmp.unknownError", device.getIpAddress());
         }
-        finishProcess(toConfig, appender);
+        finishProcess(toConfig, appender, start);
         return device.getConfigState() == DeviceState.CONFIGURED;
     }    
 
@@ -146,7 +147,7 @@ public class SnmpServiceImpl implements SnmpService {
                 if (oidCmd.isDinamic()) {
                     String val = dinamics.get(oidCmd.getDinamicName());
                     if (val == null) {
-                        appender.addMessage("message.snmp.missingDinamicValue", oidCmd);
+                        appender.addMessage("message.snmp.missingDinamicValue", oidCmd.getName(), oidCmd.getDinamicName());
                         canContinue = false;
                     }
                     oidCmd.setValue(val);
@@ -186,9 +187,9 @@ public class SnmpServiceImpl implements SnmpService {
             }
             doSetCommand(cmdManager, toConfig, setTarget, cmd.getAfter());
             if (toConfig.getConfigState().canContinue()) {
-                appender.addMessage("message.snmp.succesCmd", cmd);                    
+                appender.addMessage("message.snmp.succesCmd", cmd.getName(), toConfig.getIpAddress());                    
             } else {
-                appender.addMessage("message.snmp.failedCmd", cmd);                    
+                appender.addMessage("message.snmp.failedCmd", cmd.getName(), toConfig.getIpAddress());                    
             }            
         }
         return toConfig.getConfigState().canContinue();
@@ -211,11 +212,11 @@ public class SnmpServiceImpl implements SnmpService {
         if (event != null) {
             if (cmdManager.clearModificationSameCommands(command.getCommands(), event)) {
                 LOGGER.info("Modification found on command");
-                appender.addMessage("message.snmp.changesFound", command);
+                appender.addMessage("message.snmp.changesFound", command.getName());
                 return true;
             } else {
                 LOGGER.info("No modification found on command");
-                appender.addMessage("message.snmp.noChangesFound", command);
+                appender.addMessage("message.snmp.noChangesFound", command.getName());
                 return false;
             }
         } else {
@@ -233,9 +234,9 @@ public class SnmpServiceImpl implements SnmpService {
             Date now = new Date();
             if (date == null || (now.getTime()-date.getTime()) > MAX_DATE_DIFF) {
                 runningDeviceConfMap.put(device.getDeviceId(), now);
-                appender.addMessage("message.snmp.start", device);
+                appender.addMessage("message.snmp.start", device.getIpAddress());
             } else {
-                appender.addMessage("message.snmp.wait", device);
+                appender.addMessage("message.snmp.wait", device.getIpAddress());
                 return null;
             }            
         }    
@@ -243,11 +244,12 @@ public class SnmpServiceImpl implements SnmpService {
         return service.save(device);
     }
     
-    private void finishProcess(Device device, MessageAppender appender) {
+    private void finishProcess(Device device, MessageAppender appender, long start) {
         if (device.getConfigState().canContinue()) {
             device.setConfigState(DeviceState.CONFIGURED);
         }
-        appender.addMessage("message.snmp.stop", device);
+        long took = System.currentTimeMillis() - start;
+        appender.addMessage("message.snmp.stop", device.getIpAddress(), device.getConfigState(), took);
         appender.finish();
         service.save(device);
     }    
@@ -257,12 +259,12 @@ public class SnmpServiceImpl implements SnmpService {
             ResponseEvent checkSaved = manager.processGetCommand(getTarget, saveAndRestartCommand.getCheckSaveCommand().getCommands());
             if (manager.checkIfSameResult(saveAndRestartCommand.getCheckSaveCommand().getCommands(), checkSaved)) {
                 if (doSetCommand(manager, toConfig, setTarget, saveAndRestartCommand.getRestartCommand().getCommands())) {
-                    appender.addMessage("message.snmp.restartSucces", toConfig);
+                    appender.addMessage("message.snmp.restartSucces", toConfig.getIpAddress());
                     return true;
                 }
             }
         }
-        appender.addMessage("message.snmp.restartFailed", toConfig);
+        appender.addMessage("message.snmp.restartFailed", toConfig.getIpAddress());
         toConfig.setConfigState(DeviceState.ERROR);        
         return false;
     }
