@@ -20,6 +20,8 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.VariableBinding;
 
@@ -29,6 +31,8 @@ import org.snmp4j.smi.VariableBinding;
  */
 @XmlRootElement(name="oid")
 public class OidCommand implements Serializable, Cloneable {    
+    private static final Logger LOGGER = LoggerFactory.getLogger(OidCommand.class);
+    
     private String name;
     private String oid;
     private OidType type;
@@ -112,8 +116,9 @@ public class OidCommand implements Serializable, Cloneable {
     public boolean equalsVariable(VariableBinding variable) {
         if (oid.equals(variable.getOid().toString())) {
             String expected = expectedValue != null ? expectedValue : value;
-            if (valueConverter != null) {
+            if (valueConverter != null) {                
                 expected = valueConverter.convert(value);
+                LOGGER.info("Várt érték " + expectedValue + "; Eredeti: " + value);
             }
             return expected.equals(variable.toValueString());           
             //Extras

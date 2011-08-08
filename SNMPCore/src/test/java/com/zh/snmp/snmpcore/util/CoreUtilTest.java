@@ -43,7 +43,7 @@ public class CoreUtilTest {
      */
     @Test
     public void testSha1() throws Exception {
-        String pwd = "testwebservicePwd";
+        String pwd = "3618782825";
         String ret = ValueConverter.SHA1.convert(pwd);
         LOGGER.debug(pwd + ": '" + ret + "'");
     }

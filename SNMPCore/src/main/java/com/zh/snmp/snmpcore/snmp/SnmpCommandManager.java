@@ -150,7 +150,9 @@ public class SnmpCommandManager {
         pdu.setRequestID(new Integer32(1));
         // Setting the Oid and Value for sysContact variable
         for (OidCommand oidCmd: commands) {
-            pdu.add(oidCmd.createVariable());
+            VariableBinding binding = oidCmd.createVariable();            
+            pdu.add(binding);
+            LOGGER.debug("VariableX: " + oidCmd.getName() + " value: '" + binding.toValueString() + "'");
         }
         return pdu;        
     }    
