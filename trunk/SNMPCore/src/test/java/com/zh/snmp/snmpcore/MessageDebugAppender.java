@@ -19,6 +19,7 @@ package com.zh.snmp.snmpcore;
 import com.zh.snmp.snmpcore.message.MessageAppender;
 import com.zh.snmp.snmpcore.message.ZhMessage;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +38,8 @@ public class MessageDebugAppender implements MessageAppender {
     }
 
     @Override
-    public <T extends Serializable> void addMessage(String key, T object) {
-        LOGGER.debug("Message added: " + key + ", object: " + object);
+    public void addMessage(String key, Object[] params) {
+        LOGGER.debug("Message added: " + key + ", params: " + (params != null ? Arrays.toString(params) : "null"));
     }
 
     @Override

@@ -30,6 +30,7 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.StringResourceModel;
 
 /**
  *
@@ -59,7 +60,8 @@ public abstract class DeviceStateEditPanel extends ModalEditPanel<DeviceNode> {
             for (DinamicValue val: node.getDinamics()) {
                 if (val.getValue() == null) {
                     hasErr = true;
-                    error(getString("error.dinamicValue", Model.of(val)));
+                    error(new StringResourceModel("error.dinamicValue", this, null, new Object[] {val.getCode()}).getString());
+                    //error(getString("error.dinamicValue", Model.of(val)));
                 }
             }
         }        
