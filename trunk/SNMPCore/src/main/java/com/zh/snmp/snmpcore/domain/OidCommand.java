@@ -118,7 +118,7 @@ public class OidCommand implements Serializable, Cloneable {
             String expected = expectedValue != null ? expectedValue : value;
             if (valueConverter != null) {                
                 expected = valueConverter.convert(value);
-                LOGGER.info("Várt érték " + expectedValue + "; Eredeti: " + value);
+                LOGGER.info("Várt érték '" + expected + "'; Eredeti: '" + value + "'; Beállított: '" + variable.toValueString() + "'");
             }
             return expected.equals(variable.toValueString());           
             //Extras

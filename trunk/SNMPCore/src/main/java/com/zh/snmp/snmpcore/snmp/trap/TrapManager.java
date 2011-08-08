@@ -96,6 +96,7 @@ public class TrapManager implements CommandResponder, SnmpResources, Serializabl
         try {           
             trapInfo = new DeviceTrapInfo(cmdRespEvent);
             LOGGER.debug("Message received from " + trapInfo.getIpAdress());
+            /*
             msgAppender.addMessage("message.snmp.trapReceived", trapInfo);
             Device device = deviceService.findDeviceByIp(trapInfo.ipAddress);
             if (device == null) {
@@ -109,6 +110,8 @@ public class TrapManager implements CommandResponder, SnmpResources, Serializabl
             } else {
                 msgAppender.addMessage("message.snmp.ipNotConfigured", trapInfo);
             }
+             * 
+             */
         } catch (IOException e) {
             LOGGER.error("Error while check device ", e);
             if (trapInfo != null) {
