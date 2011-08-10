@@ -118,13 +118,6 @@ public class DeviceNode extends DefaultNode implements Serializable {
     }
     
     @XmlTransient
-    public Map<String, String> getDinamicValues() {
-        Map<String, String> values = new HashMap<String, String>();
-        appendDinamicValues(values);
-        return values;
-    }
-    
-    @XmlTransient
     public List<String> getSelectedChildList() {
         List<String> ret = new LinkedList<String>();
         appendSelectedChildList(ret);

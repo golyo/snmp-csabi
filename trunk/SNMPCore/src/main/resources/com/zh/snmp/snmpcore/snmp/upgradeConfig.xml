@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<config description="Upgrade konfigurációk" code="upgrade">
-    <node code="acces" description="Acces upgrade konfiguráció">
-    </node>
-    <node code="voip" description="Voip upgrade konfiguráció">
+<config description="Upgrade konfiguráció" code="upgrade">
         <commands>
             <variable value="10.253.0.254" type="STR" name="PACKETFRONT-DRG-MIB:downloadServer.0"/>
             <variable value="DMA0120-R2N28-R.r0" type="STR" name="PACKETFRONT-DRG-MIB:downloadFile.0"/>
             <variable value="1" type="INT" name="PACKETFRONT-DRG-MIB:downloadMethod.0"/>
             <variable value="2" type="INT" name="PACKETFRONT-DRG-MIB:downloadAction.0"/>
         </commands>
-    </node>
 </config>
