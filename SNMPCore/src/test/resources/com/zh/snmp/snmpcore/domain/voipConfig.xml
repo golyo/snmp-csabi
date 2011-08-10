@@ -23,9 +23,9 @@
         </commands>
     </node>
     <!-- Az VOIP-hez tartozo konfiguraciok, futtatasi sorrendbem -->
-    <commands priority="1" name="Voip default beállítás">
+    <commands priority="1" name="Voip konfiguráció">
         <variable value="(xx.#|xx.T)" type="STR" name="PACKETFRONT-VOIP-MIB:voipDialPlan.0"/>
-        <variable value="2" type="INT" name="PACKETFRONT-VOIP-MIB:voipIfAdmin.1"/>
+        <variable value="1" type="INT" name="PACKETFRONT-VOIP-MIB:voipIfAdmin.1"/>
         <variable value="2" type="INT" name="PACKETFRONT-VOIP-MIB:voipIfAdmin.2"/>
     </commands>
 </config>

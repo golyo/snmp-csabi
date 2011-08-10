@@ -104,16 +104,6 @@ public class SnmpCommand implements Serializable, Comparable<SnmpCommand>, Clone
         return priority - command.priority;
     }    
     
-    public void updateCommandValues(SnmpCommand mergeCmd) {
-        if (mergeCmd.getPriority() == priority) {
-            for (OidCommand mergeOid: mergeCmd.commands) {
-                if (!setNewOidValue(mergeOid)) {
-                    commands.add(mergeOid.clone());
-                }
-            }            
-        }
-    }
-    
     @Override
     public String toString() {
         return priority + ": " + commands.toString();
@@ -131,15 +121,13 @@ public class SnmpCommand implements Serializable, Comparable<SnmpCommand>, Clone
         }
     }
     
-    private boolean setNewOidValue(OidCommand cmd) {
-        int idx = 0;
+    public OidCommand setNewOidValue(OidCommand cmd) {
         for (OidCommand oids: commands) {
             if (oids.getOid().equals(cmd.getOid())) {
                 oids.setValue(cmd.getValue());
-                return true;
+                return oids;
             }
-            idx++;
         }
-        return false;
+        return null;
     }
 }
