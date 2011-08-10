@@ -84,7 +84,7 @@ public class SnmpServiceImpl implements SnmpService {
         ConfigNode config = device.getConfig().getRoot();
         try {
             SnmpCommandManager cmdManager = new SnmpCommandManager(snmp, appender, device);
-            List<SnmpCommand> commands = initDeviceCommands(config, device.getConfigMap(), appender);
+            List<SnmpCommand> commands = initDeviceCommands(config, device, appender);
             CommunityTarget getTarget = SnmpFactory.createTarget(device.getIpAddress(), "public");
             for (SnmpCommand cmd : commands) {
                 if (clearCommands(cmdManager, getTarget, cmd, appender)) {
@@ -110,7 +110,7 @@ public class SnmpServiceImpl implements SnmpService {
         ConfigNode config = device.getConfig().getRoot();
         try {
             SnmpCommandManager cmdManager = new SnmpCommandManager(snmp, appender, toConfig);
-            List<SnmpCommand> commands = initDeviceCommands(config, device.getConfigMap(), appender);
+            List<SnmpCommand> commands = initDeviceCommands(config, device, appender);
             CommunityTarget getTarget = SnmpFactory.createTarget(toConfig.getIpAddress(), "public");
             CommunityTarget setTarget = SnmpFactory.createTarget(toConfig.getIpAddress(), "private");
             boolean hasAnyChangesOnDevice = false;
@@ -136,27 +136,18 @@ public class SnmpServiceImpl implements SnmpService {
         return device.getConfigState() == DeviceState.CONFIGURED;
     }    
 
-    private List<SnmpCommand> initDeviceCommands(ConfigNode config, DeviceNode deviceNode, MessageAppender appender) {
+    private List<SnmpCommand> initDeviceCommands(ConfigNode config, Device device, MessageAppender appender) {
         List<SnmpCommand> ret = initSnmpCommands(config);
-        //Map<String, String> dinamics = deviceNode.getDinamicValues();
         boolean canContinue = true;
         for (SnmpCommand cmd: ret) {
-            canContinue = changeCommandValues(cmd, deviceNode, config);
-            /*
-            for (OidCommand oidCmd: cmd.getCommands()) {
-                if (oidCmd.isDinamic()) {
-                    String val = dinamics.get(oidCmd.getDinamicName());
-                    if (val == null) {
-                        appender.addMessage("message.snmp.missingDinamicValue", oidCmd.getName(), oidCmd.getDinamicName());
-                        canContinue = false;
-                    }
-                    oidCmd.setValue(val);
-                }
-            }
-             * 
-             */
+            canContinue = changeCommandValues(cmd, device.getConfigMap(), config, appender) && canContinue;
         }
-        return canContinue ? ret : Collections.EMPTY_LIST;
+        if (!canContinue) {
+            device.setConfigState(DeviceState.ERROR);
+            return Collections.EMPTY_LIST;
+        } else {
+            return ret;
+        }
     }
     
     private List<SnmpCommand> initSnmpCommands(ConfigNode config) {
@@ -167,21 +158,21 @@ public class SnmpServiceImpl implements SnmpService {
         return ret;
     }
     
-    private boolean changeCommandValues(SnmpCommand command, DeviceNode deviceNode, ConfigNode configNode) {
+    private boolean changeCommandValues(SnmpCommand command, DeviceNode deviceNode, ConfigNode configNode, MessageAppender appender) {
         boolean canContinue = true;
         for (DeviceNode dChild: deviceNode.getChildren()) {
             if (dChild.isSelected()) {
                 ConfigNode cChild = configNode.findChildByCode(dChild.getCode());
                 for (SnmpCommand cmd: cChild.getCommands()) {
-                    updateCommandValues(command, cmd, dChild);
+                    updateCommandValues(command, cmd, dChild, appender);
                 }
-                canContinue = canContinue && changeCommandValues(command, dChild, cChild);
+                canContinue = canContinue && changeCommandValues(command, dChild, cChild, appender);
             }
         }
         return canContinue;
     }
     
-    private boolean updateCommandValues(SnmpCommand source, SnmpCommand mergeCmd, DeviceNode deviceNode) {
+    private boolean updateCommandValues(SnmpCommand source, SnmpCommand mergeCmd, DeviceNode deviceNode, MessageAppender appender) {
         boolean canContinue = true;
         if (mergeCmd.getPriority() == source.getPriority()) {
             for (OidCommand mergeOid: mergeCmd.getCommands()) {
@@ -192,8 +183,12 @@ public class SnmpServiceImpl implements SnmpService {
                 }
                 if (act.isDinamic()) {
                     DinamicValue actDinamic = deviceNode.findDinamic(act.getDinamicName());
-                    act.setValue(actDinamic.getValue());
-                    canContinue = canContinue && act.getValue() != null;
+                    if (actDinamic == null || actDinamic.getValue() == null) {
+                        appender.addMessage("message.snmp.missingDinamicValue", act.getName(), act.getDinamicName());                        
+                        canContinue = false;
+                    } else {
+                        act.setValue(actDinamic.getValue());                        
+                    }
                 }
             }            
         }
