@@ -20,6 +20,7 @@ import com.zh.snmp.snmpcore.domain.OidCommand;
 import com.zh.snmp.snmpcore.domain.SnmpCommand;
 import com.zh.snmp.snmpcore.domain.ConfigNode;
 import com.zh.snmp.snmpcore.domain.OidType;
+import com.zh.snmp.snmpcore.snmp.UpgradeConfig;
 import com.zh.snmp.snmpcore.util.JAXBUtil;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -43,7 +44,7 @@ import static org.junit.Assert.*;
 public class ConfigNodeTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigNodeTest.class);
     
-    @Test
+    //@Test
     public void testMarshaller() {
         //ConfigNode testNode = createConfigNode("X", 2, 2);
         ConfigNode testNode = createAccesNode();
@@ -68,6 +69,21 @@ public class ConfigNodeTest {
     }
     
     @Test
+    public void testUpgrade()  throws UnsupportedEncodingException {
+        InputStream stream = UpgradeConfig.class.getResourceAsStream("upgradeConfig.xml");
+        assertNotNull(stream);
+        ConfigNode node = JAXBUtil.unmarshalTyped(new InputStreamReader(stream, "UTF8"), ConfigNode.class);
+        LOGGER.debug("+++" + node.getCommands().get(0).isPreCondition());
+        node.getCommands().get(0).setPreCondition(true);
+        StringWriter sw = new StringWriter();
+        
+        JAXBUtil.marshal(node, sw, true);
+        LOGGER.debug("XXXXXXXXXXXXXXXXXXX");
+        
+        
+    }
+    
+    //@Test
     public void testOidMarshaller() {
         SnmpCommand scmd = new SnmpCommand();
         OidCommand cmd = new OidCommand();

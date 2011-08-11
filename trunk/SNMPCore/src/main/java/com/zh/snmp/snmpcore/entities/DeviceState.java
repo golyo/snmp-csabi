@@ -25,7 +25,8 @@ public enum DeviceState {
     NEW(true),
     RUNNING(true),
     CONFIGURED(true),
-    ERROR(false);
+    ERROR(false),
+    UPDATED(false);
     
     private boolean canContinue;
     private DeviceState(boolean canContinue) {

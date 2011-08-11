@@ -100,12 +100,18 @@ public class SnmpCommand implements Serializable, Comparable<SnmpCommand>, Clone
     
     @Override
     public SnmpCommand clone() {
+        SnmpCommand ret = cloneEmpty();        
+        ret.setCommands(cloneCommands(commands));
+        return ret;
+    }
+    
+    public SnmpCommand cloneEmpty() {
         SnmpCommand ret = new SnmpCommand();
         ret.setBefore(cloneCommands(before));
         ret.setAfter(cloneCommands(after));
-        ret.setCommands(cloneCommands(commands));
         ret.setPriority(priority);
         ret.setName(name);
+        ret.setPreCondition(preCondition);
         return ret;
     }
     

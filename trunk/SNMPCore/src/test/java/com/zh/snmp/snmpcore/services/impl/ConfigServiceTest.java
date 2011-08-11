@@ -26,6 +26,7 @@ import com.zh.snmp.snmpcore.domain.ValueChecker;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.message.MessageAppender;
 import com.zh.snmp.snmpcore.message.SimpleMessageAppender;
+import com.zh.snmp.snmpcore.snmp.mib.MibParser;
 import com.zh.snmp.snmpcore.util.JAXBUtil;
 import java.io.StringReader;
 import java.util.LinkedList;
@@ -33,6 +34,8 @@ import java.util.List;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.snmp4j.smi.OID;
+import org.springframework.beans.factory.annotation.Autowired;
 import static org.junit.Assert.*;
 /**
  *
@@ -41,6 +44,9 @@ import static org.junit.Assert.*;
 public class ConfigServiceTest extends BaseTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigServiceTest.class);
     private static final String ACCES = "ACCES";
+    
+    @Autowired
+    private MibParser mibParser;
     
     @Test
     public void testConfig() {
@@ -73,6 +79,13 @@ public class ConfigServiceTest extends BaseTest {
         //pwdcmd.setValueConverter(ValueConverter.SHA1);
         LOGGER.debug("+++" + conf.toString());
         LOGGER.debug(JAXBUtil.marshal(node, true));
+    }
+    
+    @Test
+    public void testMib() throws Exception {
+        String name = "PACKETFRONT-DRG-MIB:productSwImageRev.0";
+        OID oid = mibParser.parseMib(name);
+        System.out.println("++++++++++++++++++++++++++++++++" + oid.toString());
     }
 
     private Device createTestDevice(Configuration config) {
