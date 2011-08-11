@@ -23,6 +23,8 @@ import com.zh.snmp.snmpcore.domain.DinamicValue;
 import com.zh.snmp.snmpcore.domain.OidCommand;
 import com.zh.snmp.snmpcore.domain.SnmpCommand;
 import com.zh.snmp.snmpcore.entities.DeviceState;
+import com.zh.snmp.snmpcore.exception.ExceptionCodesEnum;
+import com.zh.snmp.snmpcore.exception.SystemException;
 import com.zh.snmp.snmpcore.message.MessageAppender;
 import com.zh.snmp.snmpcore.services.DeviceService;
 import com.zh.snmp.snmpcore.services.SnmpService;
@@ -82,9 +84,9 @@ public class SnmpServiceImpl implements SnmpService {
         ConfigNode config = device.getConfig().getRoot();
         try {
             SnmpCommandManager cmdManager = new SnmpCommandManager(snmp, appender, device.getIpAddress());
-            List<SnmpCommand> commands = initDeviceCommands(config, device.getConfigMap(), appender);
+            List<SnmpCommand> commands = initDeviceCommands(config, device.getConfigMap());
             for (SnmpCommand cmd : commands) {
-                clearSameCommands(cmdManager, cmd, appender);
+                clearSameCommands(cmdManager, cmd);
                 if (!cmdManager.canContinue() || !cmd.getCommands().isEmpty()) {
                     return false;
                 }
@@ -111,13 +113,18 @@ public class SnmpServiceImpl implements SnmpService {
             //ConfigNode upgradeConfig = upgradeConfigManager.getUpgradeConfig();
             //DeviceNode upradeNode = upgradeConfigManager.getUpgradeNode(config.getCode());
             //TODO init device commands;        
-            
-            List<SnmpCommand> commands = initDeviceCommands(config, device.getConfigMap(), appender);
-            boolean hasAnyChangesOnDevice = processCommands(cmdManager, commands, appender);
-            if ((config.isRestartDevice() == Boolean.TRUE) && cmdManager.canContinue() && hasAnyChangesOnDevice) {
-                saveAndRestartDevice(cmdManager, appender);
-            }
-            toConfig.setConfigState(cmdManager.getDeviceState());
+            if (upgradeDevice(cmdManager, config.getCode())) {
+                toConfig.setConfigState(DeviceState.UPDATED);
+            } else {
+                if (cmdManager.canContinue()) {
+                    List<SnmpCommand> commands = initDeviceCommands(config, device.getConfigMap());
+                    boolean hasAnyChangesOnDevice = processCommands(cmdManager, commands);
+                    if ((config.isRestartDevice() == Boolean.TRUE) && cmdManager.canContinue() && hasAnyChangesOnDevice) {
+                        saveAndRestartDevice(cmdManager, appender);
+                    }                    
+                }
+                toConfig.setConfigState(cmdManager.getDeviceState());                
+            }                     
         } catch (Exception e) {
             LOGGER.error("Ismeretlen hiba történt", e);
             toConfig.setConfigState(DeviceState.ERROR);
@@ -127,14 +134,49 @@ public class SnmpServiceImpl implements SnmpService {
         return device.getConfigState() == DeviceState.CONFIGURED;
     }    
 
-    private List<SnmpCommand> initDeviceCommands(ConfigNode config, DeviceNode device, MessageAppender appender) {
-        List<SnmpCommand> ret = initSnmpCommands(config);
-        for (SnmpCommand cmd: ret) {
-            changeCommandValues(cmd, device, config, appender);
+    private boolean upgradeDevice(SnmpCommandManager cmdManager, String configCode) {
+        return false;
+        /*
+        ConfigNode upgradeConfig = upgradeConfigManager.getUpgradeConfig();
+        DeviceNode upgradeNode = upgradeConfigManager.getUpgradeNode(configCode);
+        try {
+            if (upgradeNode != null) {
+                List<SnmpCommand> commands = initDeviceCommands(upgradeConfig, upgradeNode);
+                boolean hasAnyChangesOnDevice = processCommands(cmdManager, commands);
+                if (hasAnyChangesOnDevice) {
+                    if (cmdManager.canContinue()) {
+                        cmdManager.addMessage("message.snmp.upgraded", cmdManager.getIpAddress());                
+                        return true;
+                    }
+                } else {
+                    cmdManager.addMessage("message.snmp.notNeedUpgrade", cmdManager.getIpAddress());   
+                }
+            }
+            return false;                        
+        } catch (SystemException e) {
+            if (e.getCode() == ExceptionCodesEnum.WrongDeviceType) {
+                cmdManager.addError("message.snmp.wrongDeviceType", cmdManager.getIpAddress(), upgradeNode.findDinamic("productName").getValue());
+                return false;
+            } else {
+                throw e;
+            }
+        }
+         * 
+         */
+    }
+    
+    private List<SnmpCommand> initDeviceCommands(ConfigNode config, DeviceNode device) {
+        //List<SnmpCommand> ret = initSnmpCommands(config);
+        List<SnmpCommand> ret = new LinkedList<SnmpCommand>();
+        for (SnmpCommand cmd: config.getCommands()) {
+            SnmpCommand source = cmd.cloneEmpty();
+            updateCommandValues(source, cmd, device);
+            changeChildCommandValues(source, device, config);
+            ret.add(source);
         }
         return ret;
     }
-    
+    /*
     private List<SnmpCommand> initSnmpCommands(ConfigNode config) {
         List<SnmpCommand> ret = new LinkedList<SnmpCommand>();
         for (SnmpCommand cmd: config.getCommands()) {
@@ -142,20 +184,20 @@ public class SnmpServiceImpl implements SnmpService {
         }
         return ret;
     }
-    
-    private void changeCommandValues(SnmpCommand command, DeviceNode deviceNode, ConfigNode configNode, MessageAppender appender) {
+    */
+    private void changeChildCommandValues(SnmpCommand command, DeviceNode deviceNode, ConfigNode configNode) {
         for (DeviceNode dChild: deviceNode.getChildren()) {
             if (dChild.isSelected()) {
                 ConfigNode cChild = configNode.findChildByCode(dChild.getCode());
                 for (SnmpCommand cmd: cChild.getCommands()) {
-                    updateCommandValues(command, cmd, dChild, appender);
+                    updateCommandValues(command, cmd, dChild);
                 }
-                changeCommandValues(command, dChild, cChild, appender);
+                changeChildCommandValues(command, dChild, cChild);
             }
         }
     }
     
-    private void updateCommandValues(SnmpCommand source, SnmpCommand mergeCmd, DeviceNode deviceNode, MessageAppender appender) {
+    private void updateCommandValues(SnmpCommand source, SnmpCommand mergeCmd, DeviceNode deviceNode) {
         if (mergeCmd.getPriority() == source.getPriority()) {
             for (OidCommand mergeOid: mergeCmd.getCommands()) {
                 OidCommand act = source.setNewOidValue(mergeOid);
@@ -173,18 +215,21 @@ public class SnmpServiceImpl implements SnmpService {
         }
     }
     
-    private boolean processCommands(SnmpCommandManager cmdManager, List<SnmpCommand> commands, MessageAppender appender) {
+    private boolean processCommands(SnmpCommandManager cmdManager, List<SnmpCommand> commands) {
         boolean hasAnyChangesOnDevice = false;
         for (SnmpCommand cmd : commands) {
             if (cmd.isPreCondition()) {
-                clearSameCommands(cmdManager, cmd, appender);
+                clearSameCommands(cmdManager, cmd);
                 if (cmd.getCommands().isEmpty()) {
-                    //Nem kell tovább módosítani, vége a folyamatnak, mert precondition
+                    //Nem kell tovább módosítani, vége a folyamatnak, mert precondition stimmel,
+                    //Utána lévő parancsokat csak különbség esetén kell futtatni
                     return hasAnyChangesOnDevice;
+                } else {
+                    hasAnyChangesOnDevice = true;
                 }
             } else {
-                processCommand(cmdManager, cmd, appender);
-                hasAnyChangesOnDevice = hasAnyChangesOnDevice || !cmd.getCommands().isEmpty();
+                processCommand(cmdManager, cmd);
+                hasAnyChangesOnDevice = hasAnyChangesOnDevice || !cmd.getCommands().isEmpty();                    
             }
             if (!cmdManager.canContinue()) {
                 break;
@@ -193,8 +238,8 @@ public class SnmpServiceImpl implements SnmpService {
         return hasAnyChangesOnDevice;
     }
     
-    private void processCommand(SnmpCommandManager cmdManager, SnmpCommand cmd, MessageAppender appender) {
-        clearSameCommands(cmdManager, cmd, appender);
+    private void processCommand(SnmpCommandManager cmdManager, SnmpCommand cmd) {
+        clearSameCommands(cmdManager, cmd);
         if (cmdManager.canContinue() && !cmd.getCommands().isEmpty()) {
             cmdManager.processSetCommand(cmd.getBefore());
             if (cmdManager.canContinue()) {
@@ -202,15 +247,15 @@ public class SnmpServiceImpl implements SnmpService {
             }
             cmdManager.processSetCommand(cmd.getAfter());
             if (cmdManager.canContinue()) {
-                appender.addMessage("message.snmp.succesCmd", cmd.getName(), cmdManager.getIpAddress());                    
+                cmdManager.addMessage("message.snmp.succesCmd", cmd.getName(), cmdManager.getIpAddress());                    
             } else {
-                appender.addMessage("message.snmp.failedCmd", cmd.getName(), cmdManager.getIpAddress());                    
+                cmdManager.addMessage("message.snmp.failedCmd", cmd.getName(), cmdManager.getIpAddress());                    
             }            
         }
     }
 
     private void clearSameCommands(SnmpCommandManager cmdManager, 
-            SnmpCommand command, MessageAppender appender) {
+            SnmpCommand command) {
         if (command.getCommands().isEmpty()) {
             LOGGER.warn("Nincs parancssor definiálva: " + command.getName());
         }
@@ -218,19 +263,22 @@ public class SnmpServiceImpl implements SnmpService {
         if (event != null) {
             if (cmdManager.clearModificationSameCommands(command.getCommands(), event)) {
                 LOGGER.info("Modification found on command");
-                appender.addMessage("message.snmp.changesFound", command.getName());
+                cmdManager.addMessage("message.snmp.changesFound", command.getName());
             } else {
                 LOGGER.info("No modification found on command");
-                appender.addMessage("message.snmp.noChangesFound", command.getName());
+                cmdManager.addMessage("message.snmp.noChangesFound", command.getName());
             }
         }
     }
     
     private Device startProcess(Device device, MessageAppender appender) {
+        /*
         if (device.getConfigState() == DeviceState.RUNNING) {
-            appender.addMessage("message.snmp.running", device);
+            appender.addMessage("message.snmp.running", device.getIpAddress());
             return null;
         }
+         * 
+         */
         synchronized (runningDeviceConfMap) {
             Date date = runningDeviceConfMap.get(device.getDeviceId());
             Date now = new Date();

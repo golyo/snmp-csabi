@@ -111,6 +111,15 @@ public class SnmpCommandManager {
         return !commands.isEmpty();
     }
     
+    public void addError(String key, Object... params) {
+        deviceState = DeviceState.ERROR;
+        appender.addMessage(key, params);
+    }
+    
+    public void addMessage(String key, Object... params) {
+        appender.addMessage(key, params);        
+    }
+    
     public boolean canContinue() {
         return deviceState.canContinue();
     }

@@ -28,6 +28,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.commons.io.IOUtils;
@@ -50,7 +52,7 @@ public class UpgradeConfig implements InitializingBean {
     
     private ConfigNode upgradeConfig;
     
-    private Map<String, DeviceNode> nodes;
+    private Map<String, DeviceNode> nodes = new HashMap<String, DeviceNode>();
     
     private File snmpDir;
     
@@ -61,7 +63,11 @@ public class UpgradeConfig implements InitializingBean {
             throw new SystemException(ExceptionCodesEnum.ConfigurationException, ".snmp dir not exists under user home");              
         }
         InputStream stream = UpgradeConfig.class.getResourceAsStream(CONFIG_FILE);
-        upgradeConfig = JAXBUtil.unmarshalTyped(new InputStreamReader(stream), ConfigNode.class);
+        try {
+            upgradeConfig = JAXBUtil.unmarshalTyped(new InputStreamReader(stream, "UTF-8"), ConfigNode.class);            
+        } catch (UnsupportedEncodingException e) {
+            throw new SystemException(ExceptionCodesEnum.ConfigurationException, e);  
+        }
         SimpleMessageAppender appender = new SimpleMessageAppender();
         if (!mibParser.parseAndSetMibValues(upgradeConfig, appender)) {
             throw new SystemException(ExceptionCodesEnum.ConfigurationException, "Wrong upgrade command " + appender.toString());  
