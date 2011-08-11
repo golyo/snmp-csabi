@@ -16,9 +16,7 @@
  */
 package com.zh.snmp.snmpcore.snmp;
 
-import com.zh.snmp.snmpcore.domain.Device;
 import com.zh.snmp.snmpcore.domain.OidCommand;
-import com.zh.snmp.snmpcore.domain.SnmpCommand;
 import com.zh.snmp.snmpcore.entities.DeviceState;
 import com.zh.snmp.snmpcore.message.MessageAppender;
 import java.io.IOException;
@@ -42,34 +40,50 @@ public class SnmpCommandManager {
     
     private Snmp snmp;
     private MessageAppender appender;
-    private Device device;
+    private String ipAddress;
+    private DeviceState deviceState;
+    private CommunityTarget getTarget;
+    private CommunityTarget setTarget;
+
+    //private Device device;
     
-    public SnmpCommandManager(Snmp snmp, MessageAppender appender, Device device) {
-        this.device = device;
+    public SnmpCommandManager(Snmp snmp, MessageAppender appender, String ipAddress) {
         this.snmp = snmp;
         this.appender = appender;
+        this.ipAddress = ipAddress;
+        getTarget = SnmpFactory.createTarget(ipAddress, "public");
+        setTarget = SnmpFactory.createTarget(ipAddress, "private");
+        deviceState = DeviceState.RUNNING;
     }
     
-    public boolean processSetCommand(CommunityTarget target, List<OidCommand> commands){
-        PDU pdu = initPDU(PDU.SET, commands);        
-        try {
-            ResponseEvent response = snmp.set(pdu, target);                            
-            return checkResponse(response, false) != null;
-        } catch (IOException e) {
-            device.setConfigState(DeviceState.ERROR);
-            LOGGER.error("Error while snmp get on device " + device.getDeviceId(), e);
-            return false;
+    public void processSetCommand(List<OidCommand> commands){
+        if (commands != null && !commands.isEmpty()) {
+            PDU pdu = initPDU(PDU.SET, commands);        
+            try {
+                if (deviceState.canContinue()) {
+                    ResponseEvent response = snmp.set(pdu, setTarget);                            
+                    checkResponse(response, false);                    
+                }
+            } catch (IOException e) {
+                deviceState = DeviceState.ERROR;
+                LOGGER.error("Error while snmp get on device ip " + ipAddress, e);            
+            }            
         }
     }
 
     
-    public ResponseEvent processGetCommand(CommunityTarget target, List<OidCommand> commands) {
+    public ResponseEvent processGetCommand(List<OidCommand> commands) {
         PDU pdu = initPDU(PDU.GET, commands);        
         try {
-            ResponseEvent response = snmp.get(pdu, target);                            
-            return checkResponse(response, true);
+            if (deviceState.canContinue()) {
+                ResponseEvent response = snmp.get(pdu, getTarget);                            
+                return checkResponse(response, true);                
+            } else {
+                return null;
+            }
         } catch (IOException e) {
-            LOGGER.error("Error while snmp get on device " + device.getDeviceId(), e);
+            deviceState = DeviceState.ERROR;
+            LOGGER.error("Error while snmp get on device ip " + ipAddress, e);
             return null;
         }        
     }
@@ -84,17 +98,29 @@ public class SnmpCommandManager {
             if (responseIt.hasNext()) { 
                 vb = responseIt.next();
                 if (!cmd.equalsVariable(vb)) {
-                    LOGGER.debug("Command variable not match on device " + device.getDeviceId() + " " + cmd + ";" + vb.toValueString() + ";");
+                    LOGGER.debug("Command variable not match on device ip " + ipAddress + " " + cmd + ";" + vb.toValueString() + ";");
                     appender.addMessage("error.snmp.variableEquals", cmd.getName(), cmd.getValue());
                 } else {
                     commandIt.remove();
                 }
             } else {
-                LOGGER.debug("Command variable not match device " + device.getDeviceId() + " " + cmd);
+                LOGGER.debug("Command variable not match device ip " + ipAddress + " " + cmd);
                 appender.addMessage("error.snmp.variableEquals", cmd.getName(), cmd.getValue());
             }
         }
         return !commands.isEmpty();
+    }
+    
+    public boolean canContinue() {
+        return deviceState.canContinue();
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public DeviceState getDeviceState() {
+        return deviceState;
     }
     
     public boolean checkIfSameResult(List<OidCommand> commands, ResponseEvent response) {
@@ -121,24 +147,25 @@ public class SnmpCommandManager {
             if (responsePDU != null) {                
                 int errorStatus = responsePDU.getErrorStatus();
                 if (errorStatus != PDU.noError) {
-                    LOGGER.error("Device response failed on device: " + device.getDeviceId() + ", ip: " + device.getIpAddress() + "; Error Statusz: " + responsePDU.getErrorStatus() + ": " + responsePDU.getErrorStatusText());
-                    device.setConfigState(DeviceState.ERROR);
+                    LOGGER.error("Device response failed on device ip: " + ipAddress + "; Error Statusz: " + responsePDU.getErrorStatus() + ": " + responsePDU.getErrorStatusText());
+                    deviceState = DeviceState.ERROR;
                     appender.addMessage("error.snmp.responseStatus", responsePDU.getErrorStatus(), responsePDU.getErrorStatusText());
                     return null;
                 } else {
                     String prefix = get ? "GET " : "SET ";
-                    LOGGER.debug(prefix + "Command succesfull finished on device " + device.getDeviceId() + ": " + responsePDU.getVariableBindings());
+                    LOGGER.debug(prefix + "Command succesfull finished on device ip " + ipAddress + ": " + responsePDU.getVariableBindings());
                     return response;
                 }      
             } else {
-                LOGGER.error("Device not found with id: " + device.getDeviceId() + ", ip: " + device.getIpAddress());
-                device.setConfigState(DeviceState.NOT_FOUND);
+                LOGGER.error("Device not found with ip: " + ipAddress);
+                deviceState = DeviceState.ERROR;
+                deviceState = DeviceState.NOT_FOUND;
                 appender.addMessage("error.snmp.pduNull");
                 return null;
             }            
         } else {
-            LOGGER.error("Device request time out on device: " + device.getDeviceId() + ", ip: " + device.getIpAddress());
-            device.setConfigState(DeviceState.ERROR);
+            LOGGER.error("Device request time out on device ip: " + ipAddress);
+            deviceState = DeviceState.ERROR;
             appender.addMessage("error.snmp.timeout");
             return null;
         }
@@ -150,9 +177,13 @@ public class SnmpCommandManager {
         pdu.setRequestID(new Integer32(1));
         // Setting the Oid and Value for sysContact variable
         for (OidCommand oidCmd: commands) {
-            VariableBinding binding = oidCmd.createVariable();            
-            pdu.add(binding);
-            LOGGER.debug("VariableX: " + oidCmd.getName() + " value: '" + binding.toValueString() + "'");
+            if (oidCmd.getValue() != null) {
+                VariableBinding binding = oidCmd.createVariable();            
+                pdu.add(binding);                
+            } else {
+                appender.addMessage("message.snmp.missingDinamicValue", oidCmd.getName(), oidCmd.getDinamicName());
+                deviceState = DeviceState.ERROR;
+            }
         }
         return pdu;        
     }    

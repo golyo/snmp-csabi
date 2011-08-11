@@ -22,7 +22,7 @@ import com.zh.snmp.snmpcore.domain.Configuration;
 import com.zh.snmp.snmpcore.domain.Device;
 import com.zh.snmp.snmpcore.domain.DeviceNode;
 import com.zh.snmp.snmpcore.domain.OidCommand;
-import com.zh.snmp.snmpcore.domain.ValueConverter;
+import com.zh.snmp.snmpcore.domain.ValueChecker;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.message.MessageAppender;
 import com.zh.snmp.snmpcore.message.SimpleMessageAppender;

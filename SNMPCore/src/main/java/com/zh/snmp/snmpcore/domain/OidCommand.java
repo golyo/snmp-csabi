@@ -39,7 +39,7 @@ public class OidCommand implements Serializable, Cloneable {
     private String value;
     private String expectedValue;
     private String dinamicName;
-    private ValueConverter valueConverter;
+    private ValueChecker valueConverter;
     
     @XmlAttribute
     public String getName() {
@@ -101,11 +101,11 @@ public class OidCommand implements Serializable, Cloneable {
     }
 
     @XmlAttribute
-    public ValueConverter getValueConverter() {
+    public ValueChecker getValueConverter() {
         return valueConverter;
     }
 
-    public void setValueConverter(ValueConverter valueConverter) {
+    public void setValueConverter(ValueChecker valueConverter) {
         this.valueConverter = valueConverter;
     }
 
@@ -116,11 +116,11 @@ public class OidCommand implements Serializable, Cloneable {
     public boolean equalsVariable(VariableBinding variable) {
         if (oid.equals(variable.getOid().toString())) {
             String expected = expectedValue != null ? expectedValue : value;
-            if (valueConverter != null) {                
-                expected = valueConverter.convert(value);
-                LOGGER.info("Várt érték '" + expected + "'; Eredeti: '" + value + "'; Beállított: '" + variable.toValueString() + "'");
+            if (valueConverter != null) {               
+                return valueConverter.check(expected, variable.toValueString());
+            } else {
+                return expected.equals(variable.toValueString());                           
             }
-            return expected.equals(variable.toValueString());           
             //Extras
         } else {
             return false;

@@ -73,7 +73,7 @@ public class ConfigNodeTest {
         OidCommand cmd = new OidCommand();
         cmd.setName("testName");
         cmd.setType(OidType.INT);
-        cmd.setValueConverter(ValueConverter.SHA1);
+        cmd.setValueConverter(ValueChecker.SHA1);
         cmd.setValue("00");
         
         scmd.setName("test");

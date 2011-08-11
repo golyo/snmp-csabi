@@ -25,7 +25,6 @@ import com.zh.snmp.snmpcore.domain.SnmpCommand;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.message.MessageAppender;
 import com.zh.snmp.snmpcore.message.SimpleMessageAppender;
-import com.zh.snmp.snmpcore.snmp.DeviceSettings;
 import com.zh.snmp.snmpcore.snmp.SnmpCommandManager;
 import com.zh.snmp.snmpcore.snmp.SnmpFactory;
 import java.util.Arrays;
@@ -92,7 +91,7 @@ public class SnmpServiceImplTest extends BaseTest {
         
         Device d = deviceService.findDeviceByIp(ip);
         Snmp snmp = SnmpFactory.createSnmp();
-        SnmpCommandManager cm = new SnmpCommandManager(snmp, appender, d);
+        SnmpCommandManager cm = new SnmpCommandManager(snmp, appender, d.getIpAddress());
         
         int idx = 0;
         BitSet set = new BitSet();
@@ -105,7 +104,8 @@ public class SnmpServiceImplTest extends BaseTest {
                 for (OidCommand ocmd: cmd.getCommands()) {
                     SnmpCommand testcmd = new SnmpCommand();
                     testcmd.setCommands(Arrays.asList(ocmd));
-                    if (!cm.processSetCommand(target, cmd.getCommands())) {
+                    cm.processSetCommand(cmd.getCommands());
+                    if (cm.canContinue()) {
                         idx = 10;
                         LOGGER.error("COMMAND FAILED " + testcmd);
                         break;
