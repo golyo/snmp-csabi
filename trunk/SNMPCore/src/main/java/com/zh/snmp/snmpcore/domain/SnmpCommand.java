@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 public class SnmpCommand implements Serializable, Comparable<SnmpCommand>, Cloneable {
     private int priority;
     private String name;
+    private boolean preCondition;
     private List<OidCommand> commands;
     private List<OidCommand> before;
     private List<OidCommand> after;
@@ -86,6 +87,15 @@ public class SnmpCommand implements Serializable, Comparable<SnmpCommand>, Clone
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @XmlAttribute
+    public boolean isPreCondition() {
+        return preCondition;
+    }
+
+    public void setPreCondition(boolean preCondition) {
+        this.preCondition = preCondition;
     }
     
     @Override

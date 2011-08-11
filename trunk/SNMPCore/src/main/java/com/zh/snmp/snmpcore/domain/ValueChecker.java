@@ -25,31 +25,45 @@ import org.snmp4j.smi.OctetString;
  *
  * @author Golyo
  */
-public enum ValueConverter {
-    SHA1(new Sha1Converter());
-
-    private IValueConverter converter;
-    private ValueConverter(IValueConverter converter) {
-        this.converter = converter;
+public enum ValueChecker {
+    SHA1(new Sha1Checker()),
+    FAIL(new FailChecker());
+    
+    private IValueChecker checker;
+    private ValueChecker(IValueChecker checker) {
+        this.checker = checker;
     }
     
-    public String convert(String value) {
-        return converter.convert(value);
+    public boolean check(String value, String snmpValue) {
+        return checker.check(value, snmpValue);
     }   
 
-    public static interface IValueConverter {
-        public String convert(String value);
+    public static interface IValueChecker {
+        public boolean check(String value, String snmpValue);
     }
     
-    private static class Sha1Converter implements IValueConverter{
+    private static class Sha1Checker implements IValueChecker {
         @Override
-        public String convert(String value) {
+        public boolean check(String value, String snmpValue) {
             try {
-                String ret =  CoreUtil.sha1(value);
-                return OctetString.fromString(ret, 16).toHexString();
+                String expected =  CoreUtil.sha1(value);
+                expected = OctetString.fromString(expected, 16).toHexString();
+                return expected.equals(snmpValue);
             } catch (Exception e) {
                 throw new SystemException(ExceptionCodesEnum.ConfigurationException, e);
             }            
         }
+    }
+    
+    private static class FailChecker implements IValueChecker {
+        @Override
+        public boolean check(String value, String snmpValue) {
+            if (value.equals(snmpValue)) {
+                return true;
+            } else {
+                throw new SystemException(ExceptionCodesEnum.WrongDeviceType, "Bad device configuration type");
+            }
+        }
+        
     }
 }

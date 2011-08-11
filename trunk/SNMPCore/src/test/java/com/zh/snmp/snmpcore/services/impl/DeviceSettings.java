@@ -14,7 +14,7 @@
  *  ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR
  *  DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
  */
-package com.zh.snmp.snmpcore.snmp;
+package com.zh.snmp.snmpcore.services.impl;
 
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.mp.SnmpConstants;

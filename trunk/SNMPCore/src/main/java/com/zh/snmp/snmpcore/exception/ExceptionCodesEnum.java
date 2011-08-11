@@ -34,7 +34,7 @@ public enum ExceptionCodesEnum {
     RemoteException,
     PersistenceException,
     SQLException,
-
+    
     /**
      * Ilyen kóddal akkor dobunk kivételt, ha nem megfelelő módon,
      * vagy helyen használnak egyet a saját annotációink közül.
@@ -52,12 +52,9 @@ public enum ExceptionCodesEnum {
     StateException,
 
     /**
-     * Ilyen kivétel akkor dobódik, ha a kódtár használtat
-     * közben történik valamilyen hiba. Például olyan kódtárból
-     * próbál olvasni, ami nincs, vagy olyan kódot, ami nem található
-     * meg az adott kódtárban.
+     * Ilyen kivétel akkor dobódik, ha a rossz konfiguráció van beállítva a devicehoz
      */
-    KodtarException,
+    WrongDeviceType,
     Unsupported,
     
     /**

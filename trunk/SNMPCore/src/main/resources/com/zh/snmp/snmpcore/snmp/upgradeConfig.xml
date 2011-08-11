@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <config description="Upgrade konfiguráció" code="upgrade">
-        <commands>
-            <variable value="10.253.0.254" type="STR" name="PACKETFRONT-DRG-MIB:downloadServer.0"/>
-            <variable value="DMA0120-R2N28-R.r0" type="STR" name="PACKETFRONT-DRG-MIB:downloadFile.0"/>
-            <variable value="1" type="INT" name="PACKETFRONT-DRG-MIB:downloadMethod.0"/>
-            <variable value="2" type="INT" name="PACKETFRONT-DRG-MIB:downloadAction.0"/>
-        </commands>
+    <commands priority="1" preCondition="true" name="Upgrade előfeltétel">
+        <variable dinamicName="productName" type="STR" valueConverter="FAIL" name="PACKETFRONT-DRG-MIB:productName.0"/>
+        <variable dinamicName="productSwImageRev" type="STR" name="PACKETFRONT-DRG-MIB:productSwImageRev.0"/>
+    </commands>
+    <commands priority="2" name="Upgrade művelet">
+        <variable dinamicName="downloadServer" type="STR" name="PACKETFRONT-DRG-MIB:downloadServer.0"/>
+        <variable dinamicName="downloadFile" type="STR" name="PACKETFRONT-DRG-MIB:downloadFile.0"/>
+        <variable value="1" type="INT" name="PACKETFRONT-DRG-MIB:downloadMethod.0"/>
+        <variable value="2" type="INT" name="PACKETFRONT-DRG-MIB:downloadAction.0"/>
+    </commands>
 </config>
