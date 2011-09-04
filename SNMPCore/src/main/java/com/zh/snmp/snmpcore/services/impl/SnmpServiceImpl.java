@@ -135,8 +135,6 @@ public class SnmpServiceImpl implements SnmpService {
     }    
 
     private boolean upgradeDevice(SnmpCommandManager cmdManager, String configCode) {
-        return false;
-        /*
         ConfigNode upgradeConfig = upgradeConfigManager.getUpgradeConfig();
         DeviceNode upgradeNode = upgradeConfigManager.getUpgradeNode(configCode);
         try {
@@ -161,8 +159,6 @@ public class SnmpServiceImpl implements SnmpService {
                 throw e;
             }
         }
-         * 
-         */
     }
     
     private List<SnmpCommand> initDeviceCommands(ConfigNode config, DeviceNode device) {
