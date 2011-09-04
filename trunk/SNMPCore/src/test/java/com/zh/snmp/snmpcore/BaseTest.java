@@ -102,6 +102,16 @@ public abstract class BaseTest {
         return deviceService.saveEntity(e);
     }
     
+    protected DeviceEntity createDevice(String configCode, String deviceId, String ip, String nodeId, String macAddress) {
+        DeviceEntity ret = new DeviceEntity();
+        ret.setId(deviceId);
+        ret.setNodeId(nodeId);
+        ret.setIpAddress(ip);
+        ret.setMacAddress(macAddress);
+        ret.setConfigCode(configCode);
+        return ret;
+    }
+    
     protected DeviceConfigEntity createConfVoip(String code) throws IOException {
         /*
         DeviceConfigEntity type = new DeviceConfigEntity();
