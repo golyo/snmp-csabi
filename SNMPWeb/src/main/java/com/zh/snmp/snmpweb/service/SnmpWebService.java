@@ -84,15 +84,15 @@ public class SnmpWebService {
     
     private static final String PATH_DELIM = "\\.";
     @WebMethod(operationName = "setDeviceConfig")
-    public Boolean setDeviceConfig(@WebParam(name = "deviceId") String deviceId, @WebParam(name = "configPath") String configPath, @WebParam(name = "dinamicValues") List<DinamicValue> dinamicValues, @WebParam(name = "mode") int mode) {
+    public Long setDeviceConfig(@WebParam(name = "deviceId") String deviceId, @WebParam(name = "configPath") String configPath, @WebParam(name = "dinamicValues") List<DinamicValue> dinamicValues, @WebParam(name = "mode") int mode) {
         init();
         List<String> path = Arrays.asList(configPath.split(PATH_DELIM));
         Device device = deviceService.setDeviceConfig(deviceId, path, dinamicValues, mode);
         if (device != null) {
-            SnmpBackgroundProcess process = service.startSnmpBackgroundProcess(device, new SimpleMessageAppender());
-            return process != null;
+            SnmpBackgroundProcess process = service.startSnmpBackgroundProcess(device.getDeviceId(), new SimpleMessageAppender());
+            return process != null ? process.getLog().getId() : null;
         } else {
-            return false;
+            return null;
         }
     }
 

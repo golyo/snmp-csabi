@@ -16,12 +16,12 @@
  */
 package com.zh.snmp.snmpcore.dao;
 
-import com.zh.snmp.snmpcore.entities.HistoryEntity;
+import com.zh.snmp.snmpcore.entities.ChangeLogEntity;
 
 /**
  *
  * @author Golyo
  */
-public class HistoryDao extends BaseJpaDao<Long, HistoryEntity> {
+public class ChangeLogDao extends BaseJpaDao<Long, ChangeLogEntity> {
     
 }

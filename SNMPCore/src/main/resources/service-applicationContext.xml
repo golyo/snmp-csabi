@@ -4,7 +4,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
        default-autowire="byName">
-
     <bean id="authenticationService" class="com.zh.snmp.snmpcore.services.impl.DBAuthenticationServiceImpl">
         <property name="defaultUser" value="${snmp.defaultUser}"/>
         <property name="defaultPwd" value="${snmp.defaultPwd}"/>
@@ -12,21 +11,4 @@
     </bean>
     <bean id="configService" class="com.zh.snmp.snmpcore.services.impl.ConfigServiceImpl"/>
     <bean id="deviceService" class="com.zh.snmp.snmpcore.services.impl.DeviceServiceImpl"/>
-    <!--
-    <bean id="GameContextService" class="com.zh.jbet.core.service.impl.GameContextService">
-        <property name="entityDao" ref="GameContextDao"/>
-    </bean>
-    <bean id="TeamService" class="com.zh.jbet.core.service.impl.BaseEntityService">
-        <property name="entityDao" ref="TeamDao"/>
-    </bean>
-    <bean id="TeamMatchService" class="com.zh.jbet.core.service.impl.BaseEntityService">
-        <property name="entityDao" ref="TeamMatchDao"/>
-    </bean>
-    <bean id="PlayerGameService" class="com.zh.jbet.core.service.impl.BaseEntityService">
-        <property name="entityDao" ref="PlayerGameDao"/>
-    </bean>
-    <bean id="JoinGameService" class="com.zh.jbet.core.service.impl.BaseEntityService">
-        <property name="entityDao" ref="JoinGameDao"/>
-    </bean>
-    -->
 </beans>

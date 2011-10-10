@@ -21,14 +21,12 @@ import com.zh.snmp.snmpcore.domain.ConfigNode;
 import com.zh.snmp.snmpcore.domain.Configuration;
 import com.zh.snmp.snmpcore.domain.Device;
 import com.zh.snmp.snmpcore.domain.DeviceNode;
-import com.zh.snmp.snmpcore.domain.OidCommand;
-import com.zh.snmp.snmpcore.domain.ValueChecker;
+import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.message.MessageAppender;
 import com.zh.snmp.snmpcore.message.SimpleMessageAppender;
 import com.zh.snmp.snmpcore.snmp.mib.MibParser;
 import com.zh.snmp.snmpcore.util.JAXBUtil;
-import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
 import org.junit.Test;
@@ -50,23 +48,24 @@ public class ConfigServiceTest extends BaseTest {
     
     @Test
     public void testConfig() {
-        Configuration conf = createTestConfig();
+        Configuration conf = createTestAccesConfig();
         configService.saveConfig(conf);
         configService.clearCache();
         Configuration check = configService.findConfigByCode(ACCES);
+        List<DeviceConfigEntity> configs = configService.findDeviceConfigByFilter(new DeviceConfigEntity(), ACCES, 0, -1);
         
         String ip = "testip";
         DeviceEntity de = createTestDevice(conf.getCode(), ip);
         assertNotNull(de);
+        
         
         Device device = deviceService.findDeviceByDeviceId(de.getId());
         assertNotNull(device);
         
         List<DeviceEntity> devices = deviceService.findDeviceEntityByFilter(new DeviceEntity(), null, 0, -1);
         
-        device = deviceService.findDeviceByIp(ip);
-        assertNotNull(device);
-        
+        DeviceEntity deentity = deviceService.findDeviceByIp(ip);
+        assertNotNull(deentity);
     }
     
     @Test
@@ -99,7 +98,7 @@ public class ConfigServiceTest extends BaseTest {
         
         return device;
     }
-    private Configuration createTestConfig() {
+    private Configuration createTestAccesConfig() {
         Configuration conf = new Configuration();
         conf.setActive(true);
         conf.setCode(ACCES);
@@ -117,7 +116,7 @@ public class ConfigServiceTest extends BaseTest {
         internet.setCode("internet");
         children.add(internet);
         ConfigNode voip = new ConfigNode();
-        voip.setCode("voip");
+        voip.setCode(ACCES);
         children.add(voip);
         node.setChildren(children);
         return node;

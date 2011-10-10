@@ -19,7 +19,6 @@ package com.zh.snmp.snmpcore.services.impl;
 import com.zh.snmp.snmpcore.dao.DeviceConfigDao;
 import com.zh.snmp.snmpcore.domain.ConfigNode;
 import com.zh.snmp.snmpcore.domain.Configuration;
-import com.zh.snmp.snmpcore.domain.OidCommand;
 import com.zh.snmp.snmpcore.domain.SnmpCommand;
 import com.zh.snmp.snmpcore.entities.DeviceConfigEntity;
 import com.zh.snmp.snmpcore.message.MessageAppender;
@@ -36,13 +35,16 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.snmp4j.smi.OID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Golyo
  */
+
+@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class ConfigServiceImpl implements ConfigService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigServiceImpl.class);
     
@@ -73,9 +75,11 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public synchronized Configuration saveConfig(Configuration config) {
         DeviceConfigEntity entity = wrap(config);
         entity = dao.save(entity);
+        dao.flush();
         Configuration merged = unwrap(entity);
         cache.put(merged.getCode(), merged);
         return merged;
@@ -102,9 +106,12 @@ public class ConfigServiceImpl implements ConfigService {
     }
     
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public DeviceConfigEntity saveEntity(DeviceConfigEntity entity) {
         JAXBUtil.unmarshal(entity.getSnmpDescriptor(), ConfigNode.class);
-        return dao.save(entity);
+        DeviceConfigEntity ret = dao.save(entity);
+        dao.flush();
+        return ret;
     }
     
     protected DeviceConfigEntity wrap(Configuration config) {
