@@ -23,11 +23,14 @@ import com.zh.snmp.snmpcore.services.AuthenticationService;
 import com.zh.snmp.snmpcore.util.CoreUtil;
 import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author sonrisa
  */
+@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class DBAuthenticationServiceImpl implements AuthenticationService {
     private static final UserEntity DEFAULT_FILTER = new UserEntity();
     
@@ -66,6 +69,7 @@ public class DBAuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public boolean register(UserEntity player, String password) {
         if (userDao.findByName(player.getName()) == null) {
             userDao.register(player, CoreUtil.digest(password));

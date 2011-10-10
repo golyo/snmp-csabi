@@ -23,6 +23,7 @@ import com.zh.snmp.snmpcore.domain.Device;
 import com.zh.snmp.snmpcore.domain.OidCommand;
 import com.zh.snmp.snmpcore.domain.SnmpCommand;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
+import com.zh.snmp.snmpcore.message.BackgroundProcess;
 import com.zh.snmp.snmpcore.message.MessageAppender;
 import com.zh.snmp.snmpcore.message.SimpleMessageAppender;
 import com.zh.snmp.snmpcore.snmp.SnmpCommandManager;
@@ -54,7 +55,7 @@ public class SnmpServiceImplTest extends BaseTest {
     }
 
     @Test
-    public void testSnmpService() {
+    public void testSnmpService() throws Exception {
         String ip = TESTIP;
         MessageAppender appender = new SimpleMessageAppender();
         Configuration conf = createTestConfig(appender, "accessConfig.xml");
@@ -66,7 +67,12 @@ public class SnmpServiceImplTest extends BaseTest {
         device = deviceService.save(device);
         
         
-        snmpService.applyConfigOnDevice(device, appender);
+        
+        BackgroundProcess bp = snmpService.startSnmpBackgroundProcess(de.getId(), appender);
+        while (!bp.isFinished()) {
+            Thread.sleep(100);
+        }
+        //snmpService.applyConfigOnDevice(device, appender);
         //snmpService.startSnmpBackgroundProcess(de.getIpAddress(), appender);
         
         LOGGER.debug(appender.toString());
@@ -89,7 +95,7 @@ public class SnmpServiceImplTest extends BaseTest {
         Configuration conf = createTestConfig(appender, "accessConfig.xml");
         DeviceEntity de = createTestDevice(conf.getCode(), ip);
         
-        Device d = deviceService.findDeviceByIp(ip);
+        Device d = deviceService.findDeviceByDeviceId(de.getId());
         Snmp snmp = SnmpFactory.createSnmp();
         SnmpCommandManager cm = new SnmpCommandManager(snmp, appender, d.getIpAddress());
         

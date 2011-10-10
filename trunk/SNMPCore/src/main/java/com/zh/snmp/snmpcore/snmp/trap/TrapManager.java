@@ -16,7 +16,7 @@
  */
 package com.zh.snmp.snmpcore.snmp.trap;
 
-import com.zh.snmp.snmpcore.domain.Device;
+import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.message.MaxMessageAppender;
 import com.zh.snmp.snmpcore.message.MessageAppender;
 import com.zh.snmp.snmpcore.services.DeviceService;
@@ -103,7 +103,7 @@ public class TrapManager implements CommandResponder, SnmpResources, Serializabl
             trapInfo = new DeviceTrapInfo(cmdRespEvent);
             LOGGER.debug("Message received from " + trapInfo.getIpAdress());
             msgAppender.addMessage("message.snmp.trapReceived", trapInfo.getIpAdress());
-            Device device = deviceService.findDeviceByIp(trapInfo.ipAddress);
+            DeviceEntity device = deviceService.findDeviceByIp(trapInfo.ipAddress);
             if (device == null) {
                 int pos = trapInfo.ipAddress.indexOf('/');
                 if (pos > 0) {
@@ -111,7 +111,7 @@ public class TrapManager implements CommandResponder, SnmpResources, Serializabl
                 }
             }
             if (device != null) {
-                snmpService.startSnmpBackgroundProcess(device, msgAppender);                            
+                snmpService.startSnmpBackgroundProcess(device.getId(), msgAppender);                            
             } else {
                 msgAppender.addMessage("message.snmp.ipNotConfigured", trapInfo.getIpAdress());
             }

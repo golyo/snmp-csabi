@@ -33,12 +33,13 @@ public class DeviceServiceImplTest extends BaseTest {
         MessageAppender appaneder = new SimpleMessageAppender();
         Configuration conf = createTestConfig(appaneder, "voipConfig.xml");
         
-        
+        /**
         DeviceEntity de1 = createDevice(conf.getCode(), "TESTID", "TESTIP", "TESTNODE", "TESTMAC");
         deviceService.saveEntity(de1);
         
         DeviceEntity de2 = createDevice(conf.getCode(), "TESTID1", "TESTIP", "TESTNODE1", "TESTMAC1");
         deviceService.saveEntity(de2);
+         **/
     }
     
 }

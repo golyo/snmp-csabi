@@ -16,36 +16,4 @@
     <bean id="exceptionInterceptor" class="com.zh.snmp.snmpcore.aop.ExceptionInterceptor">
     </bean>
 
-    <aop:config>
-        <!-- the execution of any public method defined in the service package or a sub-package -->
-        <aop:pointcut id="publicServiceMethods_AspectJSyntax"
-                expression="execution(public * com.zh.snmp.snmpcore.services.impl.*ServiceImpl.*(..))" />
-
-        <aop:advisor advice-ref="transactionAdvice" pointcut-ref="publicServiceMethods_AspectJSyntax"/>
-
-        <aop:aspect id="exceptionAspect" ref="exceptionInterceptor">
-            <aop:around pointcut-ref="publicServiceMethods_AspectJSyntax" method="invokeAround"/>
-        </aop:aspect>
-
-        <!-- <aop:aspect id="aroundTraceAspect" ref="traceInterceptor">
-            <aop:around pointcut-ref="publicServiceMethods_AspectJSyntax" method="invokeAround"/>
-        </aop:aspect> -->
-
-    </aop:config>
-    
-    <tx:advice id="transactionAdvice">
-        <tx:attributes>
-            <!-- timeout csökkentése 1 percre, valamint nem muszály, hogy az olvasások
-            tranzakcióban fussanak -->
-            <tx:method name="get*" read-only="true" propagation="SUPPORTS" timeout="620"/>
-            <tx:method name="find*" read-only="true" propagation="SUPPORTS" timeout="620"/>
-            <tx:method name="list*" read-only="true" propagation="SUPPORTS" timeout="620"/>
-            <tx:method name="count*" read-only="true" propagation="SUPPORTS" timeout="620"/>
-            <tx:method name="is*" read-only="true" propagation="SUPPORTS" timeout="620"/>
-            <tx:method name="validate*" read-only="true" propagation="SUPPORTS" timeout="620"/>
-            <tx:method name="verzio*" read-only="true" propagation="SUPPORTS" timeout="620"/>
-            <tx:method name="*" propagation="REQUIRED" timeout="620"/>
-        </tx:attributes>
-    </tx:advice>
-
 </beans>

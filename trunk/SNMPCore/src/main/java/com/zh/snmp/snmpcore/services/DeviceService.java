@@ -17,9 +17,10 @@
 package com.zh.snmp.snmpcore.services;
 
 import com.zh.snmp.snmpcore.domain.Device;
-import com.zh.snmp.snmpcore.domain.DeviceNode;
 import com.zh.snmp.snmpcore.domain.DinamicValue;
+import com.zh.snmp.snmpcore.entities.ChangeLogEntity;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
+import com.zh.snmp.snmpcore.entities.DeviceState;
 import java.util.List;
 
 /**
@@ -29,7 +30,7 @@ import java.util.List;
 public interface DeviceService {
     public Device findDeviceByDeviceId(String id);    
     public DeviceEntity findDeviceEntityById(String id);    
-    public Device findDeviceByIp(String ip);
+    public DeviceEntity findDeviceByIp(String ip);
     
     public DeviceEntity saveEntity(DeviceEntity device);
     public Device save(Device device);
@@ -41,4 +42,10 @@ public interface DeviceService {
     
     public boolean deleteDevice(String id);
     
+    //public ChangeLogEntity saveLog(ChangeLogEntity log);
+    public ChangeLogEntity findLog(Long id);
+    public List<ChangeLogEntity> findLogs(ChangeLogEntity filter, String sort, int start, int count);
+    public int countLogs(ChangeLogEntity filter);
+    
+    public ChangeLogEntity changeDeviceState(DeviceEntity device, DeviceState newState, ChangeLogEntity originalLog);
 }

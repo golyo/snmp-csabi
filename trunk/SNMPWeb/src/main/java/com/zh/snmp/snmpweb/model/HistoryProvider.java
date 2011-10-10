@@ -16,7 +16,8 @@
  */
 package com.zh.snmp.snmpweb.model;
 
-import com.zh.snmp.snmpcore.entities.HistoryEntity;
+import com.zh.snmp.snmpcore.entities.ChangeLogEntity;
+import com.zh.snmp.snmpcore.services.DeviceService;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import java.util.Collections;
 import java.util.Iterator;
@@ -29,31 +30,28 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
  *
  * @author Golyo
  */
-public class HistoryProvider extends EntityDataProvider<HistoryEntity> {
+public class HistoryProvider extends EntityDataProvider<ChangeLogEntity> {
     @SpringBean
-    private SnmpService srv;
+    private DeviceService srv;
     
     public HistoryProvider() {
-        super(new HistoryEntity());
+        super(new ChangeLogEntity());
         InjectorHolder.getInjector().inject(this);
     }
     
     @Override
-    public Iterator<? extends HistoryEntity> iterator(int first, int count) {
-        
-        return Collections.EMPTY_LIST.iterator();
-        //return srv.findHistoryByFilter(getFilterState(), getSortParam(), first, count).iterator();
+    public Iterator<? extends ChangeLogEntity> iterator(int first, int count) {
+        return srv.findLogs(getFilterState(), getSortParam(), first, count).iterator();
     }
 
     @Override
-    public IModel<HistoryEntity> model(HistoryEntity object) {
+    public IModel<ChangeLogEntity> model(ChangeLogEntity object) {
         return Model.of(object);
     }
 
     @Override
     public int size() {
-        return 0;
-        //return srv.countHistory(getFilterState());
+        return srv.countLogs(getFilterState());
     }
     
 }

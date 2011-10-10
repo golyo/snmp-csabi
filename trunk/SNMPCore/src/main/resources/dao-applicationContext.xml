@@ -13,10 +13,10 @@
     <context:annotation-config/>
     <context:component-scan base-package="com.zh.jbet.core"/>
 
-    <bean id="UserDao"      class="com.zh.snmp.snmpcore.dao.UserDao"      lazy-init="true" />
-    <bean id="SnmpTypeDao"  class="com.zh.snmp.snmpcore.dao.DeviceConfigDao"  lazy-init="true" />
-    <bean id="ClientDao"    class="com.zh.snmp.snmpcore.dao.DeviceDao"    lazy-init="true" />
-    <bean id="HistoryDao"   class="com.zh.snmp.snmpcore.dao.HistoryDao"   lazy-init="true" />
-    <bean id="TestDao"   class="com.zh.snmp.snmpcore.dao.TestDao"   lazy-init="true" />
+    <bean id="UserDao"      class="com.zh.snmp.snmpcore.dao.UserDao"           lazy-init="true" />
+    <bean id="SnmpTypeDao"  class="com.zh.snmp.snmpcore.dao.DeviceConfigDao"   lazy-init="true" />
+    <bean id="ClientDao"    class="com.zh.snmp.snmpcore.dao.DeviceDao"         lazy-init="true" />
+    <bean id="LogDao"       class="com.zh.snmp.snmpcore.dao.ChangeLogDao"      lazy-init="true" />
+    <bean id="TestDao"      class="com.zh.snmp.snmpcore.dao.TestDao"           lazy-init="true" />
 </beans>
 

@@ -124,7 +124,7 @@ public class DeviceDetailsPanel extends BasePanel<Device> {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                SnmpBackgroundProcess startSnmp = snmpService.startSnmpBackgroundProcess(deviceModel.getObject(), new SimpleMessageAppender());
+                SnmpBackgroundProcess startSnmp = snmpService.startSnmpBackgroundProcess(deviceModel.getObject().getDeviceId(), new SimpleMessageAppender());
                 MonitorPopupPanel popup = new MonitorPopupPanel(getModal(), null, startSnmp.getAppender(), "snmp.backgroundModalTitle");
                 popup.show(target);
             }

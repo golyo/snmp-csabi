@@ -16,10 +16,11 @@
  */
 package com.zh.snmp.snmpcore.services.impl;
 
-import com.zh.snmp.snmpcore.domain.Device;
+import com.zh.snmp.snmpcore.entities.ChangeLogEntity;
 import com.zh.snmp.snmpcore.message.BackgroundProcess;
 import com.zh.snmp.snmpcore.message.MessageAppender;
-import com.zh.snmp.snmpcore.services.SnmpService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -27,18 +28,30 @@ import com.zh.snmp.snmpcore.services.SnmpService;
  */
 public class SnmpBackgroundProcess extends BackgroundProcess {
 
-    private SnmpService service;
-    private Device device;
+    private static final Logger LOGGER = LoggerFactory.getLogger(SnmpBackgroundProcess.class);
     
-    SnmpBackgroundProcess(SnmpService service, Device device, MessageAppender appender) {
+    private SnmpServiceImpl service;
+    private ChangeLogEntity log;
+    
+    SnmpBackgroundProcess(SnmpServiceImpl service, ChangeLogEntity log, MessageAppender appender) {
         super(appender);
         this.service = service;
-        this.device = device;
+        this.log = log;
     }
     
     @Override
     protected void doWork() {
-        service.applyConfigOnDevice(device, getAppender());
+        service.applyConfigOnDevice(log, getAppender());
+    }
+
+    @Override
+    protected void handleException(Exception exception) {
+        LOGGER.error("Unknown exception", exception);
+        getAppender().addMessage("background.exception", exception.toString());
+    }
+
+    public ChangeLogEntity getLog() {
+        return log;
     }
     
 }

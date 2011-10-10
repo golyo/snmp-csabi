@@ -16,11 +16,13 @@
  */
 package com.zh.snmp.snmpcore.services.impl;
 
+import com.zh.snmp.snmpcore.dao.ChangeLogDao;
 import com.zh.snmp.snmpcore.dao.DeviceDao;
 import com.zh.snmp.snmpcore.domain.Configuration;
 import com.zh.snmp.snmpcore.domain.Device;
 import com.zh.snmp.snmpcore.domain.DeviceNode;
 import com.zh.snmp.snmpcore.domain.DinamicValue;
+import com.zh.snmp.snmpcore.entities.ChangeLogEntity;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.entities.DeviceState;
 import com.zh.snmp.snmpcore.exception.ExceptionCodesEnum;
@@ -28,14 +30,18 @@ import com.zh.snmp.snmpcore.exception.SystemException;
 import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpcore.services.DeviceService;
 import com.zh.snmp.snmpcore.util.JAXBUtil;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Golyo
  */
+@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class DeviceServiceImpl implements DeviceService {
 
     @Autowired
@@ -43,6 +49,10 @@ public class DeviceServiceImpl implements DeviceService {
     
     @Autowired
     private DeviceDao dao;
+    
+    @Autowired
+    private ChangeLogDao logDao;
+    
     
     @Override
     public Device findDeviceByDeviceId(String nodeId) {      
@@ -54,17 +64,17 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public Device findDeviceByIp(String ip) {
+    public DeviceEntity findDeviceByIp(String ip) {
         if (ip == null) {
             return null;
         }
         DeviceEntity filter = new DeviceEntity();
         filter.setIpAddress(ip);
-        DeviceEntity entity = dao.findExampleEntity(filter);
-        return entity != null ? unwrap(entity) : null;
+        return dao.findExampleEntity(filter);
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public Device save(Device device) {
         DeviceEntity modified = wrap(device);
         DeviceEntity merged = dao.save(modified);
@@ -87,6 +97,7 @@ public class DeviceServiceImpl implements DeviceService {
     }
     
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public DeviceEntity saveEntity(DeviceEntity device) {
         if (device.getDeviceMap() == null) {
             Configuration config = configService.findConfigByCode(device.getConfigCode());
@@ -142,6 +153,10 @@ public class DeviceServiceImpl implements DeviceService {
         }
     }
     
+    public ChangeLogEntity startSetDeviceConfig(String nodeId, List<String> path, List<DinamicValue> dinamicValues, int mode) {
+        return null;
+    }
+    
     protected DeviceEntity wrap(Device device) {
         DeviceEntity entity = new DeviceEntity();
         entity.setConfigCode(device.getConfig().getCode());
@@ -156,14 +171,50 @@ public class DeviceServiceImpl implements DeviceService {
     }
     
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public boolean deleteDevice(String id) {
         DeviceEntity de = dao.load(id);
         if (de != null) {
-            dao.delete(dao.load(id));
+            dao.delete(de);
             return true;
         } else {
             return false;
         }
+    }
+     
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    public ChangeLogEntity changeDeviceState(DeviceEntity device, DeviceState newState, ChangeLogEntity originalLog) {
+        ChangeLogEntity log = null;
+        if (originalLog != null) {
+            log = originalLog;
+        } else {
+            log = new ChangeLogEntity();
+            log.setStateBefore(device.getConfigState());
+        }
+        device.setConfigState(newState);
+        saveEntity(device);        
+        log.setStateAfter(newState);
+        log.setDevice(device);
+        log.setUpdateTime(new Date());
+        ChangeLogEntity ret = logDao.save(log);
+        logDao.flush();
+        return ret;
+    }
+    
+    @Override
+    public ChangeLogEntity findLog(Long id) {
+        return logDao.load(id);
+    }
+    
+    @Override
+    public List<ChangeLogEntity> findLogs(ChangeLogEntity filter, String sort, int start, int count) {
+        return logDao.find(filter, sort, start, count);
+    }
+    
+    @Override
+    public int countLogs(ChangeLogEntity filter) {
+        return logDao.count(filter);
     }
     
     protected Device unwrap(DeviceEntity entity) {

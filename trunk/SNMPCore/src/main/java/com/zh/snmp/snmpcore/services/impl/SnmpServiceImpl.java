@@ -22,6 +22,8 @@ import com.zh.snmp.snmpcore.domain.DeviceNode;
 import com.zh.snmp.snmpcore.domain.DinamicValue;
 import com.zh.snmp.snmpcore.domain.OidCommand;
 import com.zh.snmp.snmpcore.domain.SnmpCommand;
+import com.zh.snmp.snmpcore.entities.ChangeLogEntity;
+import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.entities.DeviceState;
 import com.zh.snmp.snmpcore.exception.ExceptionCodesEnum;
 import com.zh.snmp.snmpcore.exception.SystemException;
@@ -62,8 +64,8 @@ public class SnmpServiceImpl implements SnmpService {
     private UpgradeConfig upgradeConfigManager;
     
     @Autowired
-    private DeviceService service;
-
+    private DeviceService deviceService;
+    
     @Autowired
     private SaveAndRestartCommand saveAndRestartCommand;
     
@@ -73,9 +75,14 @@ public class SnmpServiceImpl implements SnmpService {
     }
     
     @Override
-    public SnmpBackgroundProcess startSnmpBackgroundProcess(final Device device, MessageAppender appender) {
-        SnmpBackgroundProcess ret = new SnmpBackgroundProcess(this, device, appender);
-        ret.start();
+    public SnmpBackgroundProcess startSnmpBackgroundProcess(String deviceId, MessageAppender appender) {
+        DeviceEntity device = deviceService.findDeviceEntityById(deviceId);
+        if (device == null) {
+            return null;
+        }
+        ChangeLogEntity log = startProcess(device, appender);
+        SnmpBackgroundProcess ret = new SnmpBackgroundProcess(this, log, appender);
+        ret.startProcess();
         return ret;
     }
     
@@ -99,22 +106,19 @@ public class SnmpServiceImpl implements SnmpService {
         return true;
     }
     
-    @Override
-    public boolean applyConfigOnDevice(Device device, MessageAppender appender) {
-        Device toConfig = startProcess(device, appender);
-        if (toConfig == null) {
-            return false;
-        }
+    void applyConfigOnDevice(ChangeLogEntity log, MessageAppender appender) {
+
+        Device device = deviceService.findDeviceByDeviceId(log.getDevice().getId());
         long start = System.currentTimeMillis();
         ConfigNode config = device.getConfig().getRoot();
         try {
-            SnmpCommandManager cmdManager = new SnmpCommandManager(snmp, appender, toConfig.getIpAddress());
+            SnmpCommandManager cmdManager = new SnmpCommandManager(snmp, appender, device.getIpAddress());
 
             //ConfigNode upgradeConfig = upgradeConfigManager.getUpgradeConfig();
             //DeviceNode upradeNode = upgradeConfigManager.getUpgradeNode(config.getCode());
             //TODO init device commands;        
             if (upgradeDevice(cmdManager, config.getCode())) {
-                toConfig.setConfigState(DeviceState.UPDATED);
+                device.setConfigState(DeviceState.UPDATED);
             } else {
                 if (cmdManager.canContinue()) {
                     List<SnmpCommand> commands = initDeviceCommands(config, device.getConfigMap());
@@ -123,17 +127,16 @@ public class SnmpServiceImpl implements SnmpService {
                         saveAndRestartDevice(cmdManager, appender);
                     }                    
                 }
-                toConfig.setConfigState(cmdManager.getDeviceState());                
+                device.setConfigState(cmdManager.getDeviceState());                
             }                     
         } catch (Exception e) {
             LOGGER.error("Ismeretlen hiba történt", e);
-            toConfig.setConfigState(DeviceState.ERROR);
+            device.setConfigState(DeviceState.ERROR);
             appender.addMessage("message.snmp.unknownError", device.getIpAddress());
         }
-        finishProcess(toConfig, appender, start);
-        return device.getConfigState() == DeviceState.CONFIGURED;
+        finishProcess(log, device.getConfigState(), appender, start);
     }    
-
+    
     private boolean upgradeDevice(SnmpCommandManager cmdManager, String configCode) {
         ConfigNode upgradeConfig = upgradeConfigManager.getUpgradeConfig();
         DeviceNode upgradeNode = upgradeConfigManager.getUpgradeNode(configCode);
@@ -267,7 +270,7 @@ public class SnmpServiceImpl implements SnmpService {
         }
     }
     
-    private Device startProcess(Device device, MessageAppender appender) {
+    private ChangeLogEntity startProcess(DeviceEntity device, MessageAppender appender) {
         /*
         if (device.getConfigState() == DeviceState.RUNNING) {
             appender.addMessage("message.snmp.running", device.getIpAddress());
@@ -276,28 +279,26 @@ public class SnmpServiceImpl implements SnmpService {
          * 
          */
         synchronized (runningDeviceConfMap) {
-            Date date = runningDeviceConfMap.get(device.getDeviceId());
+            Date date = runningDeviceConfMap.get(device.getId());
             Date now = new Date();
             if (date == null || (now.getTime()-date.getTime()) > MAX_DATE_DIFF) {
-                runningDeviceConfMap.put(device.getDeviceId(), now);
+                runningDeviceConfMap.put(device.getId(), now);
                 appender.addMessage("message.snmp.start", device.getIpAddress());
             } else {
                 appender.addMessage("message.snmp.wait", device.getIpAddress());
                 return null;
             }            
         }    
-        device.setConfigState(DeviceState.RUNNING);
-        return service.save(device);
+        return deviceService.changeDeviceState(device, DeviceState.RUNNING, null);
     }
     
-    private void finishProcess(Device device, MessageAppender appender, long start) {
-        if (device.getConfigState().canContinue()) {
-            device.setConfigState(DeviceState.CONFIGURED);
-        }
+    private ChangeLogEntity finishProcess(ChangeLogEntity logEntity, DeviceState newState, MessageAppender appender, long start) {
+        DeviceState finishedState = newState.canContinue() ? DeviceState.CONFIGURED : newState;
+        DeviceEntity device = logEntity.getDevice();
         long took = System.currentTimeMillis() - start;
-        appender.addMessage("message.snmp.stop", device.getIpAddress(), device.getConfigState(), took);
+        appender.addMessage("message.snmp.stop", device.getIpAddress(), finishedState, took);
         appender.finish();
-        service.save(device);
+        return deviceService.changeDeviceState(device, finishedState, logEntity);
     }    
     
     private boolean saveAndRestartDevice(SnmpCommandManager manager, MessageAppender appender) {
