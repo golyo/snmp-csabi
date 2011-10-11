@@ -47,5 +47,5 @@ public interface DeviceService {
     public List<ChangeLogEntity> findLogs(ChangeLogEntity filter, String sort, int start, int count);
     public int countLogs(ChangeLogEntity filter);
     
-    public ChangeLogEntity changeDeviceState(DeviceEntity device, DeviceState newState, ChangeLogEntity originalLog);
+    public ChangeLogEntity changeDeviceState(String userName, DeviceEntity device, DeviceState newState, ChangeLogEntity originalLog);
 }
