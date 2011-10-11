@@ -45,6 +45,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebService(serviceName = "SnmpWebService")
 public class SnmpWebService {
+    private static final String WEBSERVICE_USERNAME = "WEBSERVICE";
+    
     @Resource
     private WebServiceContext context;
 
@@ -89,7 +91,7 @@ public class SnmpWebService {
         List<String> path = Arrays.asList(configPath.split(PATH_DELIM));
         Device device = deviceService.setDeviceConfig(deviceId, path, dinamicValues, mode);
         if (device != null) {
-            SnmpBackgroundProcess process = service.startSnmpBackgroundProcess(device.getDeviceId(), new SimpleMessageAppender());
+            SnmpBackgroundProcess process = service.startSnmpBackgroundProcess(WEBSERVICE_USERNAME, device.getDeviceId(), new SimpleMessageAppender());
             return process != null ? process.getLog().getId() : null;
         } else {
             return null;

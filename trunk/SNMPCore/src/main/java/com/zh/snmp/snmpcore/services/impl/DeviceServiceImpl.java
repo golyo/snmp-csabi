@@ -122,8 +122,6 @@ public class DeviceServiceImpl implements DeviceService {
         return dao.findExampleEntity(filter);
     }    
     
-    private static final String PATH_DELIM = ".";
-    
     @Override
     public Device setDeviceConfig(String nodeId, List<String> path, List<DinamicValue> dinamicValues, int mode) {
         Device device = findDeviceByDeviceId(nodeId);
@@ -184,7 +182,7 @@ public class DeviceServiceImpl implements DeviceService {
      
     @Override
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public ChangeLogEntity changeDeviceState(DeviceEntity device, DeviceState newState, ChangeLogEntity originalLog) {
+    public ChangeLogEntity changeDeviceState(String userName, DeviceEntity device, DeviceState newState, ChangeLogEntity originalLog) {
         ChangeLogEntity log = null;
         if (originalLog != null) {
             log = originalLog;
@@ -194,6 +192,7 @@ public class DeviceServiceImpl implements DeviceService {
         }
         device.setConfigState(newState);
         saveEntity(device);        
+        log.setUserName(userName);
         log.setStateAfter(newState);
         log.setDevice(device);
         log.setUpdateTime(new Date());

@@ -27,6 +27,8 @@ import java.io.Serializable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.ChoiceFilteredPropertyColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilteredPropertyColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilteredPropertyColumn;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -50,6 +52,7 @@ public class HistoryListPanel extends DataTablePanel<ChangeLogEntity> {
     protected IColumn<ChangeLogEntity>[] createTableColumns() {
         return new IColumn[] {
             new DatePropertyColumn<ChangeLogEntity>(new ResourceModel("changeLog.updateTime"), "updateTime", "updateTime", true),
+            new TextFilteredPropertyColumn<ChangeLogEntity, String>(new ResourceModel("changeLog.userName"), "userName", "userName"),
             //new PropertyColumn<ChangeLogEntity>(new ResourceModel("device.nodeId"), "device.id"),
             new EnumPropertyColumn<ChangeLogEntity>(new ResourceModel("changeLog.stateBefore"), "stateBefore"),
             new EnumPropertyColumn<ChangeLogEntity>(new ResourceModel("changeLog.stateAfter"), "stateAfter")

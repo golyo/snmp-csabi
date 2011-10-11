@@ -23,6 +23,7 @@ import com.zh.snmp.snmpcore.message.SimpleMessageAppender;
 import com.zh.snmp.snmpcore.services.DeviceService;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import com.zh.snmp.snmpcore.services.impl.SnmpBackgroundProcess;
+import com.zh.snmp.snmpweb.BaseSession;
 import com.zh.snmp.snmpweb.model.DetachableDeviceModel;
 import com.zh.snmp.snmpweb.monitoring.MonitorPopupPanel;
 import com.zh.snmp.snmpweb.pages.BasePanel;
@@ -124,7 +125,7 @@ public class DeviceDetailsPanel extends BasePanel<Device> {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                SnmpBackgroundProcess startSnmp = snmpService.startSnmpBackgroundProcess(deviceModel.getObject().getDeviceId(), new SimpleMessageAppender());
+                SnmpBackgroundProcess startSnmp = snmpService.startSnmpBackgroundProcess(BaseSession.get().getUser().getName(), deviceModel.getObject().getDeviceId(), new SimpleMessageAppender());
                 MonitorPopupPanel popup = new MonitorPopupPanel(getModal(), null, startSnmp.getAppender(), "snmp.backgroundModalTitle");
                 popup.show(target);
             }

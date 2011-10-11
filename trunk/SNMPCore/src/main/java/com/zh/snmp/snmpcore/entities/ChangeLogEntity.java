@@ -43,6 +43,8 @@ public class ChangeLogEntity implements BaseEntity<Long>, Serializable {
     private Date updateTime;
     private DeviceState stateBefore;
     private DeviceState stateAfter;
+    private String userName;
+    private String description;
     
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -93,6 +95,24 @@ public class ChangeLogEntity implements BaseEntity<Long>, Serializable {
 
     public void setStateBefore(DeviceState stateBefore) {
         this.stateBefore = stateBefore;
+    }
+
+    @Basic
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Basic
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
 }

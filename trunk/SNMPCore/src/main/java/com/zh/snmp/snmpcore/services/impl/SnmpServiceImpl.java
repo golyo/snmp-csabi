@@ -75,12 +75,12 @@ public class SnmpServiceImpl implements SnmpService {
     }
     
     @Override
-    public SnmpBackgroundProcess startSnmpBackgroundProcess(String deviceId, MessageAppender appender) {
+    public SnmpBackgroundProcess startSnmpBackgroundProcess(String userName, String deviceId, MessageAppender appender) {
         DeviceEntity device = deviceService.findDeviceEntityById(deviceId);
         if (device == null) {
             return null;
         }
-        ChangeLogEntity log = startProcess(device, appender);
+        ChangeLogEntity log = startProcess(userName, device, appender);
         SnmpBackgroundProcess ret = new SnmpBackgroundProcess(this, log, appender);
         ret.startProcess();
         return ret;
@@ -270,7 +270,7 @@ public class SnmpServiceImpl implements SnmpService {
         }
     }
     
-    private ChangeLogEntity startProcess(DeviceEntity device, MessageAppender appender) {
+    private ChangeLogEntity startProcess(String userName, DeviceEntity device, MessageAppender appender) {
         /*
         if (device.getConfigState() == DeviceState.RUNNING) {
             appender.addMessage("message.snmp.running", device.getIpAddress());
@@ -289,7 +289,7 @@ public class SnmpServiceImpl implements SnmpService {
                 return null;
             }            
         }    
-        return deviceService.changeDeviceState(device, DeviceState.RUNNING, null);
+        return deviceService.changeDeviceState(userName, device, DeviceState.RUNNING, null);
     }
     
     private ChangeLogEntity finishProcess(ChangeLogEntity logEntity, DeviceState newState, MessageAppender appender, long start) {
@@ -298,7 +298,7 @@ public class SnmpServiceImpl implements SnmpService {
         long took = System.currentTimeMillis() - start;
         appender.addMessage("message.snmp.stop", device.getIpAddress(), finishedState, took);
         appender.finish();
-        return deviceService.changeDeviceState(device, finishedState, logEntity);
+        return deviceService.changeDeviceState(logEntity.getUserName(), device, finishedState, logEntity);
     }    
     
     private boolean saveAndRestartDevice(SnmpCommandManager manager, MessageAppender appender) {

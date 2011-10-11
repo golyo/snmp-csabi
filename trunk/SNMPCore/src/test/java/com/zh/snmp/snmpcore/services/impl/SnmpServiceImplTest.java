@@ -68,7 +68,7 @@ public class SnmpServiceImplTest extends BaseTest {
         
         
         
-        BackgroundProcess bp = snmpService.startSnmpBackgroundProcess(de.getId(), appender);
+        BackgroundProcess bp = snmpService.startSnmpBackgroundProcess("TESTUSER", de.getId(), appender);
         while (!bp.isFinished()) {
             Thread.sleep(100);
         }

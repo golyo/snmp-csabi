@@ -57,6 +57,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class TrapManager implements CommandResponder, SnmpResources, Serializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TrapManager.class);
+    private static final String TRAP_USERNAME = "TRAP";
     //private final Object synchObj = new Object();
     //private boolean interrupted;
     
@@ -70,6 +71,8 @@ public class TrapManager implements CommandResponder, SnmpResources, Serializabl
     private AbstractTransportMapping transport;
     private MessageAppender msgAppender = new MaxMessageAppender(100);
     
+    private boolean initialized;
+    
     public String getTrapListenerAddress() {
         return trapListenerAddress;
     }
@@ -80,12 +83,21 @@ public class TrapManager implements CommandResponder, SnmpResources, Serializabl
     
     public void start() throws IOException {
         msgAppender = new MaxMessageAppender(100);
-        listenTrap(new UdpAddress(trapListenerAddress));
+        try {
+            listenTrap(new UdpAddress(trapListenerAddress));  
+            initialized = true;
+        } catch (Exception e) {
+            initialized = false;
+            LOGGER.error("Trapmanager initialization failed", e);            
+            msgAppender.addMessage("trapManager.initialization.failed");
+            msgAppender.finish();
+        }
     }
 
     public void stop() throws IOException {
         transport.close();
         msgAppender.finish();
+        initialized = false;
     }
 
     public MessageAppender getMessageAppender() {
@@ -93,7 +105,7 @@ public class TrapManager implements CommandResponder, SnmpResources, Serializabl
     }
     
     public boolean isRunning() {
-        return transport.isListening();
+        return initialized && transport.isListening();
     }
     
     @Override
@@ -111,7 +123,7 @@ public class TrapManager implements CommandResponder, SnmpResources, Serializabl
                 }
             }
             if (device != null) {
-                snmpService.startSnmpBackgroundProcess(device.getId(), msgAppender);                            
+                snmpService.startSnmpBackgroundProcess(TRAP_USERNAME, device.getId(), msgAppender);                            
             } else {
                 msgAppender.addMessage("message.snmp.ipNotConfigured", trapInfo.getIpAdress());
             }

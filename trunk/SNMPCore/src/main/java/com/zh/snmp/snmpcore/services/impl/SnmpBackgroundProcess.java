@@ -31,7 +31,7 @@ public class SnmpBackgroundProcess extends BackgroundProcess {
     private static final Logger LOGGER = LoggerFactory.getLogger(SnmpBackgroundProcess.class);
     
     private SnmpServiceImpl service;
-    private ChangeLogEntity log;
+    private ChangeLogEntity log;    
     
     SnmpBackgroundProcess(SnmpServiceImpl service, ChangeLogEntity log, MessageAppender appender) {
         super(appender);
