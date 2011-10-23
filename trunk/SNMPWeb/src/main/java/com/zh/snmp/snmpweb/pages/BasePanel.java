@@ -61,7 +61,7 @@ public abstract class BasePanel<T> extends Panel {
         return (IModel<T>)getDefaultModel();
     }
     public Class<? extends BasePanel>[] getMainMenuConfig() {
-        MenuConfig c = getClass().getAnnotation(MenuConfig.class);
-        return c != null ? c.context() : null;
+        return BasePage.getMenuConfig(getClass());
     }
+    
 }

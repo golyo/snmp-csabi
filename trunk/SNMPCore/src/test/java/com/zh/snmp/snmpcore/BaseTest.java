@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import javax.naming.NamingException;
+import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -99,7 +100,8 @@ public abstract class BaseTest {
         e.setMacAddress("MAC" + ip.substring(0,3));
         e.setIpAddress(ip);
         e.setNodeId("NODE" + ip.substring(0,3));
-        return deviceService.saveEntity(e);
+        Assert.assertEquals("succes", deviceService.saveEntity(e));
+        return e;
     }
     
     protected DeviceEntity createDevice(String configCode, String deviceId, String ip, String nodeId, String macAddress) {

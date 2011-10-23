@@ -32,7 +32,7 @@ public interface DeviceService {
     public DeviceEntity findDeviceEntityById(String id);    
     public DeviceEntity findDeviceByIp(String ip);
     
-    public DeviceEntity saveEntity(DeviceEntity device);
+    public String saveEntity(DeviceEntity device);
     public Device save(Device device);
     public List<DeviceEntity> findDeviceEntityByFilter(DeviceEntity filter, String sort, int start, int count);
     public int countDevices(DeviceEntity filter);
@@ -47,5 +47,6 @@ public interface DeviceService {
     public List<ChangeLogEntity> findLogs(ChangeLogEntity filter, String sort, int start, int count);
     public int countLogs(ChangeLogEntity filter);
     
+    public List<DeviceEntity> getRetryUpdateDevices();
     public ChangeLogEntity changeDeviceState(String userName, DeviceEntity device, DeviceState newState, ChangeLogEntity originalLog);
 }

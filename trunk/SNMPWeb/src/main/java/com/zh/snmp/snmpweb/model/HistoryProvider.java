@@ -17,6 +17,7 @@
 package com.zh.snmp.snmpweb.model;
 
 import com.zh.snmp.snmpcore.entities.ChangeLogEntity;
+import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.services.DeviceService;
 import com.zh.snmp.snmpcore.services.SnmpService;
 import java.util.Collections;
@@ -36,6 +37,7 @@ public class HistoryProvider extends EntityDataProvider<ChangeLogEntity> {
     
     public HistoryProvider() {
         super(new ChangeLogEntity());
+        getFilterState().setDevice(new DeviceEntity());
         InjectorHolder.getInjector().inject(this);
     }
     

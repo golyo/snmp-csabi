@@ -57,9 +57,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class TrapManager implements CommandResponder, SnmpResources, Serializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TrapManager.class);
-    private static final String TRAP_USERNAME = "TRAP";
-    //private final Object synchObj = new Object();
-    //private boolean interrupted;
     
     @Autowired
     private SnmpService snmpService;
@@ -123,7 +120,7 @@ public class TrapManager implements CommandResponder, SnmpResources, Serializabl
                 }
             }
             if (device != null) {
-                snmpService.startSnmpBackgroundProcess(TRAP_USERNAME, device.getId(), msgAppender);                            
+                snmpService.startSnmpBackgroundProcess(SnmpService.TRAP_USERNAME, device.getId(), msgAppender);                            
             } else {
                 msgAppender.addMessage("message.snmp.ipNotConfigured", trapInfo.getIpAdress());
             }

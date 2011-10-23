@@ -32,4 +32,5 @@ public interface MessageAppender extends Serializable {
     
     public boolean isFinished();
     public void finish();
+    public void start();
 }

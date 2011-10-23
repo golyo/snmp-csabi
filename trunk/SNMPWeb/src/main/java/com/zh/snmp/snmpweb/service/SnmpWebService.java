@@ -19,6 +19,7 @@ package com.zh.snmp.snmpweb.service;
 import com.zh.snmp.snmpcore.domain.Device;
 import com.zh.snmp.snmpcore.domain.DeviceNode;
 import com.zh.snmp.snmpcore.domain.DinamicValue;
+import com.zh.snmp.snmpcore.entities.ChangeLogEntity;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.entities.DeviceState;
 import com.zh.snmp.snmpcore.message.SimpleMessageAppender;
@@ -45,7 +46,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebService(serviceName = "SnmpWebService")
 public class SnmpWebService {
-    private static final String WEBSERVICE_USERNAME = "WEBSERVICE";
     
     @Resource
     private WebServiceContext context;
@@ -67,21 +67,17 @@ public class SnmpWebService {
     }
     
     @WebMethod(operationName = "createDevice")
-    public Boolean createDevice(@WebParam(name = "configCode") String configCode, @WebParam(name = "deviceId") String deviceId, @WebParam(name = "nodeId") String nodeId, @WebParam(name = "ipAddress") String ipAddress, @WebParam(name = "macAddress") String macAddress) {
+    public String createDevice(@WebParam(name = "configCode") String configCode, @WebParam(name = "deviceId") String deviceId, @WebParam(name = "nodeId") String nodeId, @WebParam(name = "ipAddress") String ipAddress, @WebParam(name = "macAddress") String macAddress) {
         init();
         DeviceEntity de = deviceService.findDeviceEntityById(deviceId);
-        if (de != null) {
-            return false;           
-        } else {
-            de = new DeviceEntity();
-            de.setConfigCode(configCode);
-            de.setId(deviceId);
-            de.setIpAddress(ipAddress);
-            de.setMacAddress(macAddress);
-            de.setNodeId(nodeId);
-            de = deviceService.saveEntity(de);
-            return de != null;
-        }
+        de = new DeviceEntity();
+        de.setConfigCode(configCode);
+        de.setId(deviceId);
+        de.setIpAddress(ipAddress);
+        de.setMacAddress(macAddress);
+        de.setNodeId(nodeId);
+        String ret = deviceService.saveEntity(de);
+        return ret;
     }
     
     private static final String PATH_DELIM = "\\.";
@@ -91,11 +87,18 @@ public class SnmpWebService {
         List<String> path = Arrays.asList(configPath.split(PATH_DELIM));
         Device device = deviceService.setDeviceConfig(deviceId, path, dinamicValues, mode);
         if (device != null) {
-            SnmpBackgroundProcess process = service.startSnmpBackgroundProcess(WEBSERVICE_USERNAME, device.getDeviceId(), new SimpleMessageAppender());
+            SnmpBackgroundProcess process = service.startSnmpBackgroundProcess(SnmpService.WEBSERVICE_USERNAME, device.getDeviceId(), new SimpleMessageAppender());
             return process != null ? process.getLog().getId() : null;
         } else {
             return null;
         }
+    }
+
+    @WebMethod(operationName = "getTransactionState")
+    public DeviceState getTransactionState(@WebParam(name = "transactionId") Long changeLogId) {
+        init();
+        ChangeLogEntity log = deviceService.findLog(changeLogId);
+        return log != null ? log.getStateAfter() : null;
     }
 
     @WebMethod(operationName = "deleteDevice")

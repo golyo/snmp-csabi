@@ -47,7 +47,7 @@ public class ConfigServiceTest extends BaseTest {
     private MibParser mibParser;
     
     @Test
-    public void testConfig() {
+    public void testConfig() throws Exception {
         Configuration conf = createTestAccesConfig();
         configService.saveConfig(conf);
         configService.clearCache();
@@ -66,6 +66,13 @@ public class ConfigServiceTest extends BaseTest {
         
         DeviceEntity deentity = deviceService.findDeviceByIp(ip);
         assertNotNull(deentity);
+        
+        List<DeviceEntity> retries = deviceService.getRetryUpdateDevices();
+        assertFalse(retries.isEmpty());
+        
+        LOGGER.debug("Sleeep");
+        Thread.sleep(20000);
+        LOGGER.debug("Sleeep finished");
     }
     
     @Test

@@ -17,8 +17,7 @@
 package com.zh.snmp.snmpweb.monitoring;
 
 import com.zh.snmp.snmpcore.message.MessageAppender;
-import com.zh.snmp.snmpcore.snmp.trap.TrapManager;
-import java.io.IOException;
+import com.zh.snmp.snmpcore.snmp.trap.TimerUpdater;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.model.IModel;
@@ -31,47 +30,34 @@ import org.slf4j.LoggerFactory;
  *
  * @author Golyo
  */
-public class TrapMonitorPanel extends MonitorPanel<String> {
+public class UpdateMonitorPanel extends MonitorPanel<String> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrapMonitorPanel.class);
 
     @SpringBean
-    private TrapManager trapManager;
+    private TimerUpdater timerUpdater;
     
-    public TrapMonitorPanel(String id) {
+    public UpdateMonitorPanel(String id) {
         super(id, Model.of(""));
         add(new AjaxLink("start") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                try {
-                    trapManager.start();
-                    getJBetPage().changePanel(TrapMonitorPanel.class, null, target);
-                } catch (IOException e) {
-                    LOGGER.error("Error while start trap", e);
-                    getFeedback().error(getString("error.startTrap"));
-                    target.addComponent(getFeedback());
-                }
+                timerUpdater.start();
+                getJBetPage().changePanel(UpdateMonitorPanel.class, null, target);
             }
             
             @Override
             public boolean isVisible() {
-                return !trapManager.isRunning();
+                return !timerUpdater.isRunning();
             }
         });
         add(new AjaxLink("stop") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                try {
-                    trapManager.stop();
-                    getJBetPage().changePanel(TrapMonitorPanel.class, null, target);
-                } catch (IOException e) {
-                    LOGGER.error("Error while stop trap", e);
-                    getFeedback().error(getString("error.stopTrap"));
-                    target.addComponent(getFeedback());
-                }
+                timerUpdater.destroy();
             }
             @Override
             public boolean isVisible() {
-                return trapManager.isRunning();
+                return timerUpdater.isRunning();
             }
         });
     
@@ -79,7 +65,12 @@ public class TrapMonitorPanel extends MonitorPanel<String> {
     
     @Override
     protected MessageAppender createMessageAppender(IModel<String> model) {
-        return trapManager.getMessageAppender();
+        return timerUpdater.getMessageAppender();
+    }    
+    
+    @Override
+    protected boolean canRestart() {
+        return true;
     }
     
 }

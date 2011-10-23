@@ -90,7 +90,12 @@ public abstract class BasePage extends WebPage {
         tabContainer = new TabContainer(MENU, this, getMainMenuConfig()) {
             @Override
             protected void onTabMenuClick(Class<? extends MarkupContainer> parentClz, Class<? extends BasePanel> panelClz, IModel model, AjaxRequestTarget art) {
-                changePanel(panelClz, model, art);
+                Class<? extends BasePanel>[] config = getMenuConfig(panelClz);
+                if (config != null && config.length > 0 && config[0] == panelClz && parentClz != panelClz) {
+                    changePanel(config, model, panelClz, art);
+                } else {
+                    changePanel(panelClz, model, art);                    
+                }                
             }
         };
         add(tabContainer);
@@ -173,11 +178,15 @@ public abstract class BasePage extends WebPage {
     }
 
     public Class<? extends BasePanel>[] getMainMenuConfig() {
-        MenuConfig c = getClass().getAnnotation(MenuConfig.class);
-        return c != null ? c.context() : null;
+        return getMenuConfig(getClass());
     }
 
     public IModel getMainMenuModel() {
         return getDefaultModel();
+    }
+    
+    public static Class<? extends BasePanel>[] getMenuConfig(Class clz) {
+        MenuConfig c = (MenuConfig)clz.getAnnotation(MenuConfig.class);
+        return c != null ? c.context() : null;
     }
 }

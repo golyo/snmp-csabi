@@ -125,6 +125,7 @@ public class ConfigServiceImpl implements ConfigService {
     
     
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public Configuration importConfiguration(InputStream stream, MessageAppender appender) {        
         Configuration conf = new Configuration();
         try {
