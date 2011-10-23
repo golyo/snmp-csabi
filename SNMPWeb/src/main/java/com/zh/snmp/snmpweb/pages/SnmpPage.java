@@ -22,13 +22,13 @@ import org.apache.wicket.PageParameters;
 import com.zh.snmp.snmpweb.config.DeviceConfigListPanel;
 import com.zh.snmp.snmpweb.device.DeviceListPanel;
 import com.zh.snmp.snmpweb.menu.MenuConfig;
-import com.zh.snmp.snmpweb.monitoring.TrapMonitorPanel;
+import com.zh.snmp.snmpweb.pages.snmp.BackgroundHistoryListPanel;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 /**
  *
  * @author golyo
  */
-@MenuConfig(context={DeviceConfigListPanel.class, DeviceListPanel.class, TrapMonitorPanel.class})
+@MenuConfig(context={DeviceConfigListPanel.class, DeviceListPanel.class, BackgroundHistoryListPanel.class})
 @AuthorizeInstantiation({BaseSession.ROLE_ADMIN})
 public class SnmpPage extends BasePage {
     private static final long serialVersionUID = 1L;

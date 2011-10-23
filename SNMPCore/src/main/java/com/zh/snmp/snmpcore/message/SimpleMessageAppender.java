@@ -16,7 +16,6 @@
  */
 package com.zh.snmp.snmpcore.message;
 
-import java.io.Serializable;
 import java.util.LinkedList;
 
 /**
@@ -64,4 +63,9 @@ public class SimpleMessageAppender implements MessageAppender {
     public String toString() {
         return messages.toString();
     }
+    
+    @Override
+    public void start() {
+        finished = false;
+    }    
 }

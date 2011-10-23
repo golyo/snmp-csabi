@@ -19,14 +19,12 @@ package com.zh.snmp.snmpweb.device;
 import com.zh.snmp.snmpcore.entities.DeviceEntity;
 import com.zh.snmp.snmpcore.services.ConfigService;
 import com.zh.snmp.snmpcore.services.DeviceService;
-import com.zh.snmp.snmpcore.services.SnmpService;
 import com.zh.snmp.snmpweb.components.ModalEditCloseListener;
 import com.zh.snmp.snmpweb.components.ModalEditPanel;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
@@ -55,14 +53,12 @@ public class DeviceEditPanel extends ModalEditPanel<DeviceEntity> implements Mod
     protected boolean onModalSave(AjaxRequestTarget target) {
         String errKey = null;
         DeviceEntity saveable = (DeviceEntity)form.getDefaultModelObject();
-        DeviceEntity checkCode = service.findDeviceEntityById(saveable.getId());
-        if (checkCode != null) {
-            errKey = "deviceEntity.error.nodeIdExists";
-            error(getString(errKey));
+        String checkErrKey = service.saveEntity(saveable);
+        if (checkErrKey != null) {
+            error(getString(checkErrKey, null, checkErrKey));
             target.addComponent(feedback);
             return false;
         } else {
-            service.saveEntity(saveable);
             return true;
         }
     }

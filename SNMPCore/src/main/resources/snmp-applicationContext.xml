@@ -71,6 +71,8 @@
         <property name="trapListenerAddress" value="${snmp.trap.ip}"/>
     </bean>
     
-    
+    <bean id="timerUpdater" class="com.zh.snmp.snmpcore.snmp.trap.TimerUpdater" destroy-method="destroy">
+        <property name="periodInMinutes" value="60"/>        
+    </bean>
 </beans>
 

@@ -54,6 +54,12 @@ public class MessageDebugAppender implements MessageAppender {
     }
 
     @Override
+    public void start() {
+        finished = false;
+        LOGGER.debug("Started");
+    }
+
+    @Override
     public boolean isFinished() {
         return finished;
     }        

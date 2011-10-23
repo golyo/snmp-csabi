@@ -43,7 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class DeviceServiceImpl implements DeviceService {
-
     @Autowired
     private ConfigService configService;
     
@@ -98,7 +97,11 @@ public class DeviceServiceImpl implements DeviceService {
     
     @Override
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public DeviceEntity saveEntity(DeviceEntity device) {
+    public String saveEntity(DeviceEntity device) {
+        String errKey = dao.checkDevice(device);
+        if (errKey != null) {
+            return errKey;
+        }
         if (device.getDeviceMap() == null) {
             Configuration config = configService.findConfigByCode(device.getConfigCode());
             if (config != null) {
@@ -112,15 +115,21 @@ public class DeviceServiceImpl implements DeviceService {
         if (device.getConfigState() == null) {
             device.setConfigState(DeviceState.NEW);
         }
+        
         DeviceEntity ret = dao.save(device);
         dao.flush();
-        return ret;
+        return null;
     }
         
     @Override
     public DeviceEntity findDeviceEntityByFilter(DeviceEntity filter) {
         return dao.findExampleEntity(filter);
     }    
+    
+    @Override
+    public List<DeviceEntity> getRetryUpdateDevices() {
+        return dao.getRetryUpdateDevices();
+    }
     
     @Override
     public Device setDeviceConfig(String nodeId, List<String> path, List<DinamicValue> dinamicValues, int mode) {

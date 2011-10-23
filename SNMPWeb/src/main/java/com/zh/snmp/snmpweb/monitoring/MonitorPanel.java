@@ -20,6 +20,7 @@ import com.zh.snmp.snmpcore.message.MessageAppender;
 import com.zh.snmp.snmpcore.message.SimpleMessageAppender;
 import com.zh.snmp.snmpcore.message.ZhMessage;
 import com.zh.snmp.snmpweb.pages.BasePanel;
+import java.text.SimpleDateFormat;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.markup.html.basic.Label;
@@ -36,6 +37,7 @@ import org.apache.wicket.util.time.Duration;
  */
 public class MonitorPanel<T> extends BasePanel<T> {
     private static final String NL = "\n";
+    private static final SimpleDateFormat SDF = new SimpleDateFormat("yy.MM.dd hh:mm:ss");
     
     protected MessageAppender appender;
     protected Label progressLabel;
@@ -64,29 +66,29 @@ public class MonitorPanel<T> extends BasePanel<T> {
         add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(5)) {
             @Override
             protected void onPostProcessTarget(AjaxRequestTarget target) {
-                super.onPostProcessTarget(target);
-                if (MonitorPanel.this.appender.isFinished()) {
-                    this.stop();
-                    progressLabel.setVisible(false);
-                    onEndProcess(target);
+                progressLabel.setVisible(!MonitorPanel.this.appender.isFinished());
+                if (!canRestart()) {
+                    this.stop();                    
                 }
+                super.onPostProcessTarget(target);
             }
         });
     }
     protected String getMultiLineString() {
         StringBuilder sb = new StringBuilder();
         for (ZhMessage mess: MonitorPanel.this.appender.getMessages()) {
+            sb.append(SDF.format(mess.getDate())).append(": ");
             sb.append(new StringResourceModel(mess.getResourceKey(), this, null, mess.getParams()).getString());
             sb.append(NL);
         }
         return sb.toString();         
     }
     
-    protected void onEndProcess(AjaxRequestTarget target) {
-        
-    }
-    
     protected MessageAppender createMessageAppender(IModel<T> model) {
         return new SimpleMessageAppender();
+    }
+    
+    protected boolean canRestart() {
+        return false;
     }
 }
