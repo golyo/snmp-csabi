@@ -8,11 +8,6 @@
             http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
             http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
-    <!-- Logozo interceptor -->
-    <!-- <bean id="traceInterceptor" class="hu.sonrisa.kgr.k11.core.aop.TraceInterceptor">        
-        <property name="useSimpleClassName" value="true" />
-    </bean> -->
-
     <bean id="exceptionInterceptor" class="com.zh.snmp.snmpcore.aop.ExceptionInterceptor">
     </bean>
 
